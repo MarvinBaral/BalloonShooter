@@ -1,10 +1,4 @@
-//#include <QCoreApplication>
-//int main(int argc, char *argv[])
-//{
-//    QCoreApplication a(argc, argv);
-//    return a.exec();
-//    }
-
+#include <QCoreApplication>
 #include <iostream>
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
@@ -13,18 +7,31 @@
 
 //http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
 
-//=================================
-//============= BGR ===============
-//=================================
-//
+const short int PULSE_SERVO_STANDARD = 1500;
+const short int MIN_PULSE = 500;
+const short int MAX_PULSE = 1800;
+int pulseTimes[3] = {1150, 1500, 1200}; //in ms
+QSerialPort serial; //https://www.youtube.com/watch?v=UD78xyKbrfk
 
-
+void updateServo(int index, signed int pulseDiff) {
+    pulseTimes[index] += pulseDiff;
+    if (pulseTimes[index] < MIN_PULSE) {
+        pulseTimes[index] = MIN_PULSE;
+    } else {
+        serial.write(QString(QString::number(index) + ";" + QString::number(pulseTimes[index]) + ";").toLocal8Bit());
+        serial.flush();
+        std::cout << "set pulse of Servo 0 to" << pulseTimes[index];
+    }
+}
 
 int detectBall(cv::Mat frame, int maxSize) {
 
 }
 
 int main(int argc, char* argv[]) {
+
+//    QCoreApplication a(argc, argv);
+
     cv::VideoCapture cap(0); // open the video camera no. 0
     cv::Mat frame;
     int baseColor[3];
@@ -36,8 +43,6 @@ int main(int argc, char* argv[]) {
     cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
     std::cout << " BGR color model!!!" << std::endl;
 
-
-    QSerialPort serial; //https://www.youtube.com/watch?v=UD78xyKbrfk
     serial.setPortName("/dev/ttyACM0");
     serial.setBaudRate(QSerialPort::Baud9600);
     serial.setDataBits(QSerialPort::Data8);
@@ -45,15 +50,6 @@ int main(int argc, char* argv[]) {
     serial.setStopBits(QSerialPort::OneStop);
     serial.setFlowControl(QSerialPort::NoFlowControl);
     serial.open(QIODevice::ReadWrite);
-
-    //    QByteArray* response;
-
-    //    #define PULSE_LENGTH 20000 //microseconds
-    const short int PULSE_SERVO_STANDARD = 1500;
-    const short int MIN_PULSE = 500;
-    const short int MAX_PULSE = 1800;
-    //    #define PROTOCOL_USAGE "<char select {0-2}>;<int pulseTime {500-2500}>"
-    int pulseTimes[3] = {PULSE_SERVO_STANDARD, PULSE_SERVO_STANDARD, PULSE_SERVO_STANDARD}; //in ms
 
     int keyPressed;
     do {
@@ -74,25 +70,22 @@ int main(int argc, char* argv[]) {
             }
             std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
             break;
+        case 65361: //left
+            updateServo(0, 100);
+            break;
+        case 65363: //right
+            updateServo(0, -100);
+            break;
         case 65362: //up
-            pulseTimes[0] += 100;
-            if (pulseTimes[0] > MAX_PULSE) {
-                pulseTimes[0] = MAX_PULSE;
-            } else {
-                serial.write("0;" + QString(pulseTimes[0]).toLocal8Bit() + ";");
-                serial.flush();
-                std::cout << "set pulse of Servo 0 to" << pulseTimes[0];
-            }
+            updateServo(1, 100);
             break;
         case 65364: //down
-            pulseTimes[0] -= 100;
-            if (pulseTimes[0] < MIN_PULSE) {
-                pulseTimes[0] = MIN_PULSE;
-            } else {
-                serial.write(QByteArray("0;" + QString(pulseTimes[0]).toLocal8Bit() + ";"));
-                serial.flush();
-                std::cout << "set pulse of Servo 0 to" << pulseTimes[0];
-            }
+            updateServo(1, -100);
+            break;
+        case 10: //enter
+            updateServo(2, -150);
+            delay(1000);
+            updateServo(2, 150);
             break;
         default:
             std::cout << "pressed " << keyPressed << std::endl;
@@ -106,6 +99,6 @@ int main(int argc, char* argv[]) {
     std::cout << "esc key pressed - aborted" << std::endl;
     serial.close();
 
-    return 0;
+//    return a.exec();
 }
 
