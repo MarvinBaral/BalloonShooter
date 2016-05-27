@@ -33,7 +33,7 @@ int detectBall(cv::Mat frame, int maxSize) {
 
 int main(int argc, char* argv[]) {
 
-    //    QCoreApplication a(argc, argv);
+    //QCoreApplication a(argc, argv);
 
     cv::VideoCapture cap(0); // open the video camera no. 0
     cv::Mat frame;
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
     }
     //    printParams(cap);
     cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
-    std::cout << " BGR color model!!!" << std::endl;
+    std::cout << "BGR color model!!!" << std::endl;
 
     serial.setPortName("/dev/ttyACM0");
     serial.setBaudRate(QSerialPort::Baud9600);
@@ -57,8 +57,8 @@ int main(int argc, char* argv[]) {
     int keyPressed;
     do {
         cap.read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
-        //        showAvgBGR(frame);
-        //        showOnCMD(frame);
+        //showAvgBGR(frame);
+        //showOnCMD(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
 
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
         case 65364: //down
             updateServo(1, -STEP_TIME);
             break;
-        case 10: //enter
+        case 10: //enter = shoot
             updateServo(2, -150);
             delay(1000);
             updateServo(2, 150);
@@ -106,6 +106,6 @@ int main(int argc, char* argv[]) {
     std::cout << "esc key pressed - aborted" << std::endl;
     serial.close();
 
-    //    return a.exec();
+    //return a.exec();
 }
 
