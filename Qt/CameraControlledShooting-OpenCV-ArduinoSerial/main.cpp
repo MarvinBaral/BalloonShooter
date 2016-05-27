@@ -17,10 +17,11 @@ void updateServo(int index, signed int pulseDiff) {
     pulseTimes[index] += pulseDiff;
     if (pulseTimes[index] < MIN_PULSE) {
         pulseTimes[index] = MIN_PULSE;
+    } else if (pulseTimes[index] > MAX_PULSE) {
+        pulseTimes[index] = MAX_PULSE;
     } else {
         serial.write(QString(QString::number(index) + ";" + QString::number(pulseTimes[index]) + ";").toLocal8Bit());
         serial.flush();
-        std::cout << "set pulse of Servo 0 to" << pulseTimes[index];
     }
 }
 
@@ -30,7 +31,7 @@ int detectBall(cv::Mat frame, int maxSize) {
 
 int main(int argc, char* argv[]) {
 
-//    QCoreApplication a(argc, argv);
+    //    QCoreApplication a(argc, argv);
 
     cv::VideoCapture cap(0); // open the video camera no. 0
     cv::Mat frame;
@@ -99,6 +100,6 @@ int main(int argc, char* argv[]) {
     std::cout << "esc key pressed - aborted" << std::endl;
     serial.close();
 
-//    return a.exec();
+    //    return a.exec();
 }
 
