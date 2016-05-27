@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Cannot open the video cam" << std::endl;
         return -1;
     }
-//    printParams(cap);
+    //    printParams(cap);
     cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
     std::cout << " BGR color model!!!" << std::endl;
 
@@ -46,54 +46,57 @@ int main(int argc, char* argv[]) {
     serial.setFlowControl(QSerialPort::NoFlowControl);
     serial.open(QIODevice::ReadWrite);
 
-    serial.write("0;700;");
-//    QByteArray* response;
+    //    QByteArray* response;
 
-    #define PULSE_LENGTH 20000 //microseconds
-    #define PULSE_SERVO_STANDARD 1500
-    #define PROTOCOL_USAGE "<char select {0-2}>;<int pulseTime {500-2500}>"
+    //    #define PULSE_LENGTH 20000 //microseconds
+    const short int PULSE_SERVO_STANDARD = 1500;
+    const short int MIN_PULSE = 500;
+    const short int MAX_PULSE = 1800;
+    //    #define PROTOCOL_USAGE "<char select {0-2}>;<int pulseTime {500-2500}>"
     int pulseTimes[3] = {PULSE_SERVO_STANDARD, PULSE_SERVO_STANDARD, PULSE_SERVO_STANDARD}; //in ms
 
     int keyPressed;
     do {
         cap.read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
-//        showAvgBGR(frame);
-//        showOnCMD(frame);
+        //        showAvgBGR(frame);
+        //        showOnCMD(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
 
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {
-            case -1: break;
-            case 107: //k
-                //give color of most centered pixel
-                for (int color = 0; color < 3; color++){
-                    baseColor[color] = *(frame.data + frame.step[0] * (frame.rows / 2) + frame.step[1] * (frame.cols / 2) + color);
-                    std::cout << baseColor[color] << "|";
-                }
-                std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
-                break;
-            case 65362: //up
-                pulseTimes[0] += 100;
-                if (pulseTimes[0] > 2500) {
-                    pulseTimes[0] = 2500;
-                } else {
-                    serial.write("0;2100;");
-                    std::cout << "set pulse of Servo 0 to" << pulseTimes[0];
-                }
-                break;
-            case 65364: //down
-                pulseTimes[0] -= 100;
-                if (pulseTimes[0] < 500) {
-                    pulseTimes[0] = 500;
-                } else {
-                    serial.write("0;" + QString(pulseTimes[0]).toLocal8Bit() + ";");
-                    std::cout << "set pulse of Servo 0 to" << pulseTimes[0];
-                }
-                break;
-            default:
-                std::cout << "pressed " << keyPressed << std::endl;
-                break;
+        case -1: break;
+        case 107: //k
+            //give color of most centered pixel
+            for (int color = 0; color < 3; color++){
+                baseColor[color] = *(frame.data + frame.step[0] * (frame.rows / 2) + frame.step[1] * (frame.cols / 2) + color);
+                std::cout << baseColor[color] << "|";
+            }
+            std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
+            break;
+        case 65362: //up
+            pulseTimes[0] += 100;
+            if (pulseTimes[0] > MAX_PULSE) {
+                pulseTimes[0] = MAX_PULSE;
+            } else {
+                serial.write("0;" + QString(pulseTimes[0]).toLocal8Bit() + ";");
+                serial.flush();
+                std::cout << "set pulse of Servo 0 to" << pulseTimes[0];
+            }
+            break;
+        case 65364: //down
+            pulseTimes[0] -= 100;
+            if (pulseTimes[0] < MIN_PULSE) {
+                pulseTimes[0] = MIN_PULSE;
+            } else {
+                serial.write(QByteArray("0;" + QString(pulseTimes[0]).toLocal8Bit() + ";"));
+                serial.flush();
+                std::cout << "set pulse of Servo 0 to" << pulseTimes[0];
+            }
+            break;
+        default:
+            std::cout << "pressed " << keyPressed << std::endl;
+            break;
         }
 
         QByteArray response = serial.read(100);
