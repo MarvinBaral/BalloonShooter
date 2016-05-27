@@ -14,6 +14,7 @@ const unsigned short int STEP_TIME = 50;
 
 unsigned short int pulseTimes[3] = {1150, 1500, 1200}; //in ms
 QSerialPort serial; //https://www.youtube.com/watch?v=UD78xyKbrfk
+QByteArray response;
 
 void updateServo(unsigned short int index, signed short int pulseDiff) {
     pulseTimes[index] += pulseDiff;
@@ -99,8 +100,12 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        QByteArray response = serial.read(100);
-        std::cout << response.toStdString();
+        response = serial.readAll();
+        serial.waitForReadyRead(100);
+        if (!response.isEmpty() && !response.isNull()) {
+            std::cout << response.toStdString();
+        }
+
     } while (keyPressed != 27);
 
     std::cout << "esc key pressed - aborted" << std::endl;
