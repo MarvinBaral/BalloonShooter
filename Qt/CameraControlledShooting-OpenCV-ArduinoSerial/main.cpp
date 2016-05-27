@@ -7,13 +7,15 @@
 
 //http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
 
-const short int PULSE_SERVO_STANDARD = 1500;
-const short int MIN_PULSE = 500;
-const short int MAX_PULSE = 1800;
-int pulseTimes[3] = {1150, 1500, 1200}; //in ms
+const unsigned short int PULSE_SERVO_STANDARD = 1500;
+const unsigned short int MIN_PULSE = 500;
+const unsigned short int MAX_PULSE = 1800;
+const unsigned short int STEP_TIME = 50;
+
+unsigned short int pulseTimes[3] = {1150, 1500, 1200}; //in ms
 QSerialPort serial; //https://www.youtube.com/watch?v=UD78xyKbrfk
 
-void updateServo(int index, signed int pulseDiff) {
+void updateServo(unsigned short int index, signed short int pulseDiff) {
     pulseTimes[index] += pulseDiff;
     if (pulseTimes[index] < MIN_PULSE) {
         pulseTimes[index] = MIN_PULSE;
@@ -72,21 +74,25 @@ int main(int argc, char* argv[]) {
             std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
             break;
         case 65361: //left
-            updateServo(0, 100);
+            updateServo(0, STEP_TIME);
             break;
         case 65363: //right
-            updateServo(0, -100);
+            updateServo(0, -STEP_TIME);
             break;
         case 65362: //up
-            updateServo(1, 100);
+            updateServo(1, STEP_TIME);
             break;
         case 65364: //down
-            updateServo(1, -100);
+            updateServo(1, -STEP_TIME);
             break;
         case 10: //enter
             updateServo(2, -150);
             delay(1000);
             updateServo(2, 150);
+            break;
+        case 114: //r = reset
+            serial.close();
+            serial.open(QIODevice::ReadWrite);
             break;
         default:
             std::cout << "pressed " << keyPressed << std::endl;
