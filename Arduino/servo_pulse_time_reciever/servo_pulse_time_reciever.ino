@@ -1,7 +1,8 @@
 //this is a firmware simply there to be able to control 3 Servos with serial communication from your PC
-const short int PULSE_LENGTH = 20000; //microseconds
-const short int MIN_PULSE = 500;
-const short int MAX_PULSE = 1800;
+const unsigned short int PULSE_LENGTH = 20000; //microseconds
+const unsigned short int MIN_PULSE = 500;
+const unsigned short int MAX_PULSE = 1800;
+const unsigned short int REPEATIONS_OF_NEW_PULSE_TIME = 10;
 
 int pulseTimes[3] = {1150, 1500, 1200}; //in ms
 int pulseTime;
@@ -19,16 +20,26 @@ void setup() {
 }
 
 
-/*Pulses (there are three of them in parallel):
+/*Pulses done by main loop (there are three of them in parallel):
 
-pulseTimes[i]
+pulseTimes[0]
 |      /
 |     |
 
-+-----+                         +--
-|     |                         |
-|     |                         |
-+     +-------------------------+
++-----+                         
+|     |                         
+|     |                         
++     +--------------------------
+
+      +-----+                      
+      |     |                      
+      |     |                      
+------+     +--------------------
+
+            +-----+              
+            |     |              
+            |     |              
+------------+     +--------------
 
 |                               |
 |                                \
@@ -41,7 +52,7 @@ time = 0
 */
 
 void loop() {
-  if (ctr < 10) {
+  if (ctr < REPEATIONS_OF_NEW_PULSE_TIME) {
     startMicros = micros();
     for (int pin = 0; pin < 3; pin++) {
       digitalWrite(servoPins[pin], HIGH);
@@ -52,17 +63,13 @@ void loop() {
       timeInPulse = micros() - startMicros;
     }
     while (timeInPulse < PULSE_LENGTH);
-  //micros() overflow after 70 min!!!
     ctr++;
   }
 }
 
-//causes flittering of servos:
-    //
-    //digitalWrite(servoPins[pin], timeInPulse < pulseTimes[pin]);
-
 //The protocoll
 //=============
+//<char select {0-2}>;<int pulseTime {MIN_PULSE-MAX_PULSE}>;
 
 //used in the same way as acknowledgement
 
@@ -105,3 +112,4 @@ void serialEvent(){
   }
 }
 
+//micros() overflow after 70 min!!!
