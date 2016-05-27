@@ -100,8 +100,8 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        response = serial.readAll();
         serial.waitForReadyRead(100);
+        response = serial.readAll();
         if (!response.isEmpty() && !response.isNull()) {
             std::cout << response.toStdString();
         }
