@@ -9,6 +9,7 @@ int servoPins[3] = {9, 10, 11}; //also usable as PWM
 char select;
 unsigned long int startMicros;
 unsigned long int timeInPulse;
+unsigned short int ctr = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -40,17 +41,20 @@ time = 0
 */
 
 void loop() {
-  startMicros = micros();
-  for (int pin = 0; pin < 3; pin++) {
-    digitalWrite(servoPins[pin], HIGH);
-    delayMicroseconds(pulseTimes[pin]);
-    digitalWrite(servoPins[pin], LOW);
-  }
-  do {
-    timeInPulse = micros() - startMicros;
-  }
-  while (timeInPulse < PULSE_LENGTH);
+  if (ctr < 10) {
+    startMicros = micros();
+    for (int pin = 0; pin < 3; pin++) {
+      digitalWrite(servoPins[pin], HIGH);
+      delayMicroseconds(pulseTimes[pin]);
+      digitalWrite(servoPins[pin], LOW);
+    }
+    do {
+      timeInPulse = micros() - startMicros;
+    }
+    while (timeInPulse < PULSE_LENGTH);
   //micros() overflow after 70 min!!!
+    ctr++;
+  }
 }
 
 //causes flittering of servos:
@@ -79,6 +83,7 @@ void serialEvent(){
       pulseTime = Serial.parseInt();
       if (pulseTime >= MIN_PULSE && pulseTime <= MAX_PULSE && Serial.find(';')) {
         pulseTimes[select] = pulseTime;
+        ctr = 0;
         Serial.print(char(select + '0')); //!!! modified char
         Serial.print(';');
         Serial.print(pulseTimes[select]);
