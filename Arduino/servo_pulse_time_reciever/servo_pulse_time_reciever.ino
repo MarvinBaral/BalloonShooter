@@ -1,6 +1,7 @@
 //this is a firmware simply there to be able to control 3 Servos with serial communication from your PC
-#define PULSE_LENGTH 20000 //microseconds
-
+const short int PULSE_LENGTH = 20000; //microseconds
+const short int MIN_PULSE = 500;
+const short int MAX_PULSE = 1800;
 
 int pulseTimes[3] = {1150, 1500, 1200}; //in ms
 int pulseTime;
@@ -8,8 +9,6 @@ int servoPins[3] = {9, 10, 11}; //also usable as PWM
 char select;
 unsigned long int startMicros;
 unsigned long int timeInPulse;
-const short int MIN_PULSE = 500;
-const short int MAX_PULSE = 1800;
 
 void setup() {
   Serial.begin(9600);
@@ -100,3 +99,4 @@ void serialEvent(){
     }
   }
 }
+
