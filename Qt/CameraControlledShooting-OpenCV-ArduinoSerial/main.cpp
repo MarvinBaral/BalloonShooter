@@ -15,7 +15,7 @@ unsigned short int pulseTimes[3] = {1150, 1500, 1200}; //in ms
 QSerialPort serial; //https://www.youtube.com/watch?v=UD78xyKbrfk
 QByteArray response;
 
-void updateServo(unsigned short int index, signed short int pulseDiff) {
+void updateServo(const unsigned short int index, const signed short int pulseDiff) {
     pulseTimes[index] += pulseDiff;
     if (pulseTimes[index] < MIN_PULSE) {
         pulseTimes[index] = MIN_PULSE;
@@ -27,8 +27,8 @@ void updateServo(unsigned short int index, signed short int pulseDiff) {
     }
 }
 
-void initSerial(QSerialPort &serial) {
-    serial.setPortName("/dev/ttyACM0");
+void initSerial(QSerialPort &serial, const QString portName) {
+    serial.setPortName(portName);
     serial.setBaudRate(QSerialPort::Baud9600);
     serial.setDataBits(QSerialPort::Data8);
     serial.setParity(QSerialPort::NoParity);
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
     std::cout << "BGR color model!!!" << std::endl;
 
-    initSerial(serial);
+    initSerial(serial, "/dev/ttyACM0");
     serial.open(QIODevice::ReadWrite);
 
     int keyPressed;
