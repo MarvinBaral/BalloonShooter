@@ -1,4 +1,5 @@
 #include <opencv2/opencv.hpp>
+#include "servoControl.cpp"
 
 __attribute__((always_inline))
 static inline int getByte(cv::Mat frame, int x, int y, int byte) {
@@ -6,7 +7,7 @@ static inline int getByte(cv::Mat frame, int x, int y, int byte) {
 }
 
 __attribute__((always_inline))
-static inline int writeByte(cv::Mat frame, int x, int y, int byte, int value) {
+static inline void writeByte(cv::Mat frame, int x, int y, int byte, int value) {
     *(frame.data + frame.step[0] * y + frame.step[1] * x + byte) = value;
 }
 
@@ -14,15 +15,31 @@ __attribute__((always_inline))
 static inline float getRelation(cv::Mat frame, int x, int y, int byte) {
     float sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
     float single = getByte(frame, x, y, byte);
+    if (sum == 0) {
+        sum = 1;
+    }
     return single/sum;
 }
 
-void detectBallByAverage(cv::Mat frame) {
+void markPosition(cv::Mat &frame, int posx, int posy) {
+    int size = 5;
+    int markColor[3] = {255, 0, 0};
+    for (int y = posy - size; y < posy + size; y++) {
+        for (int x = posx - size; x < posx + size; x++){
+            for (int i = 0; i < 3; i++) {
+                if (x > 0 && y > 0){
+                    writeByte(frame, x, y, i, markColor[i]);
+                }
+            }
+        }
+    }
+}
+
+void detectBallByAverage(cv::Mat &frame) {
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
-            //if (getByte(frame, x, y, 2) >= 170 && getByte(frame, x, y, 0) < 100 && getByte(frame, x, y, 1) < 100) {
-            if (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) < 3 * 80) {
+            if (getRelation(frame, x, y, 2) > 0.7) {
                 ctr++;
                 ypos += y;
                 xpos += x;
@@ -34,10 +51,16 @@ void detectBallByAverage(cv::Mat frame) {
     }
     ypos /= ctr;
     xpos /= ctr;
-    std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
+    if (xpos > 0 && ypos > 0) {
+        std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
+        markPosition(frame, xpos, ypos);
+        if (ctr > 100) {
+            updateServosAccordingToCam(xpos, ypos);
+        }
+    }
 }
 
-int moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, int directionx, int color[3], int allowedDiffFromColor) {
+int moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, int directionx) {
     int length = 0;
     int posy = starty, posx = startx;
     bool colorOK = true;
@@ -46,7 +69,7 @@ int moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, i
         posx += directionx;
         length++; //will not work in 45° angles
         for (int i = 0; i < 3; i++) {
-            if (getRelation(frame, posx, posy, 2) < 0.5) {
+            if (getRelation(frame, posx, posy, 2) < 0.7) {
                 colorOK = false;
             }
         }
@@ -57,15 +80,14 @@ int moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, i
 void detectBallWithLines(cv::Mat frame) {
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
-            if (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) < 3 * 30) {
-                int color[3] = {15, 19, 128};
-                int allowedDiff = 20;
-                int initHeight = moveWhileSameColor(frame, y, x, 1, 0, color, allowedDiff); //go from first point down
-                int iniWidthRight = moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, 1, color, allowedDiff); //go at half right
-                int iniWidthLeft = moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, -1, color, allowedDiff); //go at half left
+            if (getRelation(frame, x, y, 2) < 0.7) {
+                int initHeight = moveWhileSameColor(frame, y, x, 1, 0); //go from first point down
+                int iniWidthRight = moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, 1); //go at half right
+                int iniWidthLeft = moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, -1); //go at half left
                 int iniWidth = iniWidthLeft + iniWidthRight;
                 if (initHeight > 50 && iniWidth > 50) {
                     std::cout << "pos x: " << x << " y: " << y + initHeight * 0.5 << std::endl;
+                    markPosition(frame, x, y + initHeight * 0.5);
                     return;
                 }
 

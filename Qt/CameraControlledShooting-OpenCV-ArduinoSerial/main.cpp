@@ -5,37 +5,8 @@
 #include "general.cpp"
 
 //http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
-
-const unsigned short int MIN_PULSE = 500;
-const unsigned short int MAX_PULSE = 1800;
-const unsigned short int STEP_TIME = 50;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 const QString PORT_NAME = "/dev/ttyACM0";
-
-unsigned short int pulseTimes[3] = {1150, 1500, 1200}; //in ms
-QSerialPort serial; //https://www.youtube.com/watch?v=UD78xyKbrfk
-QByteArray response;
-
-void updateServo(const unsigned short int index, const signed short int pulseDiff) {
-    pulseTimes[index] += pulseDiff;
-    if (pulseTimes[index] < MIN_PULSE) {
-        pulseTimes[index] = MIN_PULSE;
-    } else if (pulseTimes[index] > MAX_PULSE) {
-        pulseTimes[index] = MAX_PULSE;
-    } else {
-        serial.write(QString(QString::number(index) + ";" + QString::number(pulseTimes[index]) + ";").toLocal8Bit());
-        serial.flush();
-    }
-}
-
-void initSerial(QSerialPort &serial, const QString &PORT_NAME) {
-    serial.setPortName(PORT_NAME);
-    serial.setBaudRate(QSerialPort::Baud9600);
-    serial.setDataBits(QSerialPort::Data8);
-    serial.setParity(QSerialPort::NoParity);
-    serial.setStopBits(QSerialPort::OneStop);
-    serial.setFlowControl(QSerialPort::NoFlowControl);
-}
 
 int main(int argc, char* argv[]) {
 
@@ -58,8 +29,8 @@ int main(int argc, char* argv[]) {
         cap.read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
         //showAvgBGR(frame);
         //showOnCMD(frame);
-        //detectBallByAverage(frame);
-        detectBallWithLines(frame);
+        detectBallByAverage(frame);
+        //detectBallWithLines(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
 

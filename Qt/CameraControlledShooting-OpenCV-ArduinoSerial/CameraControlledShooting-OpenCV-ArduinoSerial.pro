@@ -11,7 +11,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     openCV.cpp \
-    general.cpp
+    general.cpp \
+    servoControl.cpp
 
 #CONFIG -= qt
 INCLUDEPATH += /usr/local/include/opencv
