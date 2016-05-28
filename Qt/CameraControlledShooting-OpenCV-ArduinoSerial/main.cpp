@@ -5,18 +5,15 @@
 #include "general.cpp"
 #include "servoControl.hpp"
 
-
 const unsigned short int STEP_TIME = 50;
-QSerialPort* serial = new QSerialPort(); //https://www.youtube.com/watch?v=UD78xyKbrfk
-QByteArray response;
-
-//http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 const QString PORT_NAME = "/dev/ttyACM0";
-ServoControl* servoControl = new ServoControl(serial);
-OpenCV* openCV = new OpenCV(servoControl);
 
 int main(int argc, char* argv[]) {
+
+    QSerialPort* serial = new QSerialPort(); //https://www.youtube.com/watch?v=UD78xyKbrfk
+    ServoControl* servoControl = new ServoControl(serial);
+    OpenCV* openCV = new OpenCV(servoControl);
 
     cv::VideoCapture cap(0); // open the video camera no. 0
     cv::Mat frame;
@@ -81,7 +78,7 @@ int main(int argc, char* argv[]) {
 
         if (SHOW_RESPONSE_FROM_ARDUINO) {
             serial->waitForReadyRead(10);
-            response = serial->readAll();
+            QByteArray response = serial->readAll();
             if (!response.isEmpty() && !response.isNull()) {
                 std::cout << response.toStdString();
             }
@@ -92,6 +89,13 @@ int main(int argc, char* argv[]) {
     serial->close();
     std::cout << "esc key pressed - aborted" << std::endl;
 
+    delete openCV;
+    delete servoControl;
+    delete serial;
+
     return 0;
 }
 
+
+
+//http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
