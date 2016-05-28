@@ -1,6 +1,31 @@
 #include <opencv2/opencv.hpp>
 #include <QTime>
 
+__attribute__((always_inline))
+static inline int getByte(cv::Mat frame, int x, int y, int byte) {
+    return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte);
+}
+
+int detectBall(cv::Mat frame, int maxSize) {
+    int ctr = 0, ypos = 0, xpos = 0;
+    for (int y = 0; y < frame.rows; y++) {
+        for (int x = 0; x < frame.cols; x++) {
+//            if (getByte(frame, x, y, 2) >= 170 && getByte(frame, x, y, 0) < 100 && getByte(frame, x, y, 1) < 100) {
+              if (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) < 3 * 80) {
+                ctr++;
+                ypos += y;
+                xpos += x;
+            }
+        }
+    }
+    if (ctr == 0) {
+        ctr = 1;
+    }
+    ypos /= ctr;
+    xpos /= ctr;
+    std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
+}
+
 void delay( int millisecondsToWait )
 {
     QTime dieTime = QTime::currentTime().addMSecs( millisecondsToWait );

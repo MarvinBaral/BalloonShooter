@@ -28,10 +28,6 @@ void updateServo(unsigned short int index, signed short int pulseDiff) {
     }
 }
 
-int detectBall(cv::Mat frame, int maxSize) {
-
-}
-
 int main(int argc, char* argv[]) {
 
     //QCoreApplication a(argc, argv);
@@ -60,6 +56,7 @@ int main(int argc, char* argv[]) {
         cap.read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
         //showAvgBGR(frame);
         //showOnCMD(frame);
+        detectBall(frame, 0);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
 
@@ -100,7 +97,7 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        serial.waitForReadyRead(100);
+        serial.waitForReadyRead(10);
         response = serial.readAll();
         if (!response.isEmpty() && !response.isNull()) {
             std::cout << response.toStdString();
