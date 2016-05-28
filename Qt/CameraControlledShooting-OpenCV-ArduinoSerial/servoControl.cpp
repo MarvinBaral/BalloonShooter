@@ -36,9 +36,7 @@ void ServoControl::initSerial(const QString &PORT_NAME) {
     serial->setFlowControl(QSerialPort::NoFlowControl);
 }
 
-void ServoControl::updateServosAccordingToCam(int xpos, int ypos) {
-    float height = 480;
-    float width = 640;
+void ServoControl::updateServosAccordingToCam(int xpos, int ypos, float width, float height) {
     int servo_width = MAX_PULSE - MIN_PULSE;
     int xpulse = MIN_PULSE + ((servo_width / width) * xpos);
     int ypulse = MIN_PULSE + ((servo_width / height) * ypos);

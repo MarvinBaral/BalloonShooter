@@ -14,7 +14,7 @@ public:
     void setServo(int index, int pulse);
     void initSerial(const QString &PORT_NAME);
     ServoControl(QSerialPort* pSerial);
-    void updateServosAccordingToCam(int xpos, int ypos);
+    void updateServosAccordingToCam(int xpos, int ypos, float width = 640, float height = 480);
 };
 
 
