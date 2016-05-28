@@ -27,6 +27,15 @@ void updateServo(unsigned short int index, signed short int pulseDiff) {
     }
 }
 
+void initSerial(QSerialPort &serial) {
+    serial.setPortName("/dev/ttyACM0");
+    serial.setBaudRate(QSerialPort::Baud9600);
+    serial.setDataBits(QSerialPort::Data8);
+    serial.setParity(QSerialPort::NoParity);
+    serial.setStopBits(QSerialPort::OneStop);
+    serial.setFlowControl(QSerialPort::NoFlowControl);
+}
+
 int main(int argc, char* argv[]) {
 
     cv::VideoCapture cap(0); // open the video camera no. 0
@@ -40,12 +49,7 @@ int main(int argc, char* argv[]) {
     cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
     std::cout << "BGR color model!!!" << std::endl;
 
-    serial.setPortName("/dev/ttyACM0");
-    serial.setBaudRate(QSerialPort::Baud9600);
-    serial.setDataBits(QSerialPort::Data8);
-    serial.setParity(QSerialPort::NoParity);
-    serial.setStopBits(QSerialPort::OneStop);
-    serial.setFlowControl(QSerialPort::NoFlowControl);
+    initSerial(serial);
     serial.open(QIODevice::ReadWrite);
 
     int keyPressed;
