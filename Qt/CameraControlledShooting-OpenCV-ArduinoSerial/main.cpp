@@ -6,7 +6,6 @@
 
 //http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
 
-const unsigned short int PULSE_SERVO_STANDARD = 1500;
 const unsigned short int MIN_PULSE = 500;
 const unsigned short int MAX_PULSE = 1800;
 const unsigned short int STEP_TIME = 50;
@@ -30,8 +29,6 @@ void updateServo(unsigned short int index, signed short int pulseDiff) {
 
 int main(int argc, char* argv[]) {
 
-    //QCoreApplication a(argc, argv);
-
     cv::VideoCapture cap(0); // open the video camera no. 0
     cv::Mat frame;
     int baseColor[3];
@@ -39,7 +36,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Cannot open the video cam" << std::endl;
         return -1;
     }
-    //    printParams(cap);
+    //printParams(cap);
     cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
     std::cout << "BGR color model!!!" << std::endl;
 
@@ -56,7 +53,7 @@ int main(int argc, char* argv[]) {
         cap.read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
         //showAvgBGR(frame);
         //showOnCMD(frame);
-        detectBallByAverage(frame);
+        //detectBallByAverage(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
 
@@ -107,9 +104,9 @@ int main(int argc, char* argv[]) {
 
     } while (keyPressed != 27);
 
-    std::cout << "esc key pressed - aborted" << std::endl;
     serial.close();
+    std::cout << "esc key pressed - aborted" << std::endl;
 
-    //return a.exec();
+    return 0;
 }
 
