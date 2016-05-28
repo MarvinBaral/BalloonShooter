@@ -6,8 +6,15 @@ static inline int getByte(cv::Mat frame, int x, int y, int byte) {
 }
 
 __attribute__((always_inline))
-static inline int getRelation(cv::Mat frame, int x, int y, int byte) {
-    return getByte(frame, x, y, byte) / (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
+static inline int writeByte(cv::Mat frame, int x, int y, int byte, int value) {
+    *(frame.data + frame.step[0] * y + frame.step[1] * x + byte) = value;
+}
+
+__attribute__((always_inline))
+static inline float getRelation(cv::Mat frame, int x, int y, int byte) {
+    float sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
+    float single = getByte(frame, x, y, byte);
+    return single/sum;
 }
 
 void detectBallByAverage(cv::Mat frame) {
@@ -39,7 +46,7 @@ int moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, i
         posx += directionx;
         length++; //will not work in 45° angles
         for (int i = 0; i < 3; i++) {
-            if (abs(getByte(frame, posx, posy, i) - color[i]) > allowedDiffFromColor) {
+            if (getRelation(frame, posx, posy, 2) < 0.5) {
                 colorOK = false;
             }
         }
