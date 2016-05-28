@@ -6,7 +6,7 @@ static inline int getByte(cv::Mat frame, int x, int y, int byte) {
     return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte);
 }
 
-int detectBall(cv::Mat frame, int maxSize) {
+void detectBallByAverage(cv::Mat frame) {
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
@@ -26,6 +26,7 @@ int detectBall(cv::Mat frame, int maxSize) {
     std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
 }
 
+//http://stackoverflow.com/questions/3752742/how-do-i-create-a-pause-wait-function-using-qt
 void delay( int millisecondsToWait )
 {
     QTime dieTime = QTime::currentTime().addMSecs( millisecondsToWait );

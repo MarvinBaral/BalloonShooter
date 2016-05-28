@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
         cap.read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
         //showAvgBGR(frame);
         //showOnCMD(frame);
-        detectBall(frame, 0);
+        detectBallByAverage(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
 
