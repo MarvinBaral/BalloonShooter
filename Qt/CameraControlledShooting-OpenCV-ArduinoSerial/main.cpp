@@ -11,6 +11,7 @@ const unsigned short int PULSE_SERVO_STANDARD = 1500;
 const unsigned short int MIN_PULSE = 500;
 const unsigned short int MAX_PULSE = 1800;
 const unsigned short int STEP_TIME = 50;
+const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 
 unsigned short int pulseTimes[3] = {1150, 1500, 1200}; //in ms
 QSerialPort serial; //https://www.youtube.com/watch?v=UD78xyKbrfk
@@ -97,10 +98,12 @@ int main(int argc, char* argv[]) {
             break;
         }
 
-        serial.waitForReadyRead(10);
-        response = serial.readAll();
-        if (!response.isEmpty() && !response.isNull()) {
-            std::cout << response.toStdString();
+        if (SHOW_RESPONSE_FROM_ARDUINO) {
+            serial.waitForReadyRead(10);
+            response = serial.readAll();
+            if (!response.isEmpty() && !response.isNull()) {
+                std::cout << response.toStdString();
+            }
         }
 
     } while (keyPressed != 27);
