@@ -10,6 +10,7 @@ const unsigned short int MIN_PULSE = 500;
 const unsigned short int MAX_PULSE = 1800;
 const unsigned short int STEP_TIME = 50;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
+const QString PORT_NAME = "/dev/ttyACM0";
 
 unsigned short int pulseTimes[3] = {1150, 1500, 1200}; //in ms
 QSerialPort serial; //https://www.youtube.com/watch?v=UD78xyKbrfk
@@ -27,8 +28,8 @@ void updateServo(const unsigned short int index, const signed short int pulseDif
     }
 }
 
-void initSerial(QSerialPort &serial, const QString portName) {
-    serial.setPortName(portName);
+void initSerial(QSerialPort &serial, const QString &PORT_NAME) {
+    serial.setPortName(PORT_NAME);
     serial.setBaudRate(QSerialPort::Baud9600);
     serial.setDataBits(QSerialPort::Data8);
     serial.setParity(QSerialPort::NoParity);
@@ -49,7 +50,7 @@ int main(int argc, char* argv[]) {
     cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
     std::cout << "BGR color model!!!" << std::endl;
 
-    initSerial(serial, "/dev/ttyACM0");
+    initSerial(serial, PORT_NAME);
     serial.open(QIODevice::ReadWrite);
 
     int keyPressed;
