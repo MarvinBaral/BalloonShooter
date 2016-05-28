@@ -1,6 +1,17 @@
 #include <opencv2/opencv.hpp>
 #include <QTime>
 
+
+//http://stackoverflow.com/questions/3752742/how-do-i-create-a-pause-wait-function-using-qt
+void delay( int millisecondsToWait )
+{
+    QTime dieTime = QTime::currentTime().addMSecs( millisecondsToWait );
+    while( QTime::currentTime() < dieTime )
+    {
+        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+    }
+}
+
 __attribute__((always_inline))
 static inline int getByte(cv::Mat frame, int x, int y, int byte) {
     return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte);
@@ -10,8 +21,8 @@ void detectBallByAverage(cv::Mat frame) {
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
-//            if (getByte(frame, x, y, 2) >= 170 && getByte(frame, x, y, 0) < 100 && getByte(frame, x, y, 1) < 100) {
-              if (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) < 3 * 80) {
+            //if (getByte(frame, x, y, 2) >= 170 && getByte(frame, x, y, 0) < 100 && getByte(frame, x, y, 1) < 100) {
+            if (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) < 3 * 80) {
                 ctr++;
                 ypos += y;
                 xpos += x;
@@ -24,16 +35,6 @@ void detectBallByAverage(cv::Mat frame) {
     ypos /= ctr;
     xpos /= ctr;
     std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
-}
-
-//http://stackoverflow.com/questions/3752742/how-do-i-create-a-pause-wait-function-using-qt
-void delay( int millisecondsToWait )
-{
-    QTime dieTime = QTime::currentTime().addMSecs( millisecondsToWait );
-    while( QTime::currentTime() < dieTime )
-    {
-        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
-    }
 }
 
 void showAvgBGR(cv::Mat frame) {
