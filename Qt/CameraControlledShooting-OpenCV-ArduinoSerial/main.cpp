@@ -59,6 +59,7 @@ int main(int argc, char* argv[]) {
         //showAvgBGR(frame);
         //showOnCMD(frame);
         //detectBallByAverage(frame);
+        detectBallWithLines(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
 

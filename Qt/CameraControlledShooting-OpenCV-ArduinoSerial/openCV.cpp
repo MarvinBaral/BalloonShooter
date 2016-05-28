@@ -5,6 +5,11 @@ static inline int getByte(cv::Mat frame, int x, int y, int byte) {
     return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte);
 }
 
+__attribute__((always_inline))
+static inline int getRelation(cv::Mat frame, int x, int y, int byte) {
+    return getByte(frame, x, y, byte) / (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
+}
+
 void detectBallByAverage(cv::Mat frame) {
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
@@ -23,6 +28,43 @@ void detectBallByAverage(cv::Mat frame) {
     ypos /= ctr;
     xpos /= ctr;
     std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
+}
+
+int moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, int directionx, int color[3], int allowedDiffFromColor) {
+    int length = 0;
+    int posy = starty, posx = startx;
+    bool colorOK = true;
+    while (colorOK) {
+        posy += directiony;
+        posx += directionx;
+        length++; //will not work in 45° angles
+        for (int i = 0; i < 3; i++) {
+            if (abs(getByte(frame, posx, posy, i) - color[i]) > allowedDiffFromColor) {
+                colorOK = false;
+            }
+        }
+    }
+    return length; //minimum return value is 1
+}
+
+void detectBallWithLines(cv::Mat frame) {
+    for (int y = 0; y < frame.rows; y++) {
+        for (int x = 0; x < frame.cols; x++) {
+            if (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) < 3 * 30) {
+                int color[3] = {15, 19, 128};
+                int allowedDiff = 20;
+                int initHeight = moveWhileSameColor(frame, y, x, 1, 0, color, allowedDiff); //go from first point down
+                int iniWidthRight = moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, 1, color, allowedDiff); //go at half right
+                int iniWidthLeft = moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, -1, color, allowedDiff); //go at half left
+                int iniWidth = iniWidthLeft + iniWidthRight;
+                if (initHeight > 50 && iniWidth > 50) {
+                    std::cout << "pos x: " << x << " y: " << y + initHeight * 0.5 << std::endl;
+                    return;
+                }
+
+            }
+        }
+    }
 }
 
 void showAvgBGR(cv::Mat frame) {
