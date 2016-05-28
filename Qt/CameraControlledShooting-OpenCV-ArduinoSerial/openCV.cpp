@@ -1,16 +1,4 @@
 #include <opencv2/opencv.hpp>
-#include <QTime>
-
-
-//http://stackoverflow.com/questions/3752742/how-do-i-create-a-pause-wait-function-using-qt
-void delay( int millisecondsToWait )
-{
-    QTime dieTime = QTime::currentTime().addMSecs( millisecondsToWait );
-    while( QTime::currentTime() < dieTime )
-    {
-        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
-    }
-}
 
 __attribute__((always_inline))
 static inline int getByte(cv::Mat frame, int x, int y, int byte) {

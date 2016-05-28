@@ -1,8 +1,8 @@
-#include <QCoreApplication>
+#include <QSerialPort>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include "ownfunctions.cpp"
-#include <QtSerialPort/QSerialPort>
+#include "openCV.cpp"
+#include "general.cpp"
 
 //http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
 

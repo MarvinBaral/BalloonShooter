@@ -9,7 +9,9 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp ownfunctions.cpp
+SOURCES += main.cpp \
+    openCV.cpp \
+    general.cpp
 
 #CONFIG -= qt
 INCLUDEPATH += /usr/local/include/opencv
