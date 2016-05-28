@@ -1,9 +1,9 @@
 #include <QSerialPort>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include "openCV.cpp"
 #include "general.cpp"
 #include "servoControl.hpp"
+#include "openCV.cpp"
 
 const unsigned short int STEP_TIME = 50;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;

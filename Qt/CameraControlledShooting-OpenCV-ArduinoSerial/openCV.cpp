@@ -1,5 +1,4 @@
 #include <opencv2/opencv.hpp>
-#include "servoControl.hpp"
 #include "openCV.hpp"
 
 __attribute__((always_inline))
