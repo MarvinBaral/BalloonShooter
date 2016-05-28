@@ -1,5 +1,6 @@
 #include <opencv2/opencv.hpp>
-#include "servoControl.cpp"
+#include "servoControl.hpp"
+#include "openCV.hpp"
 
 __attribute__((always_inline))
 static inline int getByte(cv::Mat frame, int x, int y, int byte) {
@@ -21,7 +22,11 @@ static inline float getRelation(cv::Mat frame, int x, int y, int byte) {
     return single/sum;
 }
 
-void markPosition(cv::Mat &frame, int posx, int posy) {
+OpenCV::OpenCV(ServoControl *pServoControl) {
+    servoControl = pServoControl;
+}
+
+void OpenCV::markPosition(cv::Mat &frame, int posx, int posy) {
     int size = 5;
     int markColor[3] = {255, 0, 0};
     for (int y = posy - size; y < posy + size; y++) {
@@ -35,7 +40,7 @@ void markPosition(cv::Mat &frame, int posx, int posy) {
     }
 }
 
-void detectBallByAverage(cv::Mat &frame) {
+void OpenCV::detectBallByAverage(cv::Mat &frame) {
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
@@ -53,14 +58,14 @@ void detectBallByAverage(cv::Mat &frame) {
     xpos /= ctr;
     if (xpos > 0 && ypos > 0) {
         std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
-        markPosition(frame, xpos, ypos);
+        this->markPosition(frame, xpos, ypos);
         if (ctr > 100) {
-            updateServosAccordingToCam(xpos, ypos);
+            servoControl->updateServosAccordingToCam(xpos, ypos);
         }
     }
 }
 
-int moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, int directionx) {
+int OpenCV::moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, int directionx) {
     int length = 0;
     int posy = starty, posx = startx;
     bool colorOK = true;
@@ -77,17 +82,17 @@ int moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, i
     return length; //minimum return value is 1
 }
 
-void detectBallWithLines(cv::Mat frame) {
+void OpenCV::detectBallWithLines(cv::Mat frame) {
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
             if (getRelation(frame, x, y, 2) < 0.7) {
-                int initHeight = moveWhileSameColor(frame, y, x, 1, 0); //go from first point down
-                int iniWidthRight = moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, 1); //go at half right
-                int iniWidthLeft = moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, -1); //go at half left
+                int initHeight = this->moveWhileSameColor(frame, y, x, 1, 0); //go from first point down
+                int iniWidthRight = this->moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, 1); //go at half right
+                int iniWidthLeft = this->moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, -1); //go at half left
                 int iniWidth = iniWidthLeft + iniWidthRight;
                 if (initHeight > 50 && iniWidth > 50) {
                     std::cout << "pos x: " << x << " y: " << y + initHeight * 0.5 << std::endl;
-                    markPosition(frame, x, y + initHeight * 0.5);
+                    this->markPosition(frame, x, y + initHeight * 0.5);
                     return;
                 }
 
@@ -96,7 +101,7 @@ void detectBallWithLines(cv::Mat frame) {
     }
 }
 
-void showAvgBGR(cv::Mat frame) {
+void OpenCV::showAvgBGR(cv::Mat frame) {
     long int avgRGB[3] = {0, 0, 0}; //2^32 is far greater than e.g. 640 * 480 * 255
     for (int y = 0; y < frame.rows; y += 1) {
         for (int x = 0; x < frame.cols; x += 1) {
@@ -114,7 +119,7 @@ void showAvgBGR(cv::Mat frame) {
     std::cout << std::endl;
 }
 
-void printApropriateSign(int value = 0) {
+void OpenCV::printApropriateSign(int value) {
     char sign = 'Y';
     if (value > 255) {
         sign = '#';
@@ -134,7 +139,9 @@ void printApropriateSign(int value = 0) {
     std::cout << sign << "|";
 }
 
-void showOnCMD(cv::Mat frame, int cols = 13, int rows = 30) {
+void OpenCV::showOnCMD(cv::Mat frame) {
+    int cols = 13;
+    int rows = 30;
     int ysteps = frame.rows/rows;
     int xsteps = frame.cols/cols;
     std::cout << "Frame: " << cols << " x " << rows << " pixel" << std::endl;
@@ -142,7 +149,7 @@ void showOnCMD(cv::Mat frame, int cols = 13, int rows = 30) {
         for (int x = 0; x < frame.cols; x += xsteps) {
             std::cout << "|";
             for (int color = 0; color < 3; color++){
-                printApropriateSign(*(frame.data + frame.step[0] * y + frame.step[1] * x + color)); //http://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#mat; the 4th byte ist the first byte of the next image
+                this->printApropriateSign(*(frame.data + frame.step[0] * y + frame.step[1] * x + color)); //http://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#mat; the 4th byte ist the first byte of the next image
             }
         }
         std::cout << std::endl;
@@ -150,7 +157,7 @@ void showOnCMD(cv::Mat frame, int cols = 13, int rows = 30) {
     std::cout << std::endl;
 }
 
-void printParams(cv::VideoCapture cap) {
+void OpenCV::printParams(cv::VideoCapture cap) {
     std::vector<double> propId =
     {
         CV_CAP_PROP_POS_MSEC,

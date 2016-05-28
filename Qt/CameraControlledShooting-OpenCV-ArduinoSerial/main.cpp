@@ -3,10 +3,18 @@
 #include <opencv2/opencv.hpp>
 #include "openCV.cpp"
 #include "general.cpp"
+#include "servoControl.hpp"
+
+
+const unsigned short int STEP_TIME = 50;
+QSerialPort* serial = new QSerialPort(); //https://www.youtube.com/watch?v=UD78xyKbrfk
+QByteArray response;
 
 //http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 const QString PORT_NAME = "/dev/ttyACM0";
+ServoControl* servoControl = new ServoControl(serial);
+OpenCV* openCV = new OpenCV(servoControl);
 
 int main(int argc, char* argv[]) {
 
@@ -21,15 +29,15 @@ int main(int argc, char* argv[]) {
     cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
     std::cout << "BGR color model!!!" << std::endl;
 
-    initSerial(serial, PORT_NAME);
-    serial.open(QIODevice::ReadWrite);
+    servoControl->initSerial(PORT_NAME);
+    serial->open(QIODevice::ReadWrite);
 
     int keyPressed;
     do {
         cap.read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
         //showAvgBGR(frame);
         //showOnCMD(frame);
-        detectBallByAverage(frame);
+        openCV->detectBallByAverage(frame);
         //detectBallWithLines(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
@@ -46,25 +54,25 @@ int main(int argc, char* argv[]) {
             std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
             break;
         case 65361: //left
-            updateServo(0, STEP_TIME);
+            servoControl->updateServo(0, STEP_TIME);
             break;
         case 65363: //right
-            updateServo(0, -STEP_TIME);
+            servoControl->updateServo(0, -STEP_TIME);
             break;
         case 65362: //up
-            updateServo(1, STEP_TIME);
+            servoControl->updateServo(1, STEP_TIME);
             break;
         case 65364: //down
-            updateServo(1, -STEP_TIME);
+            servoControl->updateServo(1, -STEP_TIME);
             break;
         case 10: //enter = shoot
-            updateServo(2, -150);
+            servoControl->updateServo(2, -150);
             delay(1000);
-            updateServo(2, 150);
+            servoControl->updateServo(2, 150);
             break;
         case 114: //r = reset
-            serial.close();
-            serial.open(QIODevice::ReadWrite);
+            serial->close();
+            serial->open(QIODevice::ReadWrite);
             break;
         default:
             std::cout << "pressed " << keyPressed << std::endl;
@@ -72,8 +80,8 @@ int main(int argc, char* argv[]) {
         }
 
         if (SHOW_RESPONSE_FROM_ARDUINO) {
-            serial.waitForReadyRead(10);
-            response = serial.readAll();
+            serial->waitForReadyRead(10);
+            response = serial->readAll();
             if (!response.isEmpty() && !response.isNull()) {
                 std::cout << response.toStdString();
             }
@@ -81,7 +89,7 @@ int main(int argc, char* argv[]) {
 
     } while (keyPressed != 27);
 
-    serial.close();
+    serial->close();
     std::cout << "esc key pressed - aborted" << std::endl;
 
     return 0;

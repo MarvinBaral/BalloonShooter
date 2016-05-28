@@ -19,3 +19,7 @@ INCLUDEPATH += /usr/local/include/opencv
 LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_videostab
 #SOURCES += main.cpp \
  #   ownfunctions.cpp
+
+HEADERS += \
+    servoControl.hpp \
+    openCV.hpp
