@@ -20,9 +20,12 @@ void updateServo(const unsigned short int index, const signed short int pulseDif
 
 void setServo(const unsigned short int index, const signed short int pulse) {
     if (pulse >= MIN_PULSE && pulse <= MAX_PULSE) {
+        QString command = QString::number(index) + ";" + QString::number(pulseTimes[index]) + ";";
         pulseTimes[index] = pulse;
-        serial.write(QString(QString::number(index) + ";" + QString::number(pulseTimes[index]) + ";").toLocal8Bit());
+        serial.write(command.toLocal8Bit());
         serial.flush();
+        serial.waitForReadyRead(100);
+        serial.readAll();
     }
 }
 
@@ -41,5 +44,4 @@ void updateServosAccordingToCam(int xpos, int ypos, float width = 640, float hei
     int ypulse = MIN_PULSE + ((servo_width / height) * ypos);
     setServo(0, xpulse);
     setServo(1, ypulse);
-    std::cout << "x: " << xpulse << std::endl;
 }
