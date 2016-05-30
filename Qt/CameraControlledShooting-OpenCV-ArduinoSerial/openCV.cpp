@@ -1,18 +1,15 @@
 #include <opencv2/opencv.hpp>
 #include "openCV.hpp"
 
-__attribute__((always_inline))
-static inline int getByte(cv::Mat frame, int x, int y, int byte) {
+int OpenCV::getByte(cv::Mat frame, int x, int y, int byte) {
     return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte);
 }
 
-__attribute__((always_inline))
-static inline void writeByte(cv::Mat frame, int x, int y, int byte, int value) {
+void OpenCV::writeByte(cv::Mat frame, int x, int y, int byte, int value) {
     *(frame.data + frame.step[0] * y + frame.step[1] * x + byte) = value;
 }
 
-__attribute__((always_inline))
-static inline float getRelation(cv::Mat frame, int x, int y, int byte) {
+float OpenCV::getRelation(cv::Mat frame, int x, int y, int byte) {
     float sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
     float single = getByte(frame, x, y, byte);
     if (sum == 0) {
