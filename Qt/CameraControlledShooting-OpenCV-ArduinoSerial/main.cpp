@@ -22,7 +22,6 @@ int main(int argc, char* argv[]) {
         std::cout << "Cannot open the video cam" << std::endl;
         return -1;
     }
-    //printParams(cap);
     cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
     std::cout << "BGR color model!!!" << std::endl;
 
@@ -32,10 +31,7 @@ int main(int argc, char* argv[]) {
     int keyPressed;
     do {
         cap.read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
-        //showAvgBGR(frame);
-        //showOnCMD(frame);
         openCV->detectBallByAverage(frame);
-        //detectBallWithLines(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
 
@@ -95,7 +91,5 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
-
 
 //http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
