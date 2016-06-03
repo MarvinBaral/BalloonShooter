@@ -1,6 +1,11 @@
 #include <opencv2/opencv.hpp>
 #include "openCV.hpp"
 
+
+OpenCV::OpenCV(ServoControl *pServoControl) {
+    servoControl = pServoControl;
+}
+
 int OpenCV::getByte(cv::Mat frame, int x, int y, int byte) {
     return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte);
 }
@@ -16,10 +21,6 @@ float OpenCV::getRelation(cv::Mat frame, int x, int y, int byte) {
         sum = 1;
     }
     return single/sum;
-}
-
-OpenCV::OpenCV(ServoControl *pServoControl) {
-    servoControl = pServoControl;
 }
 
 void OpenCV::markPosition(cv::Mat &frame, int posx, int posy) {
