@@ -59,9 +59,8 @@ int main(int argc, char* argv[]) {
             servoControl->updateServo(1, -STEP_TIME);
             break;
         case 10: //enter = shoot
-            servoControl->updateServo(2, -150);
-            delay(1000);
-            servoControl->updateServo(2, 150);
+            serial->write(QString('s').toLocal8Bit());
+            serial->flush();
             break;
         case 114: //r = reset
             serial->close();
