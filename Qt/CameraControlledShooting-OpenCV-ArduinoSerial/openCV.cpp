@@ -57,7 +57,9 @@ void OpenCV::detectBallByAverage(cv::Mat &frame) {
         std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
         this->markPosition(frame, xpos, ypos);
         if (ctr > 100) {
-            servoControl->updateServosAccordingToCam(xpos, ypos);
+            int xysize[2] = {width, height};
+            int xypos[2] = {xpos, ypos};
+            servoControl->updateServosAccordingToCam(xypos, xysize);
         }
     }
 }

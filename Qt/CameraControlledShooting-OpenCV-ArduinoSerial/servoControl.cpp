@@ -2,24 +2,26 @@
 
 ServoControl::ServoControl(QSerialPort *pSerial) {
     serial = pSerial;
+    degrees[0] = 0;
+    degrees[1] = 0;
 }
 
-void ServoControl::updateServo(int index, signed int pulseDiff) {
-    pulseTimes[index] += pulseDiff;
-    if (pulseTimes[index] < MIN_PULSE) {
-        pulseTimes[index] = MIN_PULSE;
-    } else if (pulseTimes[index] > MAX_PULSE) {
-        pulseTimes[index] = MAX_PULSE;
+void ServoControl::updateServo(int index, signed int degreeDiff) {
+    degrees[index] += degreeDiff;
+    if (degrees[index] < MAX_DEGREES[index][0]) {
+        degrees[index] = MAX_DEGREES[index][0];
+    } else if (degrees[index] > MAX_DEGREES[index][1]) {
+        degrees[index] = MAX_DEGREES[index][1];
     } else {
-        serial->write(QString(QString::number(index) + ";" + QString::number(pulseTimes[index]) + ";").toLocal8Bit());
+        serial->write(QString(QString::number(index) + ";" + QString::number(degrees[index]) + ";").toLocal8Bit());
         serial->flush();
     }
 }
 
-void ServoControl::setServo(int index, int pulse) {
-    if (pulse >= MIN_PULSE && pulse <= MAX_PULSE) {
-        QString command = QString::number(index) + ";" + QString::number(pulseTimes[index]) + ";";
-        pulseTimes[index] = pulse;
+void ServoControl::setServo(int index, int degree) {
+    if (degree >= MAX_DEGREES[index][0] && degree <= MAX_DEGREES[index][1]) {
+        degrees[index] = degree;
+        QString command = QString::number(index) + ";" + QString::number(degrees[index]) + ";";
         serial->write(command.toLocal8Bit());
         serial->flush();
         serial->waitForReadyRead(100);
@@ -36,10 +38,10 @@ void ServoControl::initSerial(const QString &PORT_NAME) {
     serial->setFlowControl(QSerialPort::NoFlowControl);
 }
 
-void ServoControl::updateServosAccordingToCam(int xpos, int ypos, float width, float height) {
-    int servo_width = MAX_PULSE - MIN_PULSE;
-    int xpulse = MIN_PULSE + ((servo_width / width) * xpos);
-    int ypulse = MIN_PULSE + ((servo_width / height) * ypos);
-    this->setServo(0, xpulse);
-    this->setServo(1, ypulse);
+void ServoControl::updateServosAccordingToCam(int xypos[2], int xysize[2]) {
+    for (int i = 0; i < 2; i ++) {
+        float servo_width = MAX_DEGREES[i][1] - MAX_DEGREES[i][0];
+        int degree = MAX_DEGREES[0][1] + ((servo_width / xysize[i]) * xypos[i]);
+        this->setServo(i, degree);
+    }
 }

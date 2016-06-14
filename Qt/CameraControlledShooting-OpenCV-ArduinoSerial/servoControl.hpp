@@ -2,19 +2,18 @@
 #define SERVOCONTROL_HPP
 
 #include <QSerialPort>
+#include "../../Arduino/servo_pulse_time_reciever/sharedConstants.h"
 
 class ServoControl {
 private:
-    static const unsigned short int MIN_PULSE = 500;
-    static const unsigned short int MAX_PULSE = 1800;
-    unsigned short int pulseTimes[3] = {1150, 1500, 1200}; //in ms
+    float degrees[2];
     QSerialPort* serial;
 public:
-    void updateServo(int index, signed int pulseDiff);
-    void setServo(int index, int pulse);
+    void updateServo(int index, signed int degreeDiff);
+    void setServo(int index, int degree);
     void initSerial(const QString &PORT_NAME);
     ServoControl(QSerialPort* pSerial);
-    void updateServosAccordingToCam(int xpos, int ypos, float width = 640, float height = 480);
+    void updateServosAccordingToCam(int xypos[], int xysize[]);
 };
 
 
