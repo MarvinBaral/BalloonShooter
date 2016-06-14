@@ -109,7 +109,7 @@ void serialEvent(){
     } else {
       select -= '0'; //convert char to number
       if (select == 0 || select == 1 && Serial.find(';')) {
-        degree = Serial.parseInt();
+        degree = Serial.parseFloat();
         if (degree >= MAX_DEGREES[0][0] && degree <= MAX_DEGREES[1][1] && Serial.find(';')) {
           pulseTimes[select] = INITIAL_PULSE_TIMES[select] - degree * TIME_PER_DEGREE;
           ctr = 0;
