@@ -1,14 +1,16 @@
 //this is a firmware simply there to be able to control 3 Servos with serial communication from your PC
 const unsigned short int PULSE_LENGTH = 20000; //microseconds
 const unsigned short int MIN_PULSE = 500;
-const unsigned short int MAX_PULSE = 1800;
+const unsigned short int MAX_PULSE = 1810;
 const unsigned short int REPEATIONS_OF_NEW_PULSE_TIME = 10;
 const unsigned short int UPTIME_SHOOTING_POS = 1050;
 const unsigned short int UPTIME_SHOOT_LOCK = 1200;
-const unsigned short int INITIAL_PULSE_TIMES[2] = {1150, 1500}; 
+const unsigned short int INITIAL_PULSE_TIMES[2] = {1150, 1500};
+const float DEGREES[2][3] = {{-61, 0, 61},{-28.06, 0, 93.55}};
+const float TIME_PER_DEGREE = 10.69; //for both
 
 unsigned short int pulseTimes[2];//in ms
-int pulseTime;
+int degree;
 int servoPins[3] = {9, 10, 11}; //also usable as PWM
 char select;
 unsigned long int startMicros;
@@ -26,7 +28,7 @@ void setup() {
 }
 
 
-/*Pulses done by main loop (there are three of them in parallel):
+/*Pulses done by main loop (there are two of them in parallel):
 
 pulseTimes[0]
 |      /
@@ -77,9 +79,9 @@ void loop() {
 void printErr() {
   Serial.print("Malformed expression. Right protocol usage: ");
   Serial.print("<char select {0-1}>;<int pulseTime {");
-  Serial.print(MIN_PULSE);
-  Serial.print('-');
-  Serial.print(MAX_PULSE);
+  Serial.print(DEGREES[0][0]);
+  Serial.print(" to ");
+  Serial.print(DEGREES[1][2]);
   Serial.print("}> or: s, a");  
 }
 
@@ -102,9 +104,9 @@ void serialEvent(){
     } else {
       select -= '0'; //convert char to number
       if (select == 0 || select == 1 && Serial.find(';')) {
-        pulseTime = Serial.parseInt();
-        if (pulseTime >= MIN_PULSE && pulseTime <= MAX_PULSE && Serial.find(';')) {
-          pulseTimes[select] = pulseTime;
+        degree = Serial.parseInt();
+        if (degree >= DEGREES[0][0] && degree <= DEGREES[1][2] && Serial.find(';')) {
+          pulseTimes[select] = INITIAL_PULSE_TIMES[select] - degree * TIME_PER_DEGREE;
           ctr = 0;
           Serial.print(char(select + '0')); //!!! modified char
           Serial.print(';');
@@ -129,3 +131,4 @@ void serialEvent(){
 }
 
 //micros() overflow after 70 min!!!
+
