@@ -1,4 +1,5 @@
 #include "servoControl.hpp"
+#include <iostream>
 
 ServoControl::ServoControl(QSerialPort *pSerial) {
     serial = pSerial;
@@ -12,10 +13,9 @@ void ServoControl::updateServo(int index, signed int degreeDiff) {
         degrees[index] = MAX_DEGREES[index][0];
     } else if (degrees[index] > MAX_DEGREES[index][1]) {
         degrees[index] = MAX_DEGREES[index][1];
-    } else {
-        serial->write(QString(QString::number(index) + ";" + QString::number(degrees[index]) + ";").toLocal8Bit());
-        serial->flush();
     }
+
+    this->setServo(index, degrees[index]);
 }
 
 void ServoControl::setServo(int index, int degree) {
@@ -41,7 +41,8 @@ void ServoControl::initSerial(const QString &PORT_NAME) {
 void ServoControl::updateServosAccordingToCam(int xypos[2], int xysize[2]) {
     for (int i = 0; i < 2; i ++) {
         float servo_width = MAX_DEGREES[i][1] - MAX_DEGREES[i][0];
-        int degree = MAX_DEGREES[0][1] + ((servo_width / xysize[i]) * xypos[i]);
+        int degree = MAX_DEGREES[i][1] - ((servo_width / xysize[i]) * xypos[i]);
+        std::cout << "degree: " << degree << std::endl;
         this->setServo(i, degree);
     }
 }
