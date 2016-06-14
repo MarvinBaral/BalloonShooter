@@ -6,10 +6,10 @@ const unsigned short int MAX_PULSE = 1810;
 const unsigned short int REPEATIONS_OF_NEW_PULSE_TIME = 10;
 const unsigned short int UPTIME_SHOOTING_POS = 1050;
 const unsigned short int UPTIME_SHOOT_LOCK = 1200;
-const unsigned short int INITIAL_PULSE_TIMES[2] = {1150, 1500};
+const unsigned short int INITIAL_PULSE_TIMES[3] = {1150, 1500, 1200};
 const float TIME_PER_DEGREE = 10.69; //for both
 
-unsigned short int pulseTimes[2];//in ms
+unsigned short int pulseTimes[3];//in ms
 int degree;
 int servoPins[3] = {9, 10, 11}; //also usable as PWM
 char select;
@@ -21,14 +21,12 @@ void setup() {
   Serial.begin(9600);
   for (int i = 0; i < 3; i++) {
     pinMode(servoPins[i], OUTPUT);
-    if (i <= 2) {
-      pulseTimes[i] = INITIAL_PULSE_TIMES[i];
-    }
+    pulseTimes[i] = INITIAL_PULSE_TIMES[i];
   }
 }
 
 
-/*Pulses done by main loop (there are two of them in parallel):
+/*Pulses done by main loop (there are three of them in parallel):
 
 pulseTimes[0]
 |      /
@@ -44,6 +42,11 @@ pulseTimes[0]
       |     |                      
 ------+     +--------------------
 
+            +-----+                      
+            |     |                      
+            |     |                      
+------------+     +--------------
+
 |                               |
 |                                \
 time defined in PULSE_LENGTH (20ms)
@@ -57,7 +60,7 @@ time = 0
 void loop() {
   if (ctr < REPEATIONS_OF_NEW_PULSE_TIME) {
     startMicros = micros();
-    for (int pin = 0; pin < 2; pin++) {
+    for (int pin = 0; pin < 3; pin++) {
       digitalWrite(servoPins[pin], HIGH);
       delayMicroseconds(pulseTimes[pin]);
       digitalWrite(servoPins[pin], LOW);
@@ -98,8 +101,10 @@ void serialEvent(){
   if (Serial.available()) {
     select = Serial.read();
     if (select == 's') {
-      pulseServo(servoPins[2], UPTIME_SHOOTING_POS, 10);
-      pulseServo(servoPins[2], UPTIME_SHOOT_LOCK, 200);
+      pulseTimes[2] = UPTIME_SHOOTING_POS;
+      pulseServo(servoPins[2], pulseTimes[2], 10);
+      pulseTimes[2] = INITIAL_PULSE_TIMES[2];
+      ctr = 0;
       Serial.println("shot");
     } else {
       select -= '0'; //convert char to number
@@ -117,7 +122,7 @@ void serialEvent(){
         }
       } else {
         if (select == ('a' - '0')) { //!!! modified char
-          for (int i = 0; i < 2; i++) {
+          for (int i = 0; i < 3; i++) {
             Serial.print(i);
             Serial.print(": ");
             Serial.println(pulseTimes[i]);
