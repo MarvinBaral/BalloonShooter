@@ -5,7 +5,7 @@
 #include "servoControl.hpp"
 #include "openCV.cpp"
 
-const unsigned short int STEP_TIME = 50;
+const unsigned short int STEP_DEGREE = 5;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 const QString PORT_NAME = "/dev/ttyACM0";
 
@@ -47,16 +47,16 @@ int main(int argc, char* argv[]) {
             std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
             break;
         case 65361: //left
-            servoControl->updateServo(0, STEP_TIME);
+            servoControl->updateServo(0, -STEP_DEGREE);
             break;
         case 65363: //right
-            servoControl->updateServo(0, -STEP_TIME);
+            servoControl->updateServo(0, STEP_DEGREE);
             break;
         case 65362: //up
-            servoControl->updateServo(1, STEP_TIME);
+            servoControl->updateServo(1, -STEP_DEGREE);
             break;
         case 65364: //down
-            servoControl->updateServo(1, -STEP_TIME);
+            servoControl->updateServo(1, STEP_DEGREE);
             break;
         case 10: //enter = shoot
             serial->write(QString('s').toLocal8Bit());

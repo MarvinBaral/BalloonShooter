@@ -6,6 +6,9 @@
 class OpenCV {
 private:
     ServoControl* servoControl;
+    int width = 640;
+    int height = 480;
+
 public:
     OpenCV(ServoControl* pServoControl);
     __attribute__((always_inline))
