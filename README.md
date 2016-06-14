@@ -6,4 +6,4 @@ LEGO-RocketLauncher. The Launcher itself with three servomotors is controlled wi
 available on your PC. The whole project is cross-platform compatible (could be an RaspberryPi with Camera too). Current Status: Servo-Control 
 is working (with manual control over keyboard), Object-Detection in build-up phase.
 
-Protocol for Communication between PC and Arduino: \<char select {0-2}\>;\<int pulseUpTime {500-1800}\>;
+Protocol for Communication between PC and Arduino: \<char select {0-1}\>;\<int degree {-61 to 93}\>;
