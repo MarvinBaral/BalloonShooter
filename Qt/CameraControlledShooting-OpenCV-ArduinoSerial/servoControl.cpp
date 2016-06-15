@@ -38,11 +38,7 @@ void ServoControl::initSerial(const QString &PORT_NAME) {
     serial->setFlowControl(QSerialPort::NoFlowControl);
 }
 
-void ServoControl::updateServosAccordingToCam(int xypos[2], int xysize[2]) {
-    for (int i = 0; i < 2; i ++) {
-        float servo_width = MAX_DEGREES[i][1] - MAX_DEGREES[i][0];
-        int degree = MAX_DEGREES[i][1] - ((servo_width / xysize[i]) * xypos[i]);
-        std::cout << "degree: " << degree << std::endl;
-        this->setServo(i, degree);
-    }
+void ServoControl::shoot(){
+    serial->write(QString('s').toLocal8Bit());
+    serial->flush();
 }

@@ -58,8 +58,7 @@ int main(int argc, char* argv[]) {
             servoControl->updateServo(1, STEP_DEGREE);
             break;
         case 10: //enter = shoot
-            serial->write(QString('s').toLocal8Bit());
-            serial->flush();
+            servoControl->shoot();
             break;
         case 114: //r = reset
             serial->close();

@@ -13,7 +13,7 @@ public:
     void setServo(int index, int degree);
     void initSerial(const QString &PORT_NAME);
     ServoControl(QSerialPort* pSerial);
-    void updateServosAccordingToCam(int xypos[], int xysize[]);
+    void shoot();
 };
 
 
