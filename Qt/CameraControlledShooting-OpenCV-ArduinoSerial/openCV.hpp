@@ -11,6 +11,7 @@ private:
     ServoControl* servoControl;
     short usedCam = EXTERNAL;
     int paramCam[2][5];
+    std::vector<int> contacts;
 
 public:
     cv::VideoCapture* cap;

@@ -69,15 +69,26 @@ void OpenCV::detectBallByAverage(cv::Mat &frame) {
         std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
         this->markPosition(frame, xpos, ypos);
         if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
+            contacts.push_back(53);
             int xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
             int xypos[2] = {xpos, ypos};
             for (int i = 0; i < 2; i ++) {
                 float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
+                if (i == 1) {
+                    degree += 20;
+                }
                 std::cout << "degree: " << degree << std::endl;
                 servoControl->setServo(i, degree);
             }
+            if (contacts.size() > 50) {
+                servoControl->shoot();
+                contacts.clear();
+            }
+        } else {
+            contacts.clear();
         }
     }
+    std::cout << "contineous contacts: " << contacts.size() << std::endl;
 }
 
 int OpenCV::moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, int directionx) {
