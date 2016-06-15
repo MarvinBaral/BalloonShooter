@@ -3,16 +3,14 @@
 
 #include "servoControl.hpp"
 
-enum params {MINIMUM_CTR = 0};
+enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum cam {EXTERNAL = 0, INTERNAL}; //only correct if both are connected, else the external one has 0
 
 class OpenCV {
 private:
     ServoControl* servoControl;
-    int width = 640;
-    int height = 480;
-    short usedCam = EXTERNAL;
-    int paramCam[2][1];
+    short usedCam = INTERNAL;
+    int paramCam[2][5];
 
 public:
     OpenCV(ServoControl* pServoControl);

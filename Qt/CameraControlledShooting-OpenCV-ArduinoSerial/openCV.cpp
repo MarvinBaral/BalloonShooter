@@ -4,8 +4,15 @@
 
 OpenCV::OpenCV(ServoControl *pServoControl) {
     servoControl = pServoControl;
-    paramCam[0][MINIMUM_CTR] = 350;
-    paramCam[1][MINIMUM_CTR] = 100;
+    paramCam[EXTERNAL][MINIMUM_CTR] = 350;
+    paramCam[EXTERNAL][ANGLE_OF_VIEW_X] = 0;
+    paramCam[EXTERNAL][ANGLE_OF_VIEW_Y] = 0;
+
+    paramCam[INTERNAL][MINIMUM_CTR] = 100;
+    paramCam[INTERNAL][ANGLE_OF_VIEW_X] = 2 * 30;
+    paramCam[INTERNAL][ANGLE_OF_VIEW_Y] = 2 * 20;
+    paramCam[INTERNAL][WIDTH] = 640;
+    paramCam[INTERNAL][HEIGHT] = 480;
 }
 
 int OpenCV::getByte(cv::Mat frame, int x, int y, int byte) {
@@ -59,7 +66,7 @@ void OpenCV::detectBallByAverage(cv::Mat &frame) {
         std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
         this->markPosition(frame, xpos, ypos);
         if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
-            int xysize[2] = {width, height};
+            int xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
             int xypos[2] = {xpos, ypos};
             servoControl->updateServosAccordingToCam(xypos, xysize);
         }
