@@ -11,8 +11,6 @@ const QString PORT_NAME = "/dev/ttyACM0";
 long unsigned int frameCount = 0;
 unsigned int fpsCount = 0;
 QTime startTime;
-cv::Mat frame;
-int baseColor[3];
 int keyPressed;
 
 int main(int argc, char* argv[]) {
@@ -21,35 +19,23 @@ int main(int argc, char* argv[]) {
     ServoControl* servoControl = new ServoControl(serial);
     OpenCV* openCV = new OpenCV(servoControl);
 
-    if (!openCV->cap->isOpened()) {
-        std::cout << "Cannot open the video cam" << std::endl;
-        return -1;
-    }
-    cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
-    std::cout << "BGR color model!!!" << std::endl;
-
     servoControl->initSerial(PORT_NAME);
     serial->open(QIODevice::ReadWrite);
 
     startTime = QTime::currentTime();
     do {
-        openCV->cap->read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
+        //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
         frameCount++;
         fpsCount++;
-        openCV->detectBallByAverage(frame);
-
-        imshow("MyVideo", frame); //show the frame in "MyVideo" window
+        openCV->detectBallByAverage();
+        openCV->updateFrame();
+        openCV->show();
 
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {
         case -1: break;
         case 107: //k
-            //give color of most centered pixel
-            for (int color = 0; color < 3; color++){
-                baseColor[color] = *(frame.data + frame.step[0] * (frame.rows / 2) + frame.step[1] * (frame.cols / 2) + color);
-                std::cout << baseColor[color] << "|";
-            }
-            std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
+            openCV->showColorOfCenteredPixel();
             break;
         case 65361: //left
             servoControl->updateServo(0, -STEP_DEGREE);

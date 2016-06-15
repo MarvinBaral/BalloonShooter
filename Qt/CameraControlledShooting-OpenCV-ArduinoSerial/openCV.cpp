@@ -2,7 +2,10 @@
 
 
 OpenCV::OpenCV(ServoControl *pServoControl) {
+    std::cout << "BGR color model!!!" << std::endl;
+
     servoControl = pServoControl;
+
     paramCam[EXTERNAL][MINIMUM_CTR] = 350;
     paramCam[EXTERNAL][ANGLE_OF_VIEW_X] = 2 * 30;
     paramCam[EXTERNAL][ANGLE_OF_VIEW_Y] = 2 * 20;
@@ -15,7 +18,18 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     paramCam[INTERNAL][WIDTH] = 640;
     paramCam[INTERNAL][HEIGHT] = 480;
 
+    usedCam = EXTERNAL;
+
     cap = new cv::VideoCapture(usedCam);
+    if (!cap->isOpened()) {
+        std::cout << "Cannot open the video cam" << std::endl;
+    }
+
+    displayWindow = true;
+    windowTitle = "Abschusskamera";
+    if (displayWindow) {
+        cv::namedWindow(windowTitle, CV_WINDOW_AUTOSIZE);
+    }
 }
 
 int OpenCV::getByte(cv::Mat frame, int x, int y, int byte) {
@@ -35,7 +49,24 @@ float OpenCV::getRelation(cv::Mat frame, int x, int y, int byte) {
     return single/sum;
 }
 
-void OpenCV::markPosition(cv::Mat &frame, int posx, int posy) {
+void OpenCV::updateFrame() {
+    cap->read(frame);
+}
+
+void OpenCV::show() {
+    cv::imshow(windowTitle, frame);
+}
+
+void OpenCV::showColorOfCenteredPixel() {
+    int baseColor[3];
+    for (int color = 0; color < 3; color++){
+        baseColor[color] = *(frame.data + frame.step[0] * (frame.rows / 2) + frame.step[1] * (frame.cols / 2) + color);
+        std::cout << baseColor[color] << "|";
+    }
+    std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
+}
+
+void OpenCV::markPosition(int posx, int posy) {
     int size = 5;
     int markColor[3] = {255, 0, 0};
     for (int y = posy - size; y < posy + size; y++) {
@@ -49,7 +80,7 @@ void OpenCV::markPosition(cv::Mat &frame, int posx, int posy) {
     }
 }
 
-void OpenCV::detectBallByAverage(cv::Mat &frame) {
+void OpenCV::detectBallByAverage() {
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
@@ -67,7 +98,7 @@ void OpenCV::detectBallByAverage(cv::Mat &frame) {
     xpos /= ctr;
     if (xpos > 0 && ypos > 0) {
         std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
-        this->markPosition(frame, xpos, ypos);
+        this->markPosition(xpos, ypos);
         if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
             contacts.push_back(53);
             int xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
@@ -88,10 +119,10 @@ void OpenCV::detectBallByAverage(cv::Mat &frame) {
             contacts.clear();
         }
     }
-//    std::cout << "contineous contacts: " << contacts.size() << std::endl;
+    //    std::cout << "contineous contacts: " << contacts.size() << std::endl;
 }
 
-int OpenCV::moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, int directionx) {
+int OpenCV::moveWhileSameColor(int starty, int startx, int directiony, int directionx) {
     int length = 0;
     int posy = starty, posx = startx;
     bool colorOK = true;
@@ -108,26 +139,25 @@ int OpenCV::moveWhileSameColor(cv::Mat &frame, int starty, int startx, int direc
     return length; //minimum return value is 1
 }
 
-void OpenCV::detectBallWithLines(cv::Mat frame) {
+void OpenCV::detectBallWithLines() {
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
             if (getRelation(frame, x, y, 2) < 0.7) {
-                int initHeight = this->moveWhileSameColor(frame, y, x, 1, 0); //go from first point down
-                int iniWidthRight = this->moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, 1); //go at half right
-                int iniWidthLeft = this->moveWhileSameColor(frame, y + initHeight * 0.5, x, 0, -1); //go at half left
+                int initHeight = this->moveWhileSameColor(y, x, 1, 0); //go from first point down
+                int iniWidthRight = this->moveWhileSameColor(y + initHeight * 0.5, x, 0, 1); //go at half right
+                int iniWidthLeft = this->moveWhileSameColor(y + initHeight * 0.5, x, 0, -1); //go at half left
                 int iniWidth = iniWidthLeft + iniWidthRight;
                 if (initHeight > 50 && iniWidth > 50) {
                     std::cout << "pos x: " << x << " y: " << y + initHeight * 0.5 << std::endl;
-                    this->markPosition(frame, x, y + initHeight * 0.5);
+                    this->markPosition(x, y + initHeight * 0.5);
                     return;
                 }
-
             }
         }
     }
 }
 
-void OpenCV::showAvgBGR(cv::Mat frame) {
+void OpenCV::showAvgBGR() {
     long int avgRGB[3] = {0, 0, 0}; //2^32 is far greater than e.g. 640 * 480 * 255
     for (int y = 0; y < frame.rows; y += 1) {
         for (int x = 0; x < frame.cols; x += 1) {
@@ -165,7 +195,7 @@ void OpenCV::printApropriateSign(int value) {
     std::cout << sign << "|";
 }
 
-void OpenCV::showOnCMD(cv::Mat frame) {
+void OpenCV::showOnCMD() {
     int cols = 13;
     int rows = 30;
     int ysteps = frame.rows/rows;
@@ -213,6 +243,7 @@ void OpenCV::printParams(cv::VideoCapture cap) {
         std::cout << i << "(" << propId.at(i) << "): " << std::to_string(cap.get(propId.at(i))) << std::endl;
     }
 }
+
 /*
     CV_CAP_PROP_POS_MSEC Current position of the video file in milliseconds or video capture timestamp.
     CV_CAP_PROP_POS_FRAMES 0-based index of the frame to be decoded/captured next.
