@@ -2,7 +2,6 @@
 #include <QTime>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include "general.cpp"
 #include "servoControl.hpp"
 #include "openCV.cpp"
 
