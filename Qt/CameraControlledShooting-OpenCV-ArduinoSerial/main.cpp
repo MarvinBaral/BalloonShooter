@@ -1,4 +1,5 @@
 #include <QSerialPort>
+#include <QTime>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "general.cpp"
@@ -8,6 +9,12 @@
 const unsigned short int STEP_DEGREE = 5;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 const QString PORT_NAME = "/dev/ttyACM0";
+long unsigned int frameCount = 0;
+unsigned int fpsCount = 0;
+QTime startTime;
+cv::Mat frame;
+int baseColor[3];
+int keyPressed;
 
 int main(int argc, char* argv[]) {
 
@@ -15,8 +22,6 @@ int main(int argc, char* argv[]) {
     ServoControl* servoControl = new ServoControl(serial);
     OpenCV* openCV = new OpenCV(servoControl);
 
-    cv::Mat frame;
-    int baseColor[3];
     if (!openCV->cap->isOpened()) {
         std::cout << "Cannot open the video cam" << std::endl;
         return -1;
@@ -27,9 +32,11 @@ int main(int argc, char* argv[]) {
     servoControl->initSerial(PORT_NAME);
     serial->open(QIODevice::ReadWrite);
 
-    int keyPressed;
+    startTime = QTime::currentTime();
     do {
         openCV->cap->read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
+        frameCount++;
+        fpsCount++;
         openCV->detectBallByAverage(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window
@@ -77,6 +84,11 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        if (startTime <= QTime::currentTime().addSecs(-1)) {
+            startTime = QTime::currentTime();
+            std::cout << "fps:" << fpsCount << std::endl;
+            fpsCount = 0;
+        }
     } while (keyPressed != 27);
 
     serial->close();
