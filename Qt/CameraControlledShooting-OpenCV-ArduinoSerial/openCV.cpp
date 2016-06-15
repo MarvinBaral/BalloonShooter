@@ -1,18 +1,21 @@
-#include <opencv2/opencv.hpp>
 #include "openCV.hpp"
 
 
 OpenCV::OpenCV(ServoControl *pServoControl) {
     servoControl = pServoControl;
     paramCam[EXTERNAL][MINIMUM_CTR] = 350;
-    paramCam[EXTERNAL][ANGLE_OF_VIEW_X] = 0;
-    paramCam[EXTERNAL][ANGLE_OF_VIEW_Y] = 0;
+    paramCam[EXTERNAL][ANGLE_OF_VIEW_X] = 2 * 30;
+    paramCam[EXTERNAL][ANGLE_OF_VIEW_Y] = 2 * 20;
+    paramCam[EXTERNAL][WIDTH] = 640;
+    paramCam[EXTERNAL][HEIGHT] = 480;
 
     paramCam[INTERNAL][MINIMUM_CTR] = 100;
     paramCam[INTERNAL][ANGLE_OF_VIEW_X] = 2 * 30;
     paramCam[INTERNAL][ANGLE_OF_VIEW_Y] = 2 * 20;
     paramCam[INTERNAL][WIDTH] = 640;
     paramCam[INTERNAL][HEIGHT] = 480;
+
+    cap = new cv::VideoCapture(usedCam);
 }
 
 int OpenCV::getByte(cv::Mat frame, int x, int y, int byte) {
@@ -66,9 +69,13 @@ void OpenCV::detectBallByAverage(cv::Mat &frame) {
         std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
         this->markPosition(frame, xpos, ypos);
         if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
-            int xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
+            float xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
             int xypos[2] = {xpos, ypos};
-            servoControl->updateServosAccordingToCam(xypos, xysize);
+            for (int i = 0; i < 2; i ++) {
+                float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] / xysize[i]) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
+                std::cout << "degree: " << degree << std::endl;
+                servoControl->setServo(i, degree);
+            }
         }
     }
 }
@@ -219,3 +226,7 @@ void OpenCV::printParams(cv::VideoCapture cap) {
     CV_CAP_PROP_ISO_SPEED The ISO speed of the camera (note: only supported by DC1394 v 2.x backend currently)
     CV_CAP_PROP_BUFFERSIZE Amount of frames stored in internal buffer memory (note: only supported by DC1394 v 2.x backend currently)
 */
+
+OpenCV::~OpenCV() {
+    delete cap;
+}

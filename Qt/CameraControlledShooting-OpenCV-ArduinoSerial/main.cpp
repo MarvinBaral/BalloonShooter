@@ -15,10 +15,9 @@ int main(int argc, char* argv[]) {
     ServoControl* servoControl = new ServoControl(serial);
     OpenCV* openCV = new OpenCV(servoControl);
 
-    cv::VideoCapture cap(0); // open the video camera no. 0
     cv::Mat frame;
     int baseColor[3];
-    if (!cap.isOpened()) {
+    if (!openCV->cap->isOpened()) {
         std::cout << "Cannot open the video cam" << std::endl;
         return -1;
     }
@@ -30,7 +29,7 @@ int main(int argc, char* argv[]) {
 
     int keyPressed;
     do {
-        cap.read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
+        openCV->cap->read(frame); //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
         openCV->detectBallByAverage(frame);
 
         imshow("MyVideo", frame); //show the frame in "MyVideo" window

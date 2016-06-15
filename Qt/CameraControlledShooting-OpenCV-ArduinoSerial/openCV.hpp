@@ -2,18 +2,21 @@
 #define OPENCV_HPP
 
 #include "servoControl.hpp"
-
+#include <opencv2/opencv.hpp>
 enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum cam {EXTERNAL = 0, INTERNAL}; //only correct if both are connected, else the external one has 0
 
 class OpenCV {
 private:
     ServoControl* servoControl;
-    short usedCam = INTERNAL;
+    short usedCam = EXTERNAL;
     int paramCam[2][5];
 
 public:
+    cv::VideoCapture* cap;
+
     OpenCV(ServoControl* pServoControl);
+    ~OpenCV();
     __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);
     __attribute__((always_inline))
