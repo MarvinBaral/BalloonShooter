@@ -80,7 +80,7 @@ void OpenCV::detectBallByAverage(cv::Mat &frame) {
                 std::cout << "degree: " << degree << std::endl;
                 servoControl->setServo(i, degree);
             }
-            if (contacts.size() > 50) {
+            if (contacts.size() > 20) {
                 servoControl->shoot();
                 contacts.clear();
             }
@@ -88,7 +88,7 @@ void OpenCV::detectBallByAverage(cv::Mat &frame) {
             contacts.clear();
         }
     }
-    std::cout << "contineous contacts: " << contacts.size() << std::endl;
+//    std::cout << "contineous contacts: " << contacts.size() << std::endl;
 }
 
 int OpenCV::moveWhileSameColor(cv::Mat &frame, int starty, int startx, int directiony, int directionx) {
