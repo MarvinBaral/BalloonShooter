@@ -69,10 +69,10 @@ void OpenCV::detectBallByAverage(cv::Mat &frame) {
         std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
         this->markPosition(frame, xpos, ypos);
         if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
-            float xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
+            int xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
             int xypos[2] = {xpos, ypos};
             for (int i = 0; i < 2; i ++) {
-                float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] / xysize[i]) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
+                float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
                 std::cout << "degree: " << degree << std::endl;
                 servoControl->setServo(i, degree);
             }
