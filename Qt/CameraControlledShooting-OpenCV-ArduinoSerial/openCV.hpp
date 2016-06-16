@@ -11,13 +11,13 @@ private:
     ServoControl* servoControl;
     short usedCam;
     int paramCam[2][5];
-    cv::Mat frame;
-    cv::VideoCapture* cap;
     bool displayWindow;
-    std::string windowTitle;
     std::vector<int> contacts;
 
 public:
+    std::string windowTitle;
+    cv::VideoCapture* cap;
+    cv::Mat frame;
     OpenCV(ServoControl* pServoControl);
     __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);

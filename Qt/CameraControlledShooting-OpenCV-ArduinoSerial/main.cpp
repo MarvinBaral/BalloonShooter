@@ -24,12 +24,13 @@ int main(int argc, char* argv[]) {
 
     startTime = QTime::currentTime();
     do {
+        openCV->cap->read(openCV->frame);
         //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
         frameCount++;
         fpsCount++;
         openCV->detectBallByAverage();
-        openCV->updateFrame();
-        openCV->show();
+
+        imshow(openCV->windowTitle, openCV->frame);
 
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {

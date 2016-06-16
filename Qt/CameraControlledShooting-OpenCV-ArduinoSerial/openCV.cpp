@@ -49,14 +49,6 @@ float OpenCV::getRelation(cv::Mat frame, int x, int y, int byte) {
     return single/sum;
 }
 
-void OpenCV::updateFrame() {
-    cap->read(frame);
-}
-
-void OpenCV::show() {
-    cv::imshow(windowTitle, frame);
-}
-
 void OpenCV::showColorOfCenteredPixel() {
     int baseColor[3];
     for (int color = 0; color < 3; color++){
