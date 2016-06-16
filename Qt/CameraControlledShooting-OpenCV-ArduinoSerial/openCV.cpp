@@ -19,6 +19,7 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     paramCam[INTERNAL][HEIGHT] = 480;
 
     usedCam = EXTERNAL;
+    invertXAxis = true;
 
     cap = new cv::VideoCapture(usedCam);
     if (!cap->isOpened()) {
@@ -99,6 +100,9 @@ void OpenCV::detectBallByAverage() {
                 float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
                 if (i == 1) {
                     degree += 20;
+                }
+                if (i == 0 && invertXAxis) {
+                    degree = -degree;
                 }
                 std::cout << "degree: " << degree << std::endl;
                 servoControl->setServo(i, degree);
