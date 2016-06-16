@@ -105,10 +105,15 @@ void OpenCV::markPosition(int posx, int posy) {
     }
 }
 
+float OpenCV::calcDistance(std::vector<int> point1, std::vector<int> point2){
+    return std::sqrt((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]));
+}
+
 void OpenCV::detectBallByAverage() {
     std::vector<std::vector<int>> pixels;
+    std::vector<std::vector<std::vector<int>>> objectPixels;
     int numDetectedObjects = 0;
-    int objectCtr = 0;
+    int objectPixelCtr = 0;
     int distance = 0;
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
@@ -122,13 +127,13 @@ void OpenCV::detectBallByAverage() {
             }
         }
     }
-    for (int i = 1; i < xpixels.size(); i++) {
-        distance = std::sqrt((pixels[i][0] - pixels[i-1][0]) * (pixels[i][0] - pixels[i-1][0]) + (pixels[i][1] - pixels[i-1][1]) * (pixels[i][1] - pixels[i-1][1]));
+    for (unsigned int i = 1; i < pixels.size(); i++) {
+        distance = this->calcDistance(pixels[i], pixels[i-1]);
         if (distance < 50) {
-            objectCtr++;
+            objectPixelCtr++;
         } else {
             numDetectedObjects++;
-            objectCtr = 0;
+            objectPixelCtr = 0;
         }
     }
     std::cout << "detected objects:" << numDetectedObjects << std::endl;
@@ -164,8 +169,7 @@ void OpenCV::detectBallByAverage() {
         }
     }
     //    std::cout << "contineous contacts: " << contacts.size() << std::endl;
-    xpixels.clear();
-    ypixels.clear();
+    pixels.clear();
 }
 
 int OpenCV::moveWhileSameColor(int starty, int startx, int directiony, int directionx) {

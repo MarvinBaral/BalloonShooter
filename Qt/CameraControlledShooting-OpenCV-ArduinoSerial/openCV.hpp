@@ -34,6 +34,7 @@ public:
     __attribute__((always_inline))
     static inline short getAverage(cv::Mat frame, int x, int y);
     void markPixel(cv::Mat frame, int posx, int posy);
+    float calcDistance(std::vector<int> point1, std::vector<int> point2);
     void updateFrame();
     void show();
     void showColorOfCenteredPixel();
