@@ -58,6 +58,25 @@ float OpenCV::getRelation(cv::Mat frame, int x, int y, int byte) {
     return single/sum;
 }
 
+short OpenCV::getHighestColor(cv::Mat frame, int x, int y) {
+    signed short winner = -1;
+    short highestValue = 0;
+    short value = 0;
+    for (short i = 0; i < 3; i++) {
+        value = getByte(frame, x, y, i);
+        if (value > highestValue) {
+            highestValue = value;
+            winner = i;
+        }
+    }
+    return winner;
+}
+
+short OpenCV::getAverage(cv::Mat frame, int x, int y) {
+    int sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
+    return sum / 3.f;
+}
+
 void OpenCV::markPixel(cv::Mat frame, int posx, int posy) {
     for (int i = 0; i < 3; i++) {
         writeByte(frame, posx, posy, i, pixelMarkColor[i]);

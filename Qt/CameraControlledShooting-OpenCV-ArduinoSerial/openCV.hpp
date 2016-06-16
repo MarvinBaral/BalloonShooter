@@ -29,6 +29,10 @@ public:
     static inline int getByte(cv::Mat frame, int x, int y, int byte);
     __attribute__((always_inline))
     static inline void writeByte(cv::Mat frame, int x, int y, int byte, int value);
+    __attribute__((always_inline))
+    static inline short getHighestColor(cv::Mat frame, int x, int y);
+    __attribute__((always_inline))
+    static inline short getAverage(cv::Mat frame, int x, int y);
     void markPixel(cv::Mat frame, int posx, int posy);
     void updateFrame();
     void show();
