@@ -22,6 +22,13 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     invertXAxis = true;
     minimumRelationTrigger = 0.6;
 
+    pixelMarkColor[0] = 255;
+    pixelMarkColor[1] = 0;
+    pixelMarkColor[2] = 0;
+    positionMarkColor[0] = 0;
+    positionMarkColor[1] = 255;
+    positionMarkColor[2] = 0;
+
     cap = new cv::VideoCapture(usedCam);
     if (!cap->isOpened()) {
         std::cout << "Cannot open the video cam" << std::endl;
@@ -52,9 +59,8 @@ float OpenCV::getRelation(cv::Mat frame, int x, int y, int byte) {
 }
 
 void OpenCV::markPixel(cv::Mat frame, int posx, int posy) {
-    int markColor[3] = {255, 0, 0};
     for (int i = 0; i < 3; i++) {
-        writeByte(frame, posx, posy, i, markColor[i]);
+        writeByte(frame, posx, posy, i, pixelMarkColor[i]);
     }
 }
 
@@ -69,12 +75,11 @@ void OpenCV::showColorOfCenteredPixel() {
 
 void OpenCV::markPosition(int posx, int posy) {
     int size = 5;
-    int markColor[3] = {255, 0, 0};
     for (int y = posy - size; y < posy + size; y++) {
         for (int x = posx - size; x < posx + size; x++){
             for (int i = 0; i < 3; i++) {
                 if (x > 0 && y > 0){
-                    writeByte(frame, x, y, i, markColor[i]);
+                    writeByte(frame, x, y, i, positionMarkColor[i]);
                 }
             }
         }
