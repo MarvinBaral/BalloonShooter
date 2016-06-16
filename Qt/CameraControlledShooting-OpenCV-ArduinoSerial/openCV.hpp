@@ -14,6 +14,7 @@ private:
     bool displayWindow;
     bool invertXAxis;
     std::vector<int> contacts;
+    float minimumRelationTrigger;
 
 public:
     std::string windowTitle;
@@ -26,6 +27,8 @@ public:
     static inline int getByte(cv::Mat frame, int x, int y, int byte);
     __attribute__((always_inline))
     static inline void writeByte(cv::Mat frame, int x, int y, int byte, int value);
+    __attribute__((always_inline))
+    static inline void markPixel(cv::Mat frame, int posx, int posy);
     void updateFrame();
     void show();
     void showColorOfCenteredPixel();

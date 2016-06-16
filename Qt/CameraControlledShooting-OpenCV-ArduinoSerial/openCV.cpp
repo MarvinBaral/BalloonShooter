@@ -20,6 +20,7 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
 
     usedCam = EXTERNAL;
     invertXAxis = true;
+    minimumRelationTrigger = 0.6;
 
     cap = new cv::VideoCapture(usedCam);
     if (!cap->isOpened()) {
@@ -50,6 +51,13 @@ float OpenCV::getRelation(cv::Mat frame, int x, int y, int byte) {
     return single/sum;
 }
 
+void OpenCV::markPixel(cv::Mat frame, int posx, int posy) {
+    int markColor[3] = {255, 0, 0};
+    for (int i = 0; i < 3; i++) {
+        writeByte(frame, posx, posy, i, markColor[i]);
+    }
+}
+
 void OpenCV::showColorOfCenteredPixel() {
     int baseColor[3];
     for (int color = 0; color < 3; color++){
@@ -74,13 +82,18 @@ void OpenCV::markPosition(int posx, int posy) {
 }
 
 void OpenCV::detectBallByAverage() {
+    std::vector<int> xpixels;
+    std::vector<int> ypixels;
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
-            if (getRelation(frame, x, y, 2) > 0.7) {
+            if (getRelation(frame, x, y, 2) >= minimumRelationTrigger) {
+                xpixels.push_back(x);
+                ypixels.push_back(y);
                 ctr++;
                 ypos += y;
                 xpos += x;
+                markPixel(frame, x, y);
             }
         }
     }
@@ -99,7 +112,7 @@ void OpenCV::detectBallByAverage() {
             for (int i = 0; i < 2; i ++) {
                 float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
                 if (i == 1) {
-                    degree += 20;
+                    degree += 20; //here will be a physical calculation depending on object distance
                 }
                 if (i == 0 && invertXAxis) {
                     degree = -degree;
@@ -116,6 +129,8 @@ void OpenCV::detectBallByAverage() {
         }
     }
     //    std::cout << "contineous contacts: " << contacts.size() << std::endl;
+    xpixels.clear();
+    ypixels.clear();
 }
 
 int OpenCV::moveWhileSameColor(int starty, int startx, int directiony, int directionx) {
@@ -127,7 +142,7 @@ int OpenCV::moveWhileSameColor(int starty, int startx, int directiony, int direc
         posx += directionx;
         length++; //will not work in 45° angles
         for (int i = 0; i < 3; i++) {
-            if (getRelation(frame, posx, posy, 2) < 0.7) {
+            if (getRelation(frame, posx, posy, 2) < minimumRelationTrigger) {
                 colorOK = false;
             }
         }
@@ -138,7 +153,7 @@ int OpenCV::moveWhileSameColor(int starty, int startx, int directiony, int direc
 void OpenCV::detectBallWithLines() {
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
-            if (getRelation(frame, x, y, 2) < 0.7) {
+            if (getRelation(frame, x, y, 2) < minimumRelationTrigger) {
                 int initHeight = this->moveWhileSameColor(y, x, 1, 0); //go from first point down
                 int iniWidthRight = this->moveWhileSameColor(y + initHeight * 0.5, x, 0, 1); //go at half right
                 int iniWidthLeft = this->moveWhileSameColor(y + initHeight * 0.5, x, 0, -1); //go at half left
