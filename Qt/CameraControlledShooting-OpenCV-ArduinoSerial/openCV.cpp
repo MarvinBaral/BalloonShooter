@@ -106,14 +106,15 @@ void OpenCV::markPosition(int posx, int posy) {
 }
 
 void OpenCV::detectBallByAverage() {
-    std::vector<int> xpixels;
-    std::vector<int> ypixels;
+    std::vector<std::vector<int>> pixels;
+    int numDetectedObjects = 0;
+    int objectCtr = 0;
+    int distance = 0;
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
             if (getRelation(frame, x, y, 2) >= minimumRelationTrigger) {
-                xpixels.push_back(x);
-                ypixels.push_back(y);
+                pixels.push_back({x, y});
                 ctr++;
                 ypos += y;
                 xpos += x;
@@ -121,6 +122,16 @@ void OpenCV::detectBallByAverage() {
             }
         }
     }
+    for (int i = 1; i < xpixels.size(); i++) {
+        distance = std::sqrt((pixels[i][0] - pixels[i-1][0]) * (pixels[i][0] - pixels[i-1][0]) + (pixels[i][1] - pixels[i-1][1]) * (pixels[i][1] - pixels[i-1][1]));
+        if (distance < 50) {
+            objectCtr++;
+        } else {
+            numDetectedObjects++;
+            objectCtr = 0;
+        }
+    }
+    std::cout << "detected objects:" << numDetectedObjects << std::endl;
     if (ctr == 0) {
         ctr = 1;
     }
