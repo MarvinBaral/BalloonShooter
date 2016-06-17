@@ -20,7 +20,7 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
 
     usedCam = EXTERNAL;
     invertXAxis = true;
-    minimumRelationTrigger = 0.6;
+    minimumRelationTrigger = 0.5;
 
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -123,7 +123,7 @@ void OpenCV::detectBallByAverage() {
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
-            if (getRelation(frame, x, y, 2) >= minimumRelationTrigger) {
+            if (getRelation(frame, x, y, 2) >= minimumRelationTrigger  && getByte(frame, x, y, 2) >= 210) {
                 pixels.push_back({x, y});
                 ctr++;
                 ypos += y;
@@ -167,6 +167,8 @@ void OpenCV::detectBallByAverage() {
     width = extremes[0][1] - extremes[0][0];
     height = extremes[1][1] - extremes[1][0];
     markPosition(extremes[0][0], extremes[1][0]);
+    markPosition(extremes[0][0], extremes[1][1]);
+    markPosition(extremes[0][1], extremes[1][0]);
     markPosition(extremes[0][1], extremes[1][1]);
     std::cout << "height: " << height << " width: " << width << std::endl;
     /*
