@@ -21,6 +21,8 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     usedCam = EXTERNAL;
     invertXAxis = true;
     minimumRelationTrigger = 0.5;
+    minimumAbsoluteRedValue = 210;
+    degreeCorrection = -10.0;
 
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -123,7 +125,7 @@ void OpenCV::detectBallByAverage() {
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
-            if (getRelation(frame, x, y, 2) >= minimumRelationTrigger  && getByte(frame, x, y, 2) >= 210) {
+            if (getRelation(frame, x, y, 2) >= minimumRelationTrigger  && getByte(frame, x, y, 2) >= minimumAbsoluteRedValue) {
                 pixels.push_back({x, y});
                 ctr++;
                 ypos += y;
@@ -213,8 +215,11 @@ void OpenCV::detectBallByAverage() {
                 if (i == 1) {
                     degree += 20; //here will be a physical calculation depending on object distance
                 }
-                if (i == 0 && invertXAxis) {
-                    degree = -degree;
+                if (i == 0) {
+                    degree += degreeCorrection;
+                    if (invertXAxis) {
+                        degree = -degree;
+                    }
                 }
                 std::cout << "degree: " << degree << std::endl;
                 servoControl->setServo(i, degree);
