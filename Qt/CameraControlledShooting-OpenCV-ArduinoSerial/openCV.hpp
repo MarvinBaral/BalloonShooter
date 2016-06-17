@@ -15,6 +15,8 @@ private:
     bool invertXAxis;
     std::vector<int> contacts;
     float minimumRelationTrigger;
+    int minimumAbsoluteRedValue;
+    float degreeCorrection;
     int positionMarkColor[3];
     int pixelMarkColor[3];
 
