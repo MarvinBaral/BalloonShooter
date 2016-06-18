@@ -110,19 +110,11 @@ void OpenCV::markPosition(int posx, int posy) {
 
 float OpenCV::calcDistance(std::vector<int> point1, std::vector<int> point2){
     float distance = std::sqrt((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]));
-//    if (distance < 10) {
-//        std::cout << "distance: " << distance << std::endl;
-//    }
     return distance;
 }
 
 void OpenCV::detectBallByAverage() {
     std::vector<std::vector<int>> pixels;
-    std::vector<std::vector<std::vector<int>>> objectPixels;
-    objectPixels.push_back({{}});
-    int numDetectedObjects = 1;
-    int objectPixelCtr = 0;
-    int distance = 0;
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
@@ -135,24 +127,6 @@ void OpenCV::detectBallByAverage() {
             }
         }
     }
-    int chkcyclCtr = 0;/*
-    //filter pixel array
-    for (unsigned int i = 0; i < pixels.size(); i++) {
-        chkcyclCtr = 0;
-        for (unsigned int chkcycl = 0; chkcycl < pixels.size(); chkcycl++) {
-            if (this->calcDistance(pixels[i], pixels[chkcycl]) < 5) {
-                chkcyclCtr++; //own one counts too
-            }
-            if (chkcyclCtr > 10) {
-                break;
-            }
-        }
-        if (chkcyclCtr <= 10) {
-            markPosition(pixels[i][0], pixels[i][1]);
-            pixels.erase(pixels.begin() + i);
-        }
-    }
-*/
     //get size
     int width = 0;
     int height = 0;
@@ -174,31 +148,7 @@ void OpenCV::detectBallByAverage() {
     markPosition(extremes[0][1], extremes[1][0]);
     markPosition(extremes[0][1], extremes[1][1]);
     std::cout << "height: " << height << " width: " << width << std::endl;
-    /*
-    for (unsigned int i = 1; i < pixels.size(); i++) {
-        distance = this->calcDistance(pixels[i], pixels[i-1]);
-        if (distance < 50) {
-            objectPixels[numDetectedObjects - 1].push_back({1,2});
-            objectPixelCtr++;
-        } else {
-            int matchedAtSecondTry = false;
-            for (unsigned int c = 0; c < objectPixels[numDetectedObjects - 1].size(); c++) {
-                distance = this->calcDistance(pixels[i], objectPixels[numDetectedObjects - 1][c]);
-                if (distance < 50) {
-                    objectPixels[numDetectedObjects - 1].push_back(pixels[i]);
-                    objectPixelCtr++;
-                    matchedAtSecondTry = true;
-                }
-            }
-            if (!matchedAtSecondTry) {
-                objectPixels.push_back({{}});
-                numDetectedObjects++;
-                objectPixelCtr = 0;
-            }
-        }
-    std::cout << "detected objects:" << numDetectedObjects << std::endl;
 
-    }*/
     if (ctr == 0) {
         ctr = 1;
     }
