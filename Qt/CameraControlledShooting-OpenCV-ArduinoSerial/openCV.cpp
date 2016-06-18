@@ -23,7 +23,6 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     minimumRelationTrigger = 0.5;
     minimumAbsoluteRedValue = 210;
     interestingColor = 2;
-    degreeCorrection = 10.0;
 
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
