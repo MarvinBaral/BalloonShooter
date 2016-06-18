@@ -131,6 +131,7 @@ void OpenCV::detectBallByAverage() {
     int width = 0;
     int height = 0;
     int extremes[2][2] = {{paramCam[usedCam][WIDTH], 0},{paramCam[usedCam][HEIGHT], 0}}; //x,y min,max
+
     for (int i = 0; i < pixels.size(); i++) {
         for (int xy = 0; xy < 2; xy++) {
             if (pixels[i][xy] < extremes[xy][0]) {
@@ -148,6 +149,9 @@ void OpenCV::detectBallByAverage() {
     markPosition(extremes[0][1], extremes[1][0]);
     markPosition(extremes[0][1], extremes[1][1]);
     std::cout << "height: " << height << " width: " << width << std::endl;
+
+    //get position and calc shooting angles
+    float degrees[2] = {0, 0};
 
     if (ctr == 0) {
         ctr = 1;
@@ -170,10 +174,13 @@ void OpenCV::detectBallByAverage() {
                     if (invertXAxis) {
                         degree = -degree;
                     }
-                    degree += degreeCorrection;
                 }
-                std::cout << "degree: " << degree << std::endl;
-                servoControl->setServo(i, degree);
+                //std::cout << "degree: " << degree << std::endl;
+                degrees[i] = degree;
+            }
+            degrees[0] += std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
+            for (int i = 0; i < 2; i ++) {
+                servoControl->setServo(i, degrees[i]);
             }
             if (contacts.size() > 20) {
                 servoControl->shoot();
