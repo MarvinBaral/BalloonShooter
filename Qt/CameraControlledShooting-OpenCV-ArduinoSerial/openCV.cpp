@@ -22,6 +22,7 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     invertXAxis = true;
     minimumRelationTrigger = 0.5;
     minimumAbsoluteRedValue = 210;
+    interestingColor = 2;
     degreeCorrection = 10.0;
 
     pixelMarkColor[0] = 255;
@@ -125,7 +126,7 @@ void OpenCV::detectBallByAverage() {
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
-            if (getRelation(frame, x, y, 2) >= minimumRelationTrigger  && getByte(frame, x, y, 2) >= minimumAbsoluteRedValue) {
+            if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumAbsoluteRedValue) {
                 pixels.push_back({x, y});
                 ctr++;
                 ypos += y;
