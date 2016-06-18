@@ -24,8 +24,8 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     minimumAbsoluteRedValue = 200;
     interestingColor = 2;
     repeationsUntilShot = 20;
-    distanceBetweenCamAndCannon = 0.1;
-    realSize = 0.25; //40cm
+    distanceBetweenCamAndCannon = 0.1; //m
+    realSize = 0.25; //m
 
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -47,7 +47,7 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
 }
 
 int OpenCV::getByte(cv::Mat frame, int x, int y, int byte) {
-    return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte);
+    return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte); //http://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#mat, BGR color model!
 }
 
 void OpenCV::writeByte(cv::Mat frame, int x, int y, int byte, int value) {
@@ -129,6 +129,13 @@ void OpenCV::detectBallByAverage() {
             }
         }
     }
+    //get position
+    if (ctr == 0) {
+        ctr = 1;
+    }
+    ypos /= ctr;
+    xpos /= ctr;
+
     //get size
     int width = 0;
     int height = 0;
@@ -161,23 +168,29 @@ void OpenCV::detectBallByAverage() {
     std::cout << "size: " << size << std::endl;
 
     //get distance
+    const float PI = 3.14159265359;
     if (size > 0) {
         float alpha = (paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f)) * size; //ganzzahldivision
         std::cout << "angle: " << alpha << std::endl;
-        alpha =  alpha / 180.f * 3.14159265359;  //conversion from degree to radiant
+        alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
         float distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
         distance -= distanceBetweenCamAndCannon;
 
         std::cout << "distance: " << distance << std::endl;
+    //get Height
+        float coordY;
+        float angleY;
+        angleY = paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f) * ((paramCam[usedCam][HEIGHT] - ypos) - paramCam[usedCam][HEIGHT] / 2.f);
+        angleY = angleY / 180.f * PI;
+        coordY = std::sin(angleY);
+
+        std::cout << "height: " << coordY << std::endl;
     }
+
     //get position and calc shooting angles
     float degrees[2] = {0, 0};
 
-    if (ctr == 0) {
-        ctr = 1;
-    }
-    ypos /= ctr;
-    xpos /= ctr;
+
     if (xpos > 0 && ypos > 0) {
         std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
         this->markPosition(xpos, ypos);

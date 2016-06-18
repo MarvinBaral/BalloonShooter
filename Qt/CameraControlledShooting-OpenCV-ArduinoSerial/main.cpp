@@ -15,7 +15,7 @@ int keyPressed;
 
 int main(int argc, char* argv[]) {
 
-    QSerialPort* serial = new QSerialPort(); //https://www.youtube.com/watch?v=UD78xyKbrfk
+    QSerialPort* serial = new QSerialPort();
     ServoControl* servoControl = new ServoControl(serial);
     OpenCV* openCV = new OpenCV(servoControl);
 
@@ -25,7 +25,6 @@ int main(int argc, char* argv[]) {
     startTime = QTime::currentTime();
     do {
         openCV->cap->read(openCV->frame);
-        //http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
         frameCount++;
         fpsCount++;
         openCV->detectBallByAverage();
@@ -86,5 +85,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
-//http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
