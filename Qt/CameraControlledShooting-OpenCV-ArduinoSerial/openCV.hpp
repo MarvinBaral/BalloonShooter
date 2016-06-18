@@ -13,12 +13,16 @@ private:
     int paramCam[2][5];
     bool displayWindow;
     bool invertXAxis;
-    std::vector<int> contacts;
     float minimumRelationTrigger;
     int minimumAbsoluteRedValue;
     short interestingColor;
+    short repeationsUntilShot;
+    float distanceBetweenCamAndCannon;
+    float realSize;
     int positionMarkColor[3];
     int pixelMarkColor[3];
+    int size;
+    std::vector<std::vector<int>> contacts;
 
 public:
     std::string windowTitle;
