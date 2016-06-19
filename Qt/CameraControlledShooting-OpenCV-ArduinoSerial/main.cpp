@@ -34,8 +34,14 @@ int main(int argc, char* argv[]) {
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {
         case -1: break;
+        case 99: //c = clear
+            openCV->allowedToShoot = true;
+            break;
         case 107: //k
             openCV->showColorOfCenteredPixel();
+            break;
+        case 108: //l = lock
+            openCV->allowedToShoot = false;
             break;
         case 65361: //left
             servoControl->updateServo(0, -STEP_DEGREE);

@@ -30,6 +30,7 @@ private:
     unsigned short maximumSizeContacts;
 
 public:
+    bool allowedToShoot;
     std::string windowTitle;
     cv::VideoCapture* cap;
     cv::Mat frame;

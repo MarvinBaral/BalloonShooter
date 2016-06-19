@@ -31,6 +31,7 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     physicalMode = true;
     v0 = 4.08;
     y0 = -0.08;
+    allowedToShoot = true;
 
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -236,12 +237,16 @@ void OpenCV::detectBallByAverage() {
                     degrees[1] += 20;
             }
             degrees[0] += std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
-            for (int i = 0; i < 2; i ++) {
+            for (int i = 0; i < 2 && allowedToShoot; i ++) {
                 servoControl->setServo(i, degrees[i]);
             }
-            if (shootingCounter >= repeationsUntilShot) {
+            if (!allowedToShoot) {
+                shootingCounter = 0;
+            }
+            if (shootingCounter >= repeationsUntilShot && allowedToShoot) {
                 servoControl->shoot();
                 shootingCounter = 0;
+                allowedToShoot = false;
             }
         } else {
             contacts.clear();
