@@ -26,9 +26,9 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     repeationsUntilShot = 20;
     shootingCounter = 0;
     distanceBetweenCamAndCannon = 0.1; //m
-    realSize = 0.20; //m
+    realSize = 0.23; //m
     maximumSizeContacts = 5;
-    physicalMode = true;
+    physicalMode = false;
     v0 = 4.08;
     y0 = -0.08;
     allowedToShoot = true;
@@ -167,9 +167,9 @@ void OpenCV::detectBallByAverage() {
 
     sizeLocal = std::round((width + height) * 0.5);
     size = sizeLocal;
-    for (unsigned int i = 0; i < contacts.size(); i++) {
+    /*for (unsigned int i = 0; i < contacts.size(); i++) {
         size = std::min(size, contacts[i][0]);
-    }
+    }*/
     std::cout << "size: " << size << std::endl;
 
     //get distance
@@ -180,14 +180,17 @@ void OpenCV::detectBallByAverage() {
         float alpha = (paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f)) * size; //ganzzahldivision
         alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
         distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
-        distance -= distanceBetweenCamAndCannon;
 
         std::cout << "distance: " << distance << std::endl;
-    //get Height
+        //get Height
         float angleY;
+        float heightCorrectionFactor = 1.0;
         angleY = paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f) * ((paramCam[usedCam][HEIGHT] - ypos) - paramCam[usedCam][HEIGHT] / 2.f);
         angleY = angleY / 180.f * PI;
-        coordY = std::sin(angleY);
+        coordY = std::sin(angleY) * distance;
+        coordY *= heightCorrectionFactor;
+        distance = std::sin(angleY) * distance;
+        distance -= distanceBetweenCamAndCannon;
 
         std::cout << "height: " << coordY << std::endl;
     }
@@ -221,20 +224,27 @@ void OpenCV::detectBallByAverage() {
                 float a = 0;
                 float g = 9.81;
                 float x = distance, y;
-                for (int i = 70; i > 0; i--) {
+                for (int i = 0; i < 80; i++) {
                     a = i;
                     a = a / 180.f * PI; //convert to radiant
-                    float t = (x / v0 * std::cos(a));
+                    float t = (x / (v0 * std::cos(a)));
                     y = y0 + v0 * std::sin(a) * t - 0.5 * g * t * t;
 
-                    if (y <= coordY) {
+                    if (y >= coordY) {
                         degrees[1] = i;
+
+                        std::cout << "calculated height: " << y << std::endl;
                         std::cout << "angle: " << i << std::endl;
                         break;
                     }
                 }
+                std::cout << "calculated heightEnd: " << y << std::endl;
             } else {
-                    degrees[1] += 20;
+                degrees[1] += 20;
+                if (coordY > 0) {
+                    degrees[1] += (coordY * 100) * distance;
+                }
+                std::cout << "calced degree: " << degrees[1] << std::endl;
             }
             degrees[0] += std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
             for (int i = 0; i < 2 && allowedToShoot; i ++) {
@@ -246,7 +256,6 @@ void OpenCV::detectBallByAverage() {
             if (shootingCounter >= repeationsUntilShot && allowedToShoot) {
                 servoControl->shoot();
                 shootingCounter = 0;
-                allowedToShoot = false;
             }
         } else {
             contacts.clear();
