@@ -20,6 +20,7 @@ private:
     short shootingCounter;
     float distanceBetweenCamAndCannon;
     float realSize;
+    bool physicalMode;
     int positionMarkColor[3];
     int pixelMarkColor[3];
     int size;
