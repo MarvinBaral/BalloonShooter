@@ -17,12 +17,14 @@ private:
     int minimumAbsoluteRedValue;
     short interestingColor;
     short repeationsUntilShot;
+    short shootingCounter;
     float distanceBetweenCamAndCannon;
     float realSize;
     int positionMarkColor[3];
     int pixelMarkColor[3];
     int size;
     std::vector<std::vector<int>> contacts;
+    short maximumSizeContacts;
 
 public:
     std::string windowTitle;

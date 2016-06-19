@@ -23,9 +23,11 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     minimumRelationTrigger = 0.5;
     minimumAbsoluteRedValue = 200;
     interestingColor = 2;
-    repeationsUntilShot = 30;
+    repeationsUntilShot = 20;
+    shootingCounter = 0;
     distanceBetweenCamAndCannon = 0.1; //m
     realSize = 0.25; //m
+    maximumSizeContacts = 5;
 
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -173,7 +175,6 @@ void OpenCV::detectBallByAverage() {
     float coordY;
     if (size > 0) {
         float alpha = (paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f)) * size; //ganzzahldivision
-        std::cout << "angle: " << alpha << std::endl;
         alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
         distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
         distance -= distanceBetweenCamAndCannon;
@@ -197,6 +198,10 @@ void OpenCV::detectBallByAverage() {
         this->markPosition(xpos, ypos);
         if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
             contacts.push_back({sizeLocal, 0});
+            shootingCounter++;
+            if (contacts.size() > maximumSizeContacts) {
+                contacts.pop_back();
+            }
             int xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
             int xypos[2] = {xpos, ypos};
             for (int i = 0; i < 2; i ++) {
@@ -212,19 +217,20 @@ void OpenCV::detectBallByAverage() {
                 //std::cout << "degree: " << degree << std::endl;
                 degrees[i] = degree;
             }
-            float v0 = 3;
+            float v0 = 3.0;
             float a = 0;
             float g = 9.81;
-            float y0 = 0;
+            float y0 = -0.08;
             float x = distance, y;
-            for (int i = 0; i < 80; i++) {
+            for (int i = 70; i > 0; i--) {
                 a = i;
                 a = a / 180.f * PI; //convert to radiant
                 float t = (x / v0 * std::cos(a));
                 y = y0 + v0 * std::sin(a) * t - 0.5 * g * t * t;
 
-                if (y >= coordY) {
+                if (y <= coordY) {
                     degrees[1] = i;
+                    std::cout << "angle: " << i << std::endl;
                     break;
                 }
             }
@@ -232,9 +238,9 @@ void OpenCV::detectBallByAverage() {
             for (int i = 0; i < 2; i ++) {
                 servoControl->setServo(i, degrees[i]);
             }
-            if (contacts.size() >= repeationsUntilShot) {
+            if (shootingCounter >= repeationsUntilShot) {
                 servoControl->shoot();
-                contacts.clear();
+                shootingCounter = 0;
             }
         } else {
             contacts.clear();
