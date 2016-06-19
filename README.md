@@ -19,4 +19,5 @@ There just has to be a accurate flightpathcalculation and a prediction of the po
 * http://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#mat
 * http://docs.opencv.org/2.4/modules/highgui/doc/reading_and_writing_images_and_video.html#videocapture-read
 * http://rodrigoberriel.com/2014/11/using-opencv-3-qt-creator-3-2-qt-5-3/
-* https://www.youtube.com/watch?v=UD78xyKbrfk
+* https://www.youtube.com/watch?v=UD78xyKbrfk - Using QSerialPort
+* https://www.youtube.com/watch?v=XdBDx7ZQaok - Flightpathcalculation
