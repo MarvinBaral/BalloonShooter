@@ -20,10 +20,10 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
 
     usedCam = EXTERNAL;
     invertXAxis = true;
-    minimumRelationTrigger = 0.4;
+    minimumRelationTrigger = 0.5;
     minimumAbsoluteRedValue = 200;
     interestingColor = 2;
-    repeationsUntilShot = 20;
+    repeationsUntilShot = 30;
     distanceBetweenCamAndCannon = 0.1; //m
     realSize = 0.25; //m
 
@@ -169,16 +169,17 @@ void OpenCV::detectBallByAverage() {
 
     //get distance
     const float PI = 3.14159265359;
+    float distance = 0;
+    float coordY;
     if (size > 0) {
         float alpha = (paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f)) * size; //ganzzahldivision
         std::cout << "angle: " << alpha << std::endl;
         alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
-        float distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
+        distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
         distance -= distanceBetweenCamAndCannon;
 
         std::cout << "distance: " << distance << std::endl;
     //get Height
-        float coordY;
         float angleY;
         angleY = paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f) * ((paramCam[usedCam][HEIGHT] - ypos) - paramCam[usedCam][HEIGHT] / 2.f);
         angleY = angleY / 180.f * PI;
@@ -201,7 +202,7 @@ void OpenCV::detectBallByAverage() {
             for (int i = 0; i < 2; i ++) {
                 float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
                 if (i == 1) {
-                    degree += 20; //here will be a physical calculation depending on object distance
+                    //degree += 20;
                 }
                 if (i == 0) {
                     if (invertXAxis) {
@@ -210,6 +211,22 @@ void OpenCV::detectBallByAverage() {
                 }
                 //std::cout << "degree: " << degree << std::endl;
                 degrees[i] = degree;
+            }
+            float v0 = 3;
+            float a = 0;
+            float g = 9.81;
+            float y0 = 0;
+            float x = distance, y;
+            for (int i = 0; i < 80; i++) {
+                a = i;
+                a = a / 180.f * PI; //convert to radiant
+                float t = (x / v0 * std::cos(a));
+                y = y0 + v0 * std::sin(a) * t - 0.5 * g * t * t;
+
+                if (y >= coordY) {
+                    degrees[1] = i;
+                    break;
+                }
             }
             degrees[0] += std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
             for (int i = 0; i < 2; i ++) {
