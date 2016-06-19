@@ -23,6 +23,7 @@ private:
     bool physicalMode;
     float y0;
     float v0;
+    int preCalcFactor;
     int positionMarkColor[3];
     int pixelMarkColor[3];
     int size;

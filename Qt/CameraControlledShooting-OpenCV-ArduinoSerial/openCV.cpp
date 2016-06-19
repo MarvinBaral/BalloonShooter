@@ -32,6 +32,7 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     v0 = 4.08;
     y0 = -0.08;
     allowedToShoot = true;
+    preCalcFactor = 4;
 
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -145,7 +146,6 @@ void OpenCV::detectBallByAverage() {
     //get size
     int width = 0;
     int height = 0;
-    int sizeLocal = 0;
     int extremes[2][2] = {{paramCam[usedCam][WIDTH], 0},{paramCam[usedCam][HEIGHT], 0}}; //x,y min,max
 
     for (unsigned int i = 0; i < pixels.size(); i++) {
@@ -165,11 +165,7 @@ void OpenCV::detectBallByAverage() {
     markPosition(extremes[0][1], extremes[1][0]);
     markPosition(extremes[0][1], extremes[1][1]);
 
-    sizeLocal = std::round((width + height) * 0.5);
-    size = sizeLocal;
-    /*for (unsigned int i = 0; i < contacts.size(); i++) {
-        size = std::min(size, contacts[i][0]);
-    }*/
+    size = std::round((width + height) * 0.5);
     std::cout << "size: " << size << std::endl;
 
     //get distance
@@ -203,13 +199,16 @@ void OpenCV::detectBallByAverage() {
         std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
         this->markPosition(xpos, ypos);
         if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
-            contacts.push_back({sizeLocal, 0});
-            shootingCounter++;
-            if (contacts.size() > maximumSizeContacts) {
-                contacts.pop_back();
+            contacts.push_back({xpos, ypos});
+            int xdiff = 0;
+            int ydiff = 0;
+            if (contacts.size() >= 2) {
+                xdiff = contacts[contacts.size() - 1][0] - contacts[contacts.size() - 2][0];
+                ydiff = contacts[contacts.size() - 1][1] - contacts[contacts.size() - 2][1];
             }
+            shootingCounter++;
             int xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
-            int xypos[2] = {xpos, ypos};
+            int xypos[2] = {xpos + preCalcFactor * xdiff, ypos + ydiff * preCalcFactor};
             for (int i = 0; i < 2; i ++) {
                 float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
                 if (i == 0) {
@@ -242,7 +241,7 @@ void OpenCV::detectBallByAverage() {
             } else {
                 degrees[1] += 20;
                 if (coordY > 0) {
-                    degrees[1] += (coordY * 100) * distance;
+                    //degrees[1] += (coordY * 100) * distance;
                 }
                 std::cout << "calced degree: " << degrees[1] << std::endl;
             }
@@ -255,6 +254,7 @@ void OpenCV::detectBallByAverage() {
             }
             if (shootingCounter >= repeationsUntilShot && allowedToShoot) {
                 servoControl->shoot();
+                contacts.clear();
                 shootingCounter = 0;
             }
         } else {
