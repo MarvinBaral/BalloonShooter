@@ -29,6 +29,8 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     realSize = 0.20; //m
     maximumSizeContacts = 5;
     physicalMode = true;
+    v0 = 4.08;
+    y0 = -0.08;
 
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -166,7 +168,6 @@ void OpenCV::detectBallByAverage() {
     size = sizeLocal;
     for (unsigned int i = 0; i < contacts.size(); i++) {
         size = std::min(size, contacts[i][0]);
-//        std::cout << "compared" << std::endl;
     }
     std::cout << "size: " << size << std::endl;
 
@@ -216,10 +217,8 @@ void OpenCV::detectBallByAverage() {
                 degrees[i] = degree;
             }
             if (physicalMode) {
-                float v0 = 4.08;
                 float a = 0;
                 float g = 9.81;
-                float y0 = -0.08;
                 float x = distance, y;
                 for (int i = 70; i > 0; i--) {
                     a = i;

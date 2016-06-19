@@ -21,11 +21,13 @@ private:
     float distanceBetweenCamAndCannon;
     float realSize;
     bool physicalMode;
+    float y0;
+    float v0;
     int positionMarkColor[3];
     int pixelMarkColor[3];
     int size;
     std::vector<std::vector<int>> contacts;
-    short maximumSizeContacts;
+    unsigned short maximumSizeContacts;
 
 public:
     std::string windowTitle;
