@@ -29,7 +29,7 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     realSize = 0.23; //m
     maximumSizeContacts = 5;
     physicalMode = true;
-    v0 = 3.5;//4.08;
+    v0 = 3.5;
     y0 = -0.08;
     allowedToShoot = true;
     preCalcFactor = 4;
@@ -246,7 +246,7 @@ void OpenCV::detectBallByAverage() {
                 }
                 std::cout << "calced degree: " << degrees[1] << std::endl;
             }
-            degrees[0] += std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
+            degrees[0] += 5 + std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
             for (int i = 0; i < 2 && allowedToShoot; i ++) {
                 servoControl->setServo(i, degrees[i]);
             }
