@@ -28,8 +28,8 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     distanceBetweenCamAndCannon = 0.1; //m
     realSize = 0.23; //m
     maximumSizeContacts = 5;
-    physicalMode = false;
-    v0 = 4.08;
+    physicalMode = true;
+    v0 = 3.5;//4.08;
     y0 = -0.08;
     allowedToShoot = true;
     preCalcFactor = 4;
@@ -177,7 +177,6 @@ void OpenCV::detectBallByAverage() {
         alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
         distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
 
-        std::cout << "distance: " << distance << std::endl;
         //get Height
         float angleY;
         float heightCorrectionFactor = 1.0;
@@ -185,9 +184,11 @@ void OpenCV::detectBallByAverage() {
         angleY = angleY / 180.f * PI;
         coordY = std::sin(angleY) * distance;
         coordY *= heightCorrectionFactor;
-        distance = std::sin(angleY) * distance;
+        //distance = std::sin(angleY) * distance;
         distance -= distanceBetweenCamAndCannon;
+        height *= 3;
 
+        std::cout << "distance: " << distance << std::endl;
         std::cout << "height: " << coordY << std::endl;
     }
 
@@ -220,6 +221,7 @@ void OpenCV::detectBallByAverage() {
                 degrees[i] = degree;
             }
             if (physicalMode) {
+                degrees[1] = 0;
                 float a = 0;
                 float g = 9.81;
                 float x = distance, y;
@@ -237,11 +239,10 @@ void OpenCV::detectBallByAverage() {
                         break;
                     }
                 }
-                std::cout << "calculated heightEnd: " << y << std::endl;
             } else {
                 degrees[1] += 20;
                 if (coordY > 0) {
-                    //degrees[1] += (coordY * 100) * distance;
+                    degrees[1] += (coordY * 100) * distance;
                 }
                 std::cout << "calced degree: " << degrees[1] << std::endl;
             }
