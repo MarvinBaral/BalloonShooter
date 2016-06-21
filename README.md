@@ -8,9 +8,9 @@ available on your PC. The whole project is cross-platform compatible (could be a
 ## Current Status:
 * Servo-Control is working
 * automatical shooting is working
-* object detection and distance detection working. 
-
-There just has to be a accurate flightpathcalculation and a prediction of the position of moved objects.
+* object detection and distance detection working
+* physical flightpathcalculation is working
+* a simple version of position predicition of moving objects is implemented
 
 ## Protocol for Communication between PC and Arduino:
 \<char select {0-1}\>;\<int degree {-61 to 93}\>;
