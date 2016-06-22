@@ -14,6 +14,7 @@ There just has to be a accurate flightpathcalculation and a prediction of the po
 
 ## Protocol for Communication between PC and Arduino:
 \<char select {0-1}\>;\<int degree {-61 to 93}\>;
+!!! Servo with index 1 has a higher minimum degree
 
 ## Sources:
 * http://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#mat
