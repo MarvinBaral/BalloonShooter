@@ -125,13 +125,29 @@ float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> poin
 }
 
 void CameraControl::detectBallByAverage() {
-    std::vector<std::vector<int>> pixels;
+	int width = 0;
+	int height = 0;
 	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
+	int extremes[2][2] = {{paramCam[usedCam][WIDTH], 0},{paramCam[usedCam][HEIGHT], 0}}; //x,y min,max yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
     for (int y = 0; y < frame.rows; y++) {
-        for (int x = 0; x < frame.cols; x++) {
+		for (int x = 0; x < frame.cols; x++) {
 			if (true && (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumAbsoluteRedValue && getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) >= minimumAbsoluteRedValue)) {
 				if (objectPixelsInRowCtr >= MINIMUM_OBJECT_PIXELS_IN_ROW) {
-					pixels.push_back({x, y});
+					//find out most outside points
+					if (x < extremes[0][0]) {
+						extremes[0][0] = x;
+					}
+					if (x > extremes[0][1]) {
+						extremes[0][1] = x;
+					}
+					if (y < extremes[1][0]) {
+						extremes[1][0] = y;
+					}
+					if (y > extremes[1][1]) {
+						extremes[1][1] = y;
+					}
+
+					//size and position
 					ctr++;
 					yposSumm += y;
 					xposSumm += x;
@@ -152,21 +168,7 @@ void CameraControl::detectBallByAverage() {
 	yposSumm /= ctr;
 	xposSumm /= ctr;
 
-    //get size
-    int width = 0;
-    int height = 0;
-    int extremes[2][2] = {{paramCam[usedCam][WIDTH], 0},{paramCam[usedCam][HEIGHT], 0}}; //x,y min,max
-
-    for (unsigned int i = 0; i < pixels.size(); i++) {
-        for (int xy = 0; xy < 2; xy++) {
-            if (pixels[i][xy] < extremes[xy][0]) {
-                extremes[xy][0] = pixels[i][xy];
-            }
-            if (pixels[i][xy] > extremes[xy][1]) {
-                extremes[xy][1] = pixels[i][xy];
-            }
-        }
-    }
+	//get size
     width = extremes[0][1] - extremes[0][0];
     height = extremes[1][1] - extremes[1][0];
     markPosition(extremes[0][0], extremes[1][0]);
@@ -273,7 +275,6 @@ void CameraControl::detectBallByAverage() {
         }
     }
     //    std::cout << "contineous contacts: " << contacts.size() << std::endl;
-    pixels.clear();
 }
 
 int CameraControl::moveWhileSameColor(int starty, int startx, int directiony, int directionx) {
