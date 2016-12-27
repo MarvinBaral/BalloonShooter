@@ -34,6 +34,8 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
     allowedToShoot = true;
     preCalcFactor = 4;
 
+	markDetectedPixels = true; //Debug
+	MINIMUM_OBJECT_PIXELS_IN_ROW = 25; //The higher the number the more noise suppression
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
     pixelMarkColor[2] = 0;
@@ -124,24 +126,31 @@ float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> poin
 
 void CameraControl::detectBallByAverage() {
     std::vector<std::vector<int>> pixels;
-    int ctr = 0, ypos = 0, xpos = 0;
+	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
-            if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumAbsoluteRedValue && getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) >= minimumAbsoluteRedValue) {
-                pixels.push_back({x, y});
-                ctr++;
-                ypos += y;
-                xpos += x;
-                markPixel(frame, x, y);
-            }
+			if (true && (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumAbsoluteRedValue && getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) >= minimumAbsoluteRedValue)) {
+				if (objectPixelsInRowCtr >= MINIMUM_OBJECT_PIXELS_IN_ROW) {
+					pixels.push_back({x, y});
+					ctr++;
+					yposSumm += y;
+					xposSumm += x;
+					if (markDetectedPixels) {
+						markPixel(frame, x, y);
+					}
+				}
+				objectPixelsInRowCtr++;
+			} else {
+				objectPixelsInRowCtr = 0;
+			}
         }
     }
     //get position
     if (ctr == 0) {
         ctr = 1;
     }
-    ypos /= ctr;
-    xpos /= ctr;
+	yposSumm /= ctr;
+	xposSumm /= ctr;
 
     //get size
     int width = 0;
@@ -196,11 +205,11 @@ void CameraControl::detectBallByAverage() {
     float degrees[2] = {0, 0};
 
 
-    if (xpos > 0 && ypos > 0) {
-        std::cout << "Position x: " << xpos << " y: " << ypos << " ctr: " << ctr << std::endl;
-        this->markPosition(xpos, ypos);
+	if (xposSumm > 0 && yposSumm > 0) {
+		std::cout << "Position x: " << xposSumm << " y: " << yposSumm << " ctr: " << ctr << std::endl;
+		this->markPosition(xposSumm, yposSumm);
         if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
-            contacts.push_back({xpos, ypos});
+			contacts.push_back({xposSumm, yposSumm});
             int xdiff = 0;
             int ydiff = 0;
             if (contacts.size() >= 2) {
@@ -209,7 +218,7 @@ void CameraControl::detectBallByAverage() {
             }
             shootingCounter++;
             int xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
-            int xypos[2] = {xpos + preCalcFactor * xdiff, ypos + ydiff * preCalcFactor};
+			int xypos[2] = {xposSumm + preCalcFactor * xdiff, yposSumm + ydiff * preCalcFactor};
             for (int i = 0; i < 2; i ++) {
                 float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
                 if (i == 0) {

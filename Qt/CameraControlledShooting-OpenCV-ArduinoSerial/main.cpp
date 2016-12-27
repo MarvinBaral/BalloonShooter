@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
 
     QSerialPort* serial = new QSerialPort();
     ServoControl* servoControl = new ServoControl(serial);
-    OpenCV* openCV = new OpenCV(servoControl);
+	CameraControl* openCV = new CameraControl(servoControl);
 
     servoControl->initSerial(PORT_NAME);
     serial->open(QIODevice::ReadWrite);

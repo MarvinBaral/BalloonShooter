@@ -24,7 +24,9 @@ private:
     float y0;
     float v0;
     int preCalcFactor;
+	short MINIMUM_OBJECT_PIXELS_IN_ROW;
     int positionMarkColor[3];
+	bool markDetectedPixels;
     int pixelMarkColor[3];
     int size;
     std::vector<std::vector<int>> contacts;
