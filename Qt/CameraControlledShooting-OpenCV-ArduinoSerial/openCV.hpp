@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum cam {EXTERNAL = 0, INTERNAL}; //only correct if both are connected, else the internal one has 0
+enum color {BLUE = 0, GREEN, RED};
 
 class CameraControl {
 private:
@@ -14,7 +15,7 @@ private:
     bool displayWindow;
     bool invertXAxis;
     float minimumRelationTrigger;
-    int minimumAbsoluteRedValue;
+	int minimumInterestingColorValue;
     short interestingColor;
     short repeationsUntilShot;
     short shootingCounter;

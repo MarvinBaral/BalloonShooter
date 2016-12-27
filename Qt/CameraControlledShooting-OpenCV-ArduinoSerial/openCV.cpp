@@ -20,9 +20,9 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
 
     usedCam = EXTERNAL;
     invertXAxis = true;
-    minimumRelationTrigger = 0.5;
-    minimumAbsoluteRedValue = 100;
-    interestingColor = 2;
+	minimumRelationTrigger = 0.50;
+	minimumInterestingColorValue = 150;
+	interestingColor = RED;
     repeationsUntilShot = 20;
     shootingCounter = 0;
     distanceBetweenCamAndCannon = 0.1; //m
@@ -131,7 +131,7 @@ void CameraControl::detectBallByAverage() {
 	int extremes[2][2] = {{paramCam[usedCam][WIDTH], 0},{paramCam[usedCam][HEIGHT], 0}}; //x,y min,max yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
     for (int y = 0; y < frame.rows; y++) {
 		for (int x = 0; x < frame.cols; x++) {
-			if (true && (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumAbsoluteRedValue && getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2) >= minimumAbsoluteRedValue)) {
+			if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumInterestingColorValue) {
 				if (objectPixelsInRowCtr >= MINIMUM_OBJECT_PIXELS_IN_ROW) {
 					//find out most outside points
 					if (x < extremes[0][0]) {
