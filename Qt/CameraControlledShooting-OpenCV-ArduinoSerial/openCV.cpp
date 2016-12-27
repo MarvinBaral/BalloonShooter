@@ -1,7 +1,7 @@
 #include "openCV.hpp"
 
 
-OpenCV::OpenCV(ServoControl *pServoControl) {
+CameraControl::CameraControl(ServoControl *pServoControl) {
     std::cout << "BGR color model!!!" << std::endl;
 
     servoControl = pServoControl;
@@ -53,15 +53,15 @@ OpenCV::OpenCV(ServoControl *pServoControl) {
     }
 }
 
-int OpenCV::getByte(cv::Mat frame, int x, int y, int byte) {
+int CameraControl::getByte(cv::Mat frame, int x, int y, int byte) {
     return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte); //http://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#mat, BGR color model!
 }
 
-void OpenCV::writeByte(cv::Mat frame, int x, int y, int byte, int value) {
+void CameraControl::writeByte(cv::Mat frame, int x, int y, int byte, int value) {
     *(frame.data + frame.step[0] * y + frame.step[1] * x + byte) = value;
 }
 
-float OpenCV::getRelation(cv::Mat frame, int x, int y, int byte) {
+float CameraControl::getRelation(cv::Mat frame, int x, int y, int byte) {
     float sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
     float single = getByte(frame, x, y, byte);
     if (sum == 0) {
@@ -70,7 +70,7 @@ float OpenCV::getRelation(cv::Mat frame, int x, int y, int byte) {
     return single/sum;
 }
 
-short OpenCV::getHighestColor(cv::Mat frame, int x, int y) {
+short CameraControl::getHighestColor(cv::Mat frame, int x, int y) {
     signed short winner = -1;
     short highestValue = 0;
     short value = 0;
@@ -84,18 +84,18 @@ short OpenCV::getHighestColor(cv::Mat frame, int x, int y) {
     return winner;
 }
 
-short OpenCV::getAverage(cv::Mat frame, int x, int y) {
+short CameraControl::getAverage(cv::Mat frame, int x, int y) {
     int sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
     return sum / 3.f;
 }
 
-void OpenCV::markPixel(cv::Mat frame, int posx, int posy) {
+void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
     for (int i = 0; i < 3; i++) {
         writeByte(frame, posx, posy, i, pixelMarkColor[i]);
     }
 }
 
-void OpenCV::showColorOfCenteredPixel() {
+void CameraControl::showColorOfCenteredPixel() {
     int baseColor[3];
     for (int color = 0; color < 3; color++){
         baseColor[color] = *(frame.data + frame.step[0] * (frame.rows / 2) + frame.step[1] * (frame.cols / 2) + color);
@@ -104,7 +104,7 @@ void OpenCV::showColorOfCenteredPixel() {
     std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
 }
 
-void OpenCV::markPosition(int posx, int posy) {
+void CameraControl::markPosition(int posx, int posy) {
     int size = 5;
     for (int y = posy - size; y < posy + size; y++) {
         for (int x = posx - size; x < posx + size; x++){
@@ -117,12 +117,12 @@ void OpenCV::markPosition(int posx, int posy) {
     }
 }
 
-float OpenCV::calcDistance(std::vector<int> point1, std::vector<int> point2){
+float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> point2){
     float distance = std::sqrt((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]));
     return distance;
 }
 
-void OpenCV::detectBallByAverage() {
+void CameraControl::detectBallByAverage() {
     std::vector<std::vector<int>> pixels;
     int ctr = 0, ypos = 0, xpos = 0;
     for (int y = 0; y < frame.rows; y++) {
@@ -267,7 +267,7 @@ void OpenCV::detectBallByAverage() {
     pixels.clear();
 }
 
-int OpenCV::moveWhileSameColor(int starty, int startx, int directiony, int directionx) {
+int CameraControl::moveWhileSameColor(int starty, int startx, int directiony, int directionx) {
     int length = 0;
     int posy = starty, posx = startx;
     bool colorOK = true;
@@ -284,7 +284,7 @@ int OpenCV::moveWhileSameColor(int starty, int startx, int directiony, int direc
     return length; //minimum return value is 1
 }
 
-void OpenCV::detectBallWithLines() {
+void CameraControl::detectBallWithLines() {
     for (int y = 0; y < frame.rows; y++) {
         for (int x = 0; x < frame.cols; x++) {
             if (getRelation(frame, x, y, 2) < minimumRelationTrigger) {
@@ -302,7 +302,7 @@ void OpenCV::detectBallWithLines() {
     }
 }
 
-void OpenCV::showAvgBGR() {
+void CameraControl::showAvgBGR() {
     long int avgRGB[3] = {0, 0, 0}; //2^32 is far greater than e.g. 640 * 480 * 255
     for (int y = 0; y < frame.rows; y += 1) {
         for (int x = 0; x < frame.cols; x += 1) {
@@ -320,7 +320,7 @@ void OpenCV::showAvgBGR() {
     std::cout << std::endl;
 }
 
-void OpenCV::printApropriateSign(int value) {
+void CameraControl::printApropriateSign(int value) {
     char sign = 'Y';
     if (value > 255) {
         sign = '#';
@@ -340,7 +340,7 @@ void OpenCV::printApropriateSign(int value) {
     std::cout << sign << "|";
 }
 
-void OpenCV::showOnCMD() {
+void CameraControl::showOnCMD() {
     int cols = 13;
     int rows = 30;
     int ysteps = frame.rows/rows;
@@ -358,7 +358,7 @@ void OpenCV::showOnCMD() {
     std::cout << std::endl;
 }
 
-void OpenCV::printParams(cv::VideoCapture cap) {
+void CameraControl::printParams(cv::VideoCapture cap) {
     std::vector<double> propId =
     {
         CV_CAP_PROP_POS_MSEC,
@@ -414,6 +414,6 @@ void OpenCV::printParams(cv::VideoCapture cap) {
     CV_CAP_PROP_BUFFERSIZE Amount of frames stored in internal buffer memory (note: only supported by DC1394 v 2.x backend currently)
 */
 
-OpenCV::~OpenCV() {
+CameraControl::~CameraControl() {
     delete cap;
 }

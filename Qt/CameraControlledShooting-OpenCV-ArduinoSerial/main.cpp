@@ -8,6 +8,7 @@
 const unsigned short int STEP_DEGREE = 5;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 const QString PORT_NAME = "/dev/ttyACM0";
+bool automaticMode = true;
 long unsigned int frameCount = 0;
 unsigned int fpsCount = 0;
 QTime startTime;
@@ -27,14 +28,23 @@ int main(int argc, char* argv[]) {
         openCV->cap->read(openCV->frame);
         frameCount++;
         fpsCount++;
-        openCV->detectBallByAverage();
+
+		if (automaticMode) {
+			openCV->detectBallByAverage();
+		}
 
         imshow(openCV->windowTitle, openCV->frame);
 
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {
         case -1: break;
-        case 99: //c = clear
+		case 97: //a = automatic mode
+			automaticMode = true;
+			break;
+		case 109: //m = manual mode
+			automaticMode = false;
+				break;
+		case 99: //c = clear
             openCV->allowedToShoot = true;
             break;
         case 107: //k
@@ -44,16 +54,20 @@ int main(int argc, char* argv[]) {
             openCV->allowedToShoot = false;
             break;
         case 65361: //left
-            servoControl->updateServo(0, -STEP_DEGREE);
+			if (!automaticMode)
+				servoControl->updateServo(0, -STEP_DEGREE);
             break;
         case 65363: //right
-            servoControl->updateServo(0, STEP_DEGREE);
+			if (!automaticMode)
+				servoControl->updateServo(0, STEP_DEGREE);
             break;
         case 65362: //up
-            servoControl->updateServo(1, -STEP_DEGREE);
+			if (!automaticMode)
+				servoControl->updateServo(1, -STEP_DEGREE);
             break;
         case 65364: //down
-            servoControl->updateServo(1, STEP_DEGREE);
+			if (!automaticMode)
+				servoControl->updateServo(1, STEP_DEGREE);
             break;
         case 10: //enter = shoot
             servoControl->shoot();

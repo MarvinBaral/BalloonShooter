@@ -6,7 +6,7 @@
 enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum cam {EXTERNAL = 0, INTERNAL}; //only correct if both are connected, else the internal one has 0
 
-class OpenCV {
+class CameraControl {
 private:
     ServoControl* servoControl;
     short usedCam;
@@ -35,7 +35,7 @@ public:
     std::string windowTitle;
     cv::VideoCapture* cap;
     cv::Mat frame;
-    OpenCV(ServoControl* pServoControl);
+	CameraControl(ServoControl* pServoControl);
     __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);
     __attribute__((always_inline))
@@ -59,7 +59,7 @@ public:
     void showAvgBGR();
     void showOnCMD();
     void printParams(cv::VideoCapture cap);
-    ~OpenCV();
+	~CameraControl();
 };
 
 #endif // OPENCV_HPP
