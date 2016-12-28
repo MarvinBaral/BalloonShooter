@@ -20,8 +20,7 @@ private:
     short repeationsUntilShot;
     short shootingCounter;
     float distanceBetweenCamAndCannon;
-    float realSize;
-    bool physicalMode;
+	float realSize;
     float y0;
     float v0;
 	int preCalcFactor;

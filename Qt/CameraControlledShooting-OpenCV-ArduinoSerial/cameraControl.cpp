@@ -19,8 +19,7 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
     shootingCounter = 0;
 	distanceBetweenCamAndCannon = 0.1; //m
 	realSize = 0.23; //m
-    maximumSizeContacts = 5;
-	physicalMode = true;
+	maximumSizeContacts = 5;
 	v0 = 5.3; //m/s
 	y0 = -0.06; //m
 
@@ -221,33 +220,27 @@ void CameraControl::detectBallByAverage() {
                     }
 				}
                 degrees[i] = degree;
-            }
-            if (physicalMode) {
-                degrees[1] = 0;
-                float a = 0;
-                float g = 9.81;
-                float x = distance, y;
-                for (int i = 0; i < 80; i++) {
-                    a = i;
-                    a = a / 180.f * PI; //convert to radiant
-                    float t = (x / (v0 * std::cos(a)));
-                    y = y0 + v0 * std::sin(a) * t - 0.5 * g * t * t;
+			}
 
-                    if (y >= coordY) {
-                        degrees[1] = i;
+			degrees[1] = 0;
+			float a = 0;
+			float g = 9.81;
+			float x = distance, y;
+			for (int i = 0; i < 80; i++) {
+				a = i;
+				a = a / 180.f * PI; //convert to radiant
+				float t = (x / (v0 * std::cos(a)));
+				y = y0 + v0 * std::sin(a) * t - 0.5 * g * t * t;
 
-						std::cout << ",\theight: " << y << "m";
-						std::cout << ",\tdeg: " << i << "°";
-                        break;
-                    }
-                }
-            } else {
-                degrees[1] += 20;
-                if (coordY > 0) {
-                    degrees[1] += (coordY * 100) * distance;
-                }
-				std::cout << ",\tdeg: " << degrees[1];
-            }
+				if (y >= coordY) {
+					degrees[1] = i;
+
+					std::cout << ",\theight: " << y << "m";
+					std::cout << ",\tdeg: " << i << "°";
+					break;
+				}
+			}
+
 			if (HARDWARE_VERSION < V1_1){
 				degrees[0] += 5 + std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
 			}
