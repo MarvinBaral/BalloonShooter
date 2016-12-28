@@ -177,7 +177,7 @@ void CameraControl::detectBallByAverage() {
     markPosition(extremes[0][1], extremes[1][1]);
 
     size = std::round((width + height) * 0.5);
-    std::cout << "size: " << size << std::endl;
+	std::cout << "size: " << size << "px";
 
     //get distance
     const float PI = 3.14159265359;
@@ -189,18 +189,15 @@ void CameraControl::detectBallByAverage() {
         distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
 
         //get Height
-        float angleY;
-        float heightCorrectionFactor = 1.0;
-        angleY = paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f) * ((paramCam[usedCam][HEIGHT] - ypos) - paramCam[usedCam][HEIGHT] / 2.f);
+		float angleY;
+		angleY = paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f) * ((paramCam[usedCam][HEIGHT] - yposSumm) - paramCam[usedCam][HEIGHT] / 2.f);
         angleY = angleY / 180.f * PI;
-        coordY = std::sin(angleY) * distance;
-        coordY *= heightCorrectionFactor;
+		coordY = std::sin(angleY) * distance;
         //distance = std::sin(angleY) * distance;
         distance -= distanceBetweenCamAndCannon;
         height *= 3;
 
-        std::cout << "distance: " << distance << std::endl;
-        std::cout << "height: " << coordY << std::endl;
+		std::cout << ",\tdistance: " << distance << "m";
     }
 
     //get position and calc shooting angles
@@ -208,7 +205,7 @@ void CameraControl::detectBallByAverage() {
 
 
 	if (xposSumm > 0 && yposSumm > 0) {
-		std::cout << "Position x: " << xposSumm << " y: " << yposSumm << " ctr: " << ctr << std::endl;
+		std::cout << ",\tx: " << xposSumm << "px" << ",\ty: " << yposSumm << "px" << ",\tctr: " << ctr << "px";
 		this->markPosition(xposSumm, yposSumm);
         if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
 			contacts.push_back({xposSumm, yposSumm});
@@ -227,8 +224,7 @@ void CameraControl::detectBallByAverage() {
                     if (invertXAxis) {
                         degree = -degree;
                     }
-                }
-                //std::cout << "degree: " << degree << std::endl;
+				}
                 degrees[i] = degree;
             }
             if (physicalMode) {
@@ -245,8 +241,8 @@ void CameraControl::detectBallByAverage() {
                     if (y >= coordY) {
                         degrees[1] = i;
 
-                        std::cout << "calculated height: " << y << std::endl;
-                        std::cout << "angle: " << i << std::endl;
+						std::cout << ",\theight: " << y << "m";
+						std::cout << ",\tdeg: " << i << "°";
                         break;
                     }
                 }
@@ -255,7 +251,7 @@ void CameraControl::detectBallByAverage() {
                 if (coordY > 0) {
                     degrees[1] += (coordY * 100) * distance;
                 }
-                std::cout << "calced degree: " << degrees[1] << std::endl;
+				std::cout << ",\tdeg: " << degrees[1];
             }
             degrees[0] += 5 + std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
             for (int i = 0; i < 2 && allowedToShoot; i ++) {
@@ -274,7 +270,7 @@ void CameraControl::detectBallByAverage() {
             shootingCounter = 0;
         }
     }
-    //    std::cout << "contineous contacts: " << contacts.size() << std::endl;
+	std::cout << std::endl;
 }
 
 int CameraControl::moveWhileSameColor(int starty, int startx, int directiony, int directionx) {

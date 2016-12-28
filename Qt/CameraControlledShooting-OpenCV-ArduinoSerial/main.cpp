@@ -8,6 +8,7 @@
 const unsigned short int STEP_DEGREE = 5;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 const QString PORT_NAME = "/dev/ttyACM0";
+const bool SHOW_FPS = false;
 bool automaticMode = true;
 long unsigned int frameCount = 0;
 unsigned int fpsCount = 0;
@@ -89,7 +90,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        if (startTime <= QTime::currentTime().addSecs(-1)) {
+		if (SHOW_FPS && startTime <= QTime::currentTime().addSecs(-1)) {
             startTime = QTime::currentTime();
             std::cout << "fps:" << fpsCount << std::endl;
             fpsCount = 0;
