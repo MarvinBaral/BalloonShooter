@@ -1,4 +1,4 @@
-#include "openCV.hpp"
+#include "cameraControl.hpp"
 
 
 CameraControl::CameraControl(ServoControl *pServoControl) {

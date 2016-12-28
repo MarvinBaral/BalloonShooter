@@ -3,7 +3,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "servoControl.hpp"
-#include "openCV.cpp"
+#include "cameraControl.cpp"
 
 const unsigned short int STEP_DEGREE = 5;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
