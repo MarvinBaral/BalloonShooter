@@ -81,7 +81,7 @@ void loop() {
 
 void printErr() {
   Serial.print("Malformed expression. Right protocol usage: ");
-  Serial.print("<char select {0-1}>;<int pulseTime {");
+  Serial.print("<char select {0-1}>;<int degree {");
   Serial.print(MAX_DEGREES[0][0]);
   Serial.print(" to ");
   Serial.print(MAX_DEGREES[1][1]);
