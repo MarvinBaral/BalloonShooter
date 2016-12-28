@@ -248,8 +248,10 @@ void CameraControl::detectBallByAverage() {
                 }
 				std::cout << ",\tdeg: " << degrees[1];
             }
-            degrees[0] += 5 + std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
-            for (int i = 0; i < 2 && allowedToShoot; i ++) {
+			if (HARDWARE_VERSION < V1_1){
+				degrees[0] += 5 + std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
+			}
+			for (int i = 0; i < 2 && allowedToShoot; i ++) {
                 servoControl->setServo(i, degrees[i]);
             }
             if (!allowedToShoot) {
