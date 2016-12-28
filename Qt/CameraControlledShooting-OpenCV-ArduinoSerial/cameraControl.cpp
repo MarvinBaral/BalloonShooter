@@ -11,7 +11,6 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
 	paramCam[ANGLE_OF_VIEW_Y] = 2 * 20;
 	paramCam[WIDTH] = 640;
 	paramCam[HEIGHT] = 480;
-
     invertXAxis = true;
 	minimumRelationTrigger = 0.50;
 	minimumInterestingColorValue = 150;
@@ -21,14 +20,15 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
 	distanceBetweenCamAndCannon = 0.1; //m
 	realSize = 0.23; //m
     maximumSizeContacts = 5;
-    physicalMode = true;
-    v0 = 3.5;
-    y0 = -0.08;
-    allowedToShoot = true;
+	physicalMode = true;
+	v0 = 5.3; //m/s
+	y0 = -0.06; //m
+
+	allowedToShoot = true;
     preCalcFactor = 4;
 
 	markDetectedPixels = true; //Debug
-	MINIMUM_OBJECT_PIXELS_IN_ROW = 25; //The higher the number the more noise suppression
+	MINIMUM_OBJECT_PIXELS_IN_ROW = 10; //The higher the number the more noise suppression
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
     pixelMarkColor[2] = 0;
