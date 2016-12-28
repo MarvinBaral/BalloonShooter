@@ -6,27 +6,20 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
 
     servoControl = pServoControl;
 
-    paramCam[EXTERNAL][MINIMUM_CTR] = 350;
-    paramCam[EXTERNAL][ANGLE_OF_VIEW_X] = 2 * 30;
-    paramCam[EXTERNAL][ANGLE_OF_VIEW_Y] = 2 * 20;
-    paramCam[EXTERNAL][WIDTH] = 640;
-    paramCam[EXTERNAL][HEIGHT] = 480;
+	paramCam[MINIMUM_CTR] = 350;
+	paramCam[ANGLE_OF_VIEW_X] = 2 * 30;
+	paramCam[ANGLE_OF_VIEW_Y] = 2 * 20;
+	paramCam[WIDTH] = 640;
+	paramCam[HEIGHT] = 480;
 
-    paramCam[INTERNAL][MINIMUM_CTR] = 100;
-    paramCam[INTERNAL][ANGLE_OF_VIEW_X] = 2 * 30;
-    paramCam[INTERNAL][ANGLE_OF_VIEW_Y] = 2 * 20;
-    paramCam[INTERNAL][WIDTH] = 640;
-    paramCam[INTERNAL][HEIGHT] = 480;
-
-    usedCam = EXTERNAL;
     invertXAxis = true;
 	minimumRelationTrigger = 0.50;
 	minimumInterestingColorValue = 150;
 	interestingColor = RED;
     repeationsUntilShot = 20;
     shootingCounter = 0;
-    distanceBetweenCamAndCannon = 0.1; //m
-    realSize = 0.23; //m
+	distanceBetweenCamAndCannon = 0.1; //m
+	realSize = 0.23; //m
     maximumSizeContacts = 5;
     physicalMode = true;
     v0 = 3.5;
@@ -43,10 +36,12 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
     positionMarkColor[1] = 255;
     positionMarkColor[2] = 0;
 
-    cap = new cv::VideoCapture(usedCam);
-    if (!cap->isOpened()) {
-        std::cout << "Cannot open the video cam" << std::endl;
-    }
+
+	const short FIRST_CONNECTED_USB_CAM = 1;
+	cap = new cv::VideoCapture(FIRST_CONNECTED_USB_CAM);
+	if (!cap->isOpened()) {
+		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
+	}
 
     displayWindow = true;
     windowTitle = "Abschusskamera";
@@ -128,7 +123,7 @@ void CameraControl::detectBallByAverage() {
 	int width = 0;
 	int height = 0;
 	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
-	int extremes[2][2] = {{paramCam[usedCam][WIDTH], 0},{paramCam[usedCam][HEIGHT], 0}}; //x,y min,max yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
+	int extremes[2][2] = {{paramCam[WIDTH], 0},{paramCam[HEIGHT], 0}}; //x,y min,max
     for (int y = 0; y < frame.rows; y++) {
 		for (int x = 0; x < frame.cols; x++) {
 			if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumInterestingColorValue) {
@@ -184,13 +179,13 @@ void CameraControl::detectBallByAverage() {
     float distance = 0;
     float coordY;
     if (size > 0) {
-        float alpha = (paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f)) * size; //ganzzahldivision
+		float alpha = (paramCam[ANGLE_OF_VIEW_Y] / (paramCam[HEIGHT] * 1.f)) * size; //ganzzahldivision
         alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
         distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
 
         //get Height
 		float angleY;
-		angleY = paramCam[usedCam][ANGLE_OF_VIEW_Y] / (paramCam[usedCam][HEIGHT] * 1.f) * ((paramCam[usedCam][HEIGHT] - yposSumm) - paramCam[usedCam][HEIGHT] / 2.f);
+		angleY = paramCam[ANGLE_OF_VIEW_Y] / (paramCam[HEIGHT] * 1.f) * ((paramCam[HEIGHT] - yposSumm) - paramCam[HEIGHT] / 2.f);
         angleY = angleY / 180.f * PI;
 		coordY = std::sin(angleY) * distance;
         //distance = std::sin(angleY) * distance;
@@ -207,7 +202,7 @@ void CameraControl::detectBallByAverage() {
 	if (xposSumm > 0 && yposSumm > 0) {
 		std::cout << ",\tx: " << xposSumm << "px" << ",\ty: " << yposSumm << "px" << ",\tctr: " << ctr << "px";
 		this->markPosition(xposSumm, yposSumm);
-        if (ctr > paramCam[usedCam][MINIMUM_CTR]) {
+		if (ctr > paramCam[MINIMUM_CTR]) {
 			contacts.push_back({xposSumm, yposSumm});
             int xdiff = 0;
             int ydiff = 0;
@@ -216,10 +211,10 @@ void CameraControl::detectBallByAverage() {
                 ydiff = contacts[contacts.size() - 1][1] - contacts[contacts.size() - 2][1];
             }
             shootingCounter++;
-            int xysize[2] = {paramCam[usedCam][WIDTH], paramCam[usedCam][HEIGHT]};
+			int xysize[2] = {paramCam[WIDTH], paramCam[HEIGHT]};
 			int xypos[2] = {xposSumm + preCalcFactor * xdiff, yposSumm + ydiff * preCalcFactor};
             for (int i = 0; i < 2; i ++) {
-                float degree = paramCam[usedCam][ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[usedCam][ANGLE_OF_VIEW_X + i]);
+				float degree = paramCam[ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[ANGLE_OF_VIEW_X + i]);
                 if (i == 0) {
                     if (invertXAxis) {
                         degree = -degree;

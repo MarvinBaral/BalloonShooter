@@ -19,22 +19,22 @@ int main(int argc, char* argv[]) {
 
     QSerialPort* serial = new QSerialPort();
     ServoControl* servoControl = new ServoControl(serial);
-	CameraControl* openCV = new CameraControl(servoControl);
+	CameraControl* cameraControl = new CameraControl(servoControl);
 
     servoControl->initSerial(PORT_NAME);
     serial->open(QIODevice::ReadWrite);
 
     startTime = QTime::currentTime();
     do {
-        openCV->cap->read(openCV->frame);
+		cameraControl->cap->read(cameraControl->frame);
         frameCount++;
         fpsCount++;
 
 		if (automaticMode) {
-			openCV->detectBallByAverage();
+			cameraControl->detectBallByAverage();
 		}
 
-        imshow(openCV->windowTitle, openCV->frame);
+		imshow(cameraControl->windowTitle, cameraControl->frame);
 
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {
@@ -46,13 +46,13 @@ int main(int argc, char* argv[]) {
 			automaticMode = false;
 				break;
 		case 99: //c = clear
-            openCV->allowedToShoot = true;
+			cameraControl->allowedToShoot = true;
             break;
         case 107: //k
-            openCV->showColorOfCenteredPixel();
+			cameraControl->showColorOfCenteredPixel();
             break;
         case 108: //l = lock
-            openCV->allowedToShoot = false;
+			cameraControl->allowedToShoot = false;
             break;
         case 65361: //left
 			if (!automaticMode)
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
         }
 
         if (SHOW_RESPONSE_FROM_ARDUINO) {
-            serial->waitForReadyRead(10);
+			serial->waitForReadyRead(10);
             QByteArray response = serial->readAll();
             if (!response.isEmpty() && !response.isNull()) {
                 std::cout << response.toStdString();
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
     serial->close();
     std::cout << "esc key pressed - aborted" << std::endl;
 
-    delete openCV;
+	delete cameraControl;
     delete servoControl;
     delete serial;
 

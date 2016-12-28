@@ -4,14 +4,12 @@
 #include "servoControl.hpp"
 #include <opencv2/opencv.hpp>
 enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
-enum cam {EXTERNAL = 0, INTERNAL}; //only correct if both are connected, else the internal one has 0
 enum color {BLUE = 0, GREEN, RED};
 
 class CameraControl {
 private:
-    ServoControl* servoControl;
-    short usedCam;
-    int paramCam[2][5];
+	ServoControl* servoControl;
+	int paramCam[5];
     bool displayWindow;
     bool invertXAxis;
     float minimumRelationTrigger;
