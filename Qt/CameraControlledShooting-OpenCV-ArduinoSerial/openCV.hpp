@@ -22,7 +22,7 @@ private:
     bool physicalMode;
     float y0;
     float v0;
-    int preCalcFactor;
+	int preCalcFactor;
 	short MINIMUM_OBJECT_PIXELS_IN_ROW;
     int positionMarkColor[3];
 	bool markDetectedPixels;

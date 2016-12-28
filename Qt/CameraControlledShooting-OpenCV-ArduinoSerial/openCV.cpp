@@ -268,6 +268,15 @@ void CameraControl::detectBallByAverage() {
 	std::cout << std::endl;
 }
 
+
+CameraControl::~CameraControl() {
+	delete cap;
+}
+
+
+//=========================================================================================================================
+//some other stuff, not used
+
 int CameraControl::moveWhileSameColor(int starty, int startx, int directiony, int directionx) {
     int length = 0;
     int posy = starty, posx = startx;
@@ -414,7 +423,3 @@ void CameraControl::printParams(cv::VideoCapture cap) {
     CV_CAP_PROP_ISO_SPEED The ISO speed of the camera (note: only supported by DC1394 v 2.x backend currently)
     CV_CAP_PROP_BUFFERSIZE Amount of frames stored in internal buffer memory (note: only supported by DC1394 v 2.x backend currently)
 */
-
-CameraControl::~CameraControl() {
-    delete cap;
-}
