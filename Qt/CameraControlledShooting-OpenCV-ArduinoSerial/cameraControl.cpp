@@ -35,9 +35,8 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
     positionMarkColor[1] = 255;
     positionMarkColor[2] = 0;
 
-
-	const short FIRST_CONNECTED_USB_CAM = 1;
-	cap = new cv::VideoCapture(FIRST_CONNECTED_USB_CAM);
+	const short USB_CAM = 0;	//0 = first connected USB Cam on boot
+	cap = new cv::VideoCapture(USB_CAM);
 	if (!cap->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
 	}
