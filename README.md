@@ -6,6 +6,13 @@ A project for shooting specified objects with UNPOWERED projectiles automaticall
 LEGO-RocketLauncher. The Launcher itself with three servomotors is controlled by an Arduino via serial port. The Camera can be any camera 
 available on your PC. The whole project is cross-platform compatible (could be an RaspberryPi with Camera too). 
 
+## Hotkeys
+* l - lock - locks the servos, the turret will nether move nor shoot
+* c - clearance - clearance to shoot
+* m - manual mode - control the turret with keys and enter
+* a - let the program automatically detect and shoot at a airballoon (red)
+* r - reset connection to Arduino, resetting servos
+
 ## Current Status:
 * Servo-Control is working
 * automatical shooting is working
