@@ -7,6 +7,9 @@ LEGO-RocketLauncher. The Launcher itself with three servomotors is controlled by
 available on your PC. The whole project is cross-platform compatible (could be an RaspberryPi with Camera too). 
 
 ## Hotkeys
+how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzqlPu6wwwvgCbJU/edit#heading=h.loo15b9ijivk
+
+## Hotkeys
 * l - lock - locks the servos, the turret will nether move nor shoot
 * c - clearance - clearance to shoot
 * m - manual mode - control the turret with keys and enter
