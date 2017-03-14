@@ -2,11 +2,13 @@
 ![](https://www.marvinbaral.de/image/jpeg/Uploads/RocketLauncher/2.jpg)
 Author: Marvin Baral (github@marvinbaral.de)
 
-A project for shooting specified objects with UNPOWERED projectiles automatically. Like shooting airballons with a modified 
-LEGO-RocketLauncher. The Launcher itself with three servomotors is controlled by an Arduino via serial port. The Camera can be any camera 
-available on your PC. The whole project is cross-platform compatible (could be an RaspberryPi with Camera too). 
+A project for shooting specified objects with projektiles automatically. Like shooting airballons with a modified LEGO-RocketLauncher. The Launcher itself with three servomotors is controlled with an Arduino with UART over USB. The Camera can be any camera available on your PC. The pc-side is cross-platform compatible (could ba an RaspberryPi with Camera too). Current Status: Works.
+Red airballons can succesfully be hit and destroyed with a LEGO-RocketLauncher IF they hold still. PC-Side consumes a lot of CPU and is comperably slow. (I just get ~11 FPS from a 30 FPS USB Webcam). Flightpathprediction does work a bit (If you slowly move the ballon horizontally, it might be hit).
+The flightpath calculation uses physical formulars and trigonometry, the flightpathprediction doesn't.
+To configure it you have to edit the constants/ class attributes defined in Qt/cameraControl.cpp and Qt/main.cpp.
 
-## Hotkeys
+
+## DIY (Do It Yourself)
 how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzqlPu6wwwvgCbJU/edit#heading=h.loo15b9ijivk
 
 ## Hotkeys
@@ -25,7 +27,7 @@ how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzq
 
 ## Protocol for Communication between PC and Arduino:
 \<char select {0-1}\>;\<int degree {-61 to 93}\>;
-!!! Servo with index 1 has a higher minimum degree
+!!! Servo with index 1 has a higher minimum degree (Note to self)
 
 ![](https://www.marvinbaral.de/image/jpeg/Uploads/RocketLauncher/5.jpg)
 
