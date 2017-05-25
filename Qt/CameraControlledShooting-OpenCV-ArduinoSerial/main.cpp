@@ -91,8 +91,10 @@ int main(int argc, char* argv[]) {
             serial->open(QIODevice::ReadWrite);
             break;
         default:
-            std::cout << "pressed " << keyPressed << std::endl;
-            break;
+#ifdef DEBUG
+			std::cout << "pressed " << keyPressed << std::endl;
+#endif
+			break;
         }
 
         if (SHOW_RESPONSE_FROM_ARDUINO) {

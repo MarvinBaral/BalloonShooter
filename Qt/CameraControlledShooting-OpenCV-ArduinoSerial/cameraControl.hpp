@@ -1,6 +1,8 @@
 #ifndef OPENCV_HPP
 #define OPENCV_HPP
 
+//#define DEBUG
+
 #include "servoControl.hpp"
 #include <opencv2/opencv.hpp>
 enum versions {V1_0 = 0, V1_1};

@@ -201,8 +201,9 @@ void CameraControl::detectBallByAverage() {
     markPosition(extremes[0][1], extremes[1][1]);
 
     size = std::round((width + height) * 0.5);
+#ifdef DEBUG
 	std::cout << "size: " << size << "px";
-
+#endif
     //get distance
     const float PI = 3.14159265359;
     float distance = 0;
@@ -220,8 +221,9 @@ void CameraControl::detectBallByAverage() {
         //distance = std::sin(angleY) * distance;
         distance -= distanceBetweenCamAndCannon;
         height *= 3;
-
+#ifdef DEBUG
 		std::cout << ",\tdistance: " << distance << "m";
+#endif
     }
 
     //get position and calc shooting angles
@@ -229,7 +231,9 @@ void CameraControl::detectBallByAverage() {
 
 
 	if (xposSumm > 0 && yposSumm > 0) {
+#ifdef DEBUG
 		std::cout << ",\tx: " << xposSumm << "px" << ",\ty: " << yposSumm << "px" << ",\tctr: " << ctr << "px";
+#endif
 		this->markPosition(xposSumm, yposSumm);
 		if (ctr > paramCam[MINIMUM_CTR]) {
 			contacts.push_back({xposSumm, yposSumm});
@@ -264,9 +268,10 @@ void CameraControl::detectBallByAverage() {
 
 				if (y >= coordY) {
 					degrees[1] = i;
-
+#ifdef DEBUG
 					std::cout << ",\theight: " << y << "m";
 					std::cout << ",\tdeg: " << i << "°";
+#endif
 					break;
 				}
 			}
@@ -290,7 +295,9 @@ void CameraControl::detectBallByAverage() {
             shootingCounter = 0;
         }
     }
+#ifdef DEBUG
 	std::cout << std::endl;
+#endif
 }
 
 
@@ -328,8 +335,10 @@ void CameraControl::detectBallWithLines() {
                 int iniWidthLeft = this->moveWhileSameColor(y + initHeight * 0.5, x, 0, -1); //go at half left
                 int iniWidth = iniWidthLeft + iniWidthRight;
                 if (initHeight > 50 && iniWidth > 50) {
-                    std::cout << "pos x: " << x << " y: " << y + initHeight * 0.5 << std::endl;
-                    this->markPosition(x, y + initHeight * 0.5);
+#ifdef DEBUG
+					std::cout << "pos x: " << x << " y: " << y + initHeight * 0.5 << std::endl;
+#endif
+					this->markPosition(x, y + initHeight * 0.5);
                     return;
                 }
             }
