@@ -25,16 +25,29 @@ int main(int argc, char* argv[]) {
     serial->open(QIODevice::ReadWrite);
 
     startTime = QTime::currentTime();
-    do {
+	do {
 		cameraControl->cap->read(cameraControl->frame);
-        frameCount++;
+		if (DEBUG_MODE) {
+		cameraControl->cap->read(cameraControl->h_frame);
+		cameraControl->cap->read(cameraControl->s_frame);
+		cameraControl->cap->read(cameraControl->v_frame);
+		}
+		frameCount++;
         fpsCount++;
 
 		if (automaticMode) {
 			cameraControl->detectBallByAverage();
 		}
-
-		imshow(cameraControl->windowTitle, cameraControl->frame);
+		try {
+			imshow(cameraControl->windowTitle, cameraControl->frame);
+			if (DEBUG_MODE) {
+				imshow("h-frame", cameraControl->h_frame);
+				imshow("s-frame", cameraControl->s_frame);
+				imshow("v-frame", cameraControl->v_frame);
+			}
+		} catch (cv::Exception e) {
+			std::cout << e.what() <<std::endl;
+		}
 
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {

@@ -27,7 +27,7 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
     preCalcFactor = 4;
 
 	markDetectedPixels = true; //Debug
-	MINIMUM_OBJECT_PIXELS_IN_ROW = 10; //The higher the number the more noise suppression
+	MINIMUM_OBJECT_PIXELS_IN_ROW = 0; //The higher the number the more noise suppression
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
     pixelMarkColor[2] = 0;
@@ -81,7 +81,33 @@ short CameraControl::getHighestColor(cv::Mat frame, int x, int y) {
 
 short CameraControl::getAverage(cv::Mat frame, int x, int y) {
     int sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
-    return sum / 3.f;
+	return sum / 3.f;
+}
+
+bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
+{
+	//For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]. Different softwares use different scales. So if you are comparing OpenCV values with them, you need to normalize these ranges.
+	float h = getByte(hsv_frame, x, y, 0);
+	float s = getByte(hsv_frame, x, y, 1);
+	float v = getByte(hsv_frame, x, y, 2);
+
+	//return ((-0.1 < h) && (h < 0.1) && (s > 0.5) && (0.15 < v) && (v < 0.85));
+	//return ((h > 300) || (h < 30));// && s > 120 && v > 30 && v < 220;
+	if (DEBUG_MODE) {
+		for (int i = 0; i < 3; i++) {
+			writeByte(h_frame, x, y, i, h);
+		}
+		for (int j = 0; j < 3; j++) {
+			writeByte(s_frame, x, y, j, s);
+		}
+		for (int k = 0; k < 3; k++) {
+			writeByte(v_frame, x, y, k, v);
+		}
+	}
+	return (h > 150 || h < 20) && s > 210 && v > 150;
+	return false;
+	return false;
+	return s > 120 && v > 150;
 }
 
 void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
@@ -122,9 +148,14 @@ void CameraControl::detectBallByAverage() {
 	int height = 0;
 	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
 	int extremes[2][2] = {{paramCam[WIDTH] - 3, 0},{paramCam[HEIGHT] - 3, 0}}; //x,y min,max ;-3 because of markPosition() possibly doing out of bound access
+	cv::Mat hsv_frame(frame.clone());
+	cv::medianBlur(hsv_frame, hsv_frame, 15);
+	cv::cvtColor(hsv_frame, hsv_frame, CV_BGR2HSV);
+
     for (int y = 0; y < frame.rows; y++) {
 		for (int x = 0; x < frame.cols; x++) {
-			if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumInterestingColorValue) {
+			//if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumInterestingColorValue) {
+			if (isBalloon(hsv_frame, x, y)) {
 				if (objectPixelsInRowCtr >= MINIMUM_OBJECT_PIXELS_IN_ROW) {
 					//find out most outside points
 					if (x < extremes[0][0]) {

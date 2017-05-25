@@ -4,7 +4,8 @@
 #include "servoControl.hpp"
 #include <opencv2/opencv.hpp>
 enum versions {V1_0 = 0, V1_1};
-const short HARDWARE_VERSION = V1_0;
+const short HARDWARE_VERSION = V1_1;
+const bool DEBUG_MODE = false;
 enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum color {BLUE = 0, GREEN, RED};
 
@@ -35,8 +36,11 @@ private:
 public:
     bool allowedToShoot;
     std::string windowTitle;
-    cv::VideoCapture* cap;
-    cv::Mat frame;
+	cv::VideoCapture* cap;
+	cv::Mat frame;
+	cv::Mat h_frame;
+	cv::Mat s_frame;
+	cv::Mat v_frame;
 	CameraControl(ServoControl* pServoControl);
     __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);
@@ -48,7 +52,9 @@ public:
     static inline short getHighestColor(cv::Mat frame, int x, int y);
     __attribute__((always_inline))
     static inline short getAverage(cv::Mat frame, int x, int y);
-    void markPixel(cv::Mat frame, int posx, int posy);
+	/*__attribute__((always_inline))
+	static inline*/ bool isBalloon(cv::Mat hsv_frame, int x, int y);
+	void markPixel(cv::Mat frame, int posx, int posy);
     float calcDistance(std::vector<int> point1, std::vector<int> point2);
     void updateFrame();
     void show();
