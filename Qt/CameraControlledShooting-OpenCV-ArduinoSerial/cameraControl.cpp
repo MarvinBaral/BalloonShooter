@@ -99,7 +99,7 @@ void CameraControl::showColorOfCenteredPixel() {
     std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
 }
 
-void CameraControl::markPosition(int posx, int posy) {
+void CameraControl::markPosition(int posx, int posy) { //in this function should be a check whether there is no out of bound write, via a hotfix done elsewhere
     int size = 5;
     for (int y = posy - size; y < posy + size; y++) {
         for (int x = posx - size; x < posx + size; x++){
@@ -121,7 +121,7 @@ void CameraControl::detectBallByAverage() {
 	int width = 0;
 	int height = 0;
 	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
-	int extremes[2][2] = {{paramCam[WIDTH], 0},{paramCam[HEIGHT], 0}}; //x,y min,max
+	int extremes[2][2] = {{paramCam[WIDTH] - 3, 0},{paramCam[HEIGHT] - 3, 0}}; //x,y min,max ;-3 because of markPosition() possibly doing out of bound access
     for (int y = 0; y < frame.rows; y++) {
 		for (int x = 0; x < frame.cols; x++) {
 			if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumInterestingColorValue) {
