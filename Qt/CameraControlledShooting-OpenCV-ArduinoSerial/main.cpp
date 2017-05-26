@@ -67,19 +67,19 @@ int main(int argc, char* argv[]) {
         case 108: //l = lock
 			cameraControl->allowedToShoot = false;
             break;
-        case 65361: //left
+		case 81: //left
 			if (!automaticMode)
 				servoControl->updateServo(0, -STEP_DEGREE);
             break;
-        case 65363: //right
+		case 83: //right
 			if (!automaticMode)
 				servoControl->updateServo(0, STEP_DEGREE);
             break;
-        case 65362: //up
+		case 82: //up
 			if (!automaticMode)
 				servoControl->updateServo(1, -STEP_DEGREE);
             break;
-        case 65364: //down
+		case 84: //down
 			if (!automaticMode)
 				servoControl->updateServo(1, STEP_DEGREE);
             break;
