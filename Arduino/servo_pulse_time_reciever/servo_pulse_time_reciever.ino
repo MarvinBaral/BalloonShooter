@@ -66,12 +66,12 @@ void loop() {
       digitalWrite(servoPins[pin], LOW);
     }
     do {
+      handleSerial();
       timeInPulse = micros() - startMicros;
     }
     while (timeInPulse < PULSE_LENGTH);
     ctr++;
   }
-  handleSerial();
 }
 
 //The protocoll
