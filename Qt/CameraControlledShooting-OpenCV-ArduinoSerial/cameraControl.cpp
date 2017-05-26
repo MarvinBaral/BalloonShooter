@@ -111,12 +111,12 @@ void CameraControl::showColorOfCenteredPixel() {
     std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
 }
 
-void CameraControl::markPosition(int posx, int posy) { //in this function should be a check whether there is no out of bound write, via a hotfix done elsewhere
+void CameraControl::markPosition(int posx, int posy) {
     int size = 5;
     for (int y = posy - size; y < posy + size; y++) {
         for (int x = posx - size; x < posx + size; x++){
             for (int i = 0; i < 3; i++) {
-                if (x > 0 && y > 0){
+				if (x >= 0 && y >= 0 && x < frame.cols && y < frame.rows){
                     writeByte(frame, x, y, i, positionMarkColor[i]);
                 }
             }
@@ -133,7 +133,7 @@ void CameraControl::detectBallByAverage() {
 	int width = 0;
 	int height = 0;
 	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
-	int extremes[2][2] = {{paramCam[WIDTH] - 3, 0},{paramCam[HEIGHT] - 3, 0}}; //x,y min,max ;-3 because of markPosition() possibly doing out of bound access
+	int extremes[2][2] = {{paramCam[WIDTH], 0},{paramCam[HEIGHT], 0}}; //x,y min,max
 	cv::Mat hsv_frame(frame.clone());
 	cv::medianBlur(hsv_frame, hsv_frame, 15);
 	cv::cvtColor(hsv_frame, hsv_frame, CV_BGR2HSV);
