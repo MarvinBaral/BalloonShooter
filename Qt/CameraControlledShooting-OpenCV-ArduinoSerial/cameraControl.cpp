@@ -65,20 +65,6 @@ float CameraControl::getRelation(cv::Mat frame, int x, int y, int byte) {
     return single/sum;
 }
 
-short CameraControl::getHighestColor(cv::Mat frame, int x, int y) {
-    signed short winner = -1;
-    short highestValue = 0;
-    short value = 0;
-    for (short i = 0; i < 3; i++) {
-        value = getByte(frame, x, y, i);
-        if (value > highestValue) {
-            highestValue = value;
-            winner = i;
-        }
-    }
-    return winner;
-}
-
 short CameraControl::getAverage(cv::Mat frame, int x, int y) {
     int sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
 	return sum / 3.f;
@@ -308,6 +294,20 @@ CameraControl::~CameraControl() {
 
 //=========================================================================================================================
 //some other stuff, not used
+
+short CameraControl::getHighestColor(cv::Mat frame, int x, int y) {
+	signed short winner = -1;
+	short highestValue = 0;
+	short value = 0;
+	for (short i = 0; i < 3; i++) {
+		value = getByte(frame, x, y, i);
+		if (value > highestValue) {
+			highestValue = value;
+			winner = i;
+		}
+	}
+	return winner;
+}
 
 int CameraControl::moveWhileSameColor(int starty, int startx, int directiony, int directionx) {
     int length = 0;
