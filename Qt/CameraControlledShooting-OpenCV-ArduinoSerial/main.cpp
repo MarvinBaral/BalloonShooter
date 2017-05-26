@@ -1,5 +1,6 @@
 #include <QSerialPort>
 #include <QTime>
+#include <QElapsedTimer>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "servoControl.hpp"
@@ -8,15 +9,15 @@
 const unsigned short int STEP_DEGREE = 5;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 const QString PORT_NAME = "/dev/ttyACM0";
-const bool SHOW_FPS = false;
+const bool SHOW_FPS = true;
 bool automaticMode = true;
 long unsigned int frameCount = 0;
 unsigned int fpsCount = 0;
 QTime startTime;
+QElapsedTimer elapsedTimer;
 int keyPressed;
 
 int main(int argc, char* argv[]) {
-
     QSerialPort* serial = new QSerialPort();
     ServoControl* servoControl = new ServoControl(serial);
 	CameraControl* cameraControl = new CameraControl(servoControl);
@@ -26,20 +27,26 @@ int main(int argc, char* argv[]) {
 
     startTime = QTime::currentTime();
 	do {
+		elapsedTimer.restart();
 		cameraControl->cap->read(cameraControl->frame);
+		std::cout << "read frame:\t\t" << elapsedTimer.nsecsElapsed() << std::endl;
 		if (DEBUG_MODE) {
-		cameraControl->cap->read(cameraControl->h_frame);
-		cameraControl->cap->read(cameraControl->s_frame);
-		cameraControl->cap->read(cameraControl->v_frame);
+			cameraControl->cap->read(cameraControl->h_frame);
+			cameraControl->cap->read(cameraControl->s_frame);
+			cameraControl->cap->read(cameraControl->v_frame);
 		}
 		frameCount++;
         fpsCount++;
 
+		elapsedTimer.restart();
 		if (automaticMode) {
 			cameraControl->detectBallByAverage();
 		}
+		std::cout << "detectBallByAverage:\t" << elapsedTimer.nsecsElapsed() << std::endl;
 		try {
+			elapsedTimer.restart();
 			imshow(cameraControl->windowTitle, cameraControl->frame);
+			std::cout << "imshow:\t\t\t" << elapsedTimer.nsecsElapsed() << std::endl;
 			if (DEBUG_MODE) {
 				imshow("h-frame", cameraControl->h_frame);
 				imshow("s-frame", cameraControl->s_frame);
@@ -49,6 +56,7 @@ int main(int argc, char* argv[]) {
 			std::cout << e.what() <<std::endl;
 		}
 
+		elapsedTimer.restart();
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {
         case -1: break;
@@ -95,7 +103,9 @@ int main(int argc, char* argv[]) {
 			std::cout << "pressed " << keyPressed << std::endl;
 #endif
 			break;
-        }
+		}
+		std::cout << "gui polling:\t\t" << elapsedTimer.nsecsElapsed() << std::endl;
+
 
         if (SHOW_RESPONSE_FROM_ARDUINO) {
 			serial->waitForReadyRead(10);

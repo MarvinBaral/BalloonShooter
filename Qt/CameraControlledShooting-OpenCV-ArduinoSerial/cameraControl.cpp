@@ -1,4 +1,5 @@
 #include "cameraControl.hpp"
+#include <QElapsedTimer>
 
 
 CameraControl::CameraControl(ServoControl *pServoControl) {
@@ -35,7 +36,7 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
     positionMarkColor[1] = 255;
     positionMarkColor[2] = 0;
 
-	const short USB_CAM = 0;	//0 = first connected USB Cam on boot
+	const short USB_CAM = 1;	//0 = first connected USB Cam on boot
 	cap = new cv::VideoCapture(USB_CAM);
 	if (!cap->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
@@ -144,14 +145,25 @@ float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> poin
 }
 
 void CameraControl::detectBallByAverage() {
+	QElapsedTimer elapsedTimerDetectFunction;
+	QElapsedTimer elapsedTimerDetectFunctionInit;
+	elapsedTimerDetectFunction.restart();
 	int width = 0;
 	int height = 0;
 	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
 	int extremes[2][2] = {{paramCam[WIDTH] - 3, 0},{paramCam[HEIGHT] - 3, 0}}; //x,y min,max ;-3 because of markPosition() possibly doing out of bound access
+	elapsedTimerDetectFunctionInit.restart();
 	cv::Mat hsv_frame(frame.clone());
-	cv::medianBlur(hsv_frame, hsv_frame, 15);
+	std::cout << "\t\tclone:\t" << elapsedTimerDetectFunctionInit.nsecsElapsed() << std::endl;
+	elapsedTimerDetectFunctionInit.restart();
+	cv::medianBlur(hsv_frame, hsv_frame, 15); //very time consuming!
+	std::cout << "\t\tmedian:\t" << elapsedTimerDetectFunctionInit.nsecsElapsed() << std::endl;
+	elapsedTimerDetectFunctionInit.restart();
 	cv::cvtColor(hsv_frame, hsv_frame, CV_BGR2HSV);
+	std::cout << "\t\tcvtClr:\t" << elapsedTimerDetectFunctionInit.nsecsElapsed() << std::endl;
+	std::cout << "\tinit:\t\t" << elapsedTimerDetectFunction.nsecsElapsed() << std::endl;
 
+	elapsedTimerDetectFunction.restart();
     for (int y = 0; y < frame.rows; y++) {
 		for (int x = 0; x < frame.cols; x++) {
 			//if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumInterestingColorValue) {
@@ -185,6 +197,9 @@ void CameraControl::detectBallByAverage() {
 			}
         }
     }
+	std::cout << "\titerative calc:\t" << elapsedTimerDetectFunction.nsecsElapsed() << std::endl;
+
+	elapsedTimerDetectFunction.restart();
     //get position
     if (ctr == 0) {
         ctr = 1;
@@ -298,6 +313,7 @@ void CameraControl::detectBallByAverage() {
 #ifdef DEBUG
 	std::cout << std::endl;
 #endif
+	std::cout << "\trest:\t\t" << elapsedTimerDetectFunction.nsecsElapsed() << std::endl;
 }
 
 
