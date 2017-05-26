@@ -71,6 +71,7 @@ void loop() {
     while (timeInPulse < PULSE_LENGTH);
     ctr++;
   }
+  handleSerial();
 }
 
 //The protocoll
@@ -97,7 +98,7 @@ void pulseServo(int pin, int uptime, int cycles) {
   }
 }
 
-void serialEvent(){
+void handleSerial() {
   if (Serial.available()) {
     select = Serial.read();
     if (select == 's') {
