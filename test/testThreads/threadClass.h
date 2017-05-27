@@ -2,12 +2,13 @@
 #define THREADCLASS_H
 #include "commanderClass.h"
 #include <string>
+#include <opencv2/opencv.hpp>
 
 class commanderClass;
 
 class threadClass {
 	public:
-		threadClass(commanderClass* pPointer, std::string pThreadName);
+		threadClass(commanderClass* pPointer, std::string pThreadName, cv::VideoCapture* capture);
 	private:
 		long long int i;
 		std::string threadName;

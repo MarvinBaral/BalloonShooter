@@ -2,14 +2,14 @@
 #include <thread>
 #include <iostream>
 
-commanderClass::commanderClass():
-		thread1([this] () {
-				std::cout << "thread One started" << std::endl;
-				threadClassObj1 = new threadClass(this, "One");
-		}),
-		thread2([this] () {
+commanderClass::commanderClass(cv::VideoCapture* pCapture):
+//		thread1([this, pCapture] () {
+//				std::cout << "thread One started" << std::endl;
+//				threadClassObj1 = new threadClass(this, "One", pCapture);
+//		}),
+		thread2([this, pCapture] () {
 				std::cout << "thread Two started" << std::endl;
-				threadClassObj2 = new threadClass(this, "Two");
+				threadClassObj2 = new threadClass(this, "Two", pCapture);
 		})
 {
 }
