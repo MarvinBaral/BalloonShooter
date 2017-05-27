@@ -294,6 +294,7 @@ CameraControl::~CameraControl() {
 
 //=========================================================================================================================
 //some other stuff, not used
+/*
 
 short CameraControl::getHighestColor(cv::Mat frame, int x, int y) {
 	signed short winner = -1;
@@ -433,7 +434,7 @@ void CameraControl::printParams(cv::VideoCapture cap) {
     }
 }
 
-/*
+
     CV_CAP_PROP_POS_MSEC Current position of the video file in milliseconds or video capture timestamp.
     CV_CAP_PROP_POS_FRAMES 0-based index of the frame to be decoded/captured next.
     CV_CAP_PROP_POS_AVI_RATIO Relative position of the video file: 0 - start of the film, 1 - end of the film.
