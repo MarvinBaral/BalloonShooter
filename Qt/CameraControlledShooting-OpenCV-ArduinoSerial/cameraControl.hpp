@@ -33,17 +33,14 @@ private:
     int pixelMarkColor[3];
     int size;
     std::vector<std::vector<int>> contacts;
-    unsigned short maximumSizeContacts;
-
-public:
-    bool allowedToShoot;
+	unsigned short maximumSizeContacts;
     std::string windowTitle;
 	cv::VideoCapture* cap;
 	cv::Mat frame;
 	cv::Mat h_frame;
 	cv::Mat s_frame;
 	cv::Mat v_frame;
-	CameraControl(ServoControl* pServoControl, cv::VideoCapture* pCap, std::string pWindowTitle);
+
     __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);
     __attribute__((always_inline))
@@ -57,10 +54,12 @@ public:
 	/*__attribute__((always_inline))
 	static inline*/ bool isBalloon(cv::Mat hsv_frame, int x, int y);
 	void markPixel(cv::Mat frame, int posx, int posy);
-    float calcDistance(std::vector<int> point1, std::vector<int> point2);
-	void updateFrame();
+	float calcDistance(std::vector<int> point1, std::vector<int> point2);
+
+public:
+	bool allowedToShoot;
+	CameraControl(ServoControl* pServoControl, cv::VideoCapture* pCap, std::string pWindowTitle);    void markPosition(int posx, int posy);
 	void showColorOfCenteredPixel();
-    void markPosition(int posx, int posy);
 	void readFrame();
 	void showFrame();
 	void detectBallByAverage();
