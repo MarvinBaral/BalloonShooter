@@ -1,11 +1,11 @@
 #ifndef OPENCV_HPP
 #define OPENCV_HPP
-
+#include "servoControl.h"
+#include <opencv2/opencv.hpp>
+#include "main.h"
 //#define DEBUG
 //#define DEBUG_HSV
 
-#include "servoControl.h"
-#include <opencv2/opencv.hpp>
 enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum color {BLUE = 0, GREEN, RED};
 

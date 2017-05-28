@@ -8,9 +8,12 @@
 #include "missionControlCenter.h"
 #include "main.h"
 
+std::queue<Position> positions;
+QTime timer;
+std::mutex cv_gui;
+std::mutex pos_queue;
+
 int main() {
-	positions = new std::queue<Position>;
-	timer = new QTime;
 	const unsigned short int STEP_DEGREE = 5;
 	const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 	const QString PORT_NAME = "/dev/ttyACM0";

@@ -1,6 +1,5 @@
 #include "cameraControl.h"
 #include "missionControlCenter.h"
-#include "main.h"
 
 CameraControl::CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle) {
 	cap = pCap;
@@ -24,7 +23,7 @@ CameraControl::CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle) {
 	windowTitle = pWindowTitle;
 	invertXAxis = true;
 	realSize = 0.23; //m
-	timer->start();
+	timer.start();
 }
 
 int CameraControl::getByte(cv::Mat frame, int x, int y, int byte) {
@@ -103,16 +102,19 @@ float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> poin
 }
 
 void CameraControl::readFrame() {
+	cv_gui.lock();
 	cap->read(frame);
 #ifdef DEBUG_HSV
 	cap->read(h_frame);
 	cap->read(s_frame);
 	cap->read(v_frame);
 #endif
+	cv_gui.unlock();
 }
 
 void CameraControl::showFrame()
 {
+	cv_gui.lock();
 	try {
 		imshow(windowTitle, frame);
 #ifdef DEBUG_HSV
@@ -123,6 +125,7 @@ void CameraControl::showFrame()
 	} catch (cv::Exception e) {
 		std::cout << e.what() <<std::endl;
 	}
+	cv_gui.unlock();
 }
 
 void CameraControl::detectBallByAverage() {
@@ -217,12 +220,14 @@ void CameraControl::detectBallByAverage() {
 		posRelToCam.degree = degreeX;
 		posRelToCam.distance = distance;
 		posRelToCam.height = coordY;
-		if (positions->size() == 0) {
-			timer->restart();
+		if (positions.size() == 0) {
+			timer.restart();
 		}
-		posRelToCam.time = timer->elapsed();
+		posRelToCam.time = timer.elapsed();
 
-		positions->push(posRelToCam);
+		pos_queue.lock();
+		positions.push(posRelToCam);
+		pos_queue.unlock();
 	}
 #ifdef DEBUG
 	std::cout << std::endl;

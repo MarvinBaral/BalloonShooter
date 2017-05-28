@@ -14,11 +14,13 @@ MissionControlCenter::MissionControlCenter(ServoControl* pServoControl)
 
 void MissionControlCenter::handleShooting()
 {
-	if (positions->size() > 0) {
+	if (positions.size() > 0) {
 		float degrees[2] = {0, 0};
 		shootingCounter++;
-		Position positionRelToCam = positions->front();
-		positions->pop();
+		pos_queue.lock();
+		Position positionRelToCam = positions.front();
+		positions.pop();
+		pos_queue.unlock();
 		degrees[0] = positionRelToCam.degree;
 		float a = 0;
 		float g = 9.81;
