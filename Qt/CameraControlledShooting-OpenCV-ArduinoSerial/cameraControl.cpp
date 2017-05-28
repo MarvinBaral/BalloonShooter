@@ -1,8 +1,9 @@
 #include "cameraControl.hpp"
 
 
-CameraControl::CameraControl(ServoControl *pServoControl) {
-    std::cout << "BGR color model!!!" << std::endl;
+CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap, std::string pWindowTitle) {
+	cap = pCap;
+	std::cout << "BGR color model!!!" << std::endl;
 
     servoControl = pServoControl;
 
@@ -35,17 +36,7 @@ CameraControl::CameraControl(ServoControl *pServoControl) {
     positionMarkColor[1] = 255;
     positionMarkColor[2] = 0;
 
-	const short USB_CAM = 0;	//0 = first connected USB Cam on boot
-	cap = new cv::VideoCapture(USB_CAM);
-	if (!cap->isOpened()) {
-		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
-	}
-
-    displayWindow = true;
-    windowTitle = "Abschusskamera";
-    if (displayWindow) {
-        cv::namedWindow(windowTitle, CV_WINDOW_AUTOSIZE);
-    }
+	windowTitle = pWindowTitle;
 }
 
 int CameraControl::getByte(cv::Mat frame, int x, int y, int byte) {

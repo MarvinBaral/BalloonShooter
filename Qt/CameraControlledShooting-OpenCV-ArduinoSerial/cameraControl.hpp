@@ -43,7 +43,7 @@ public:
 	cv::Mat h_frame;
 	cv::Mat s_frame;
 	cv::Mat v_frame;
-	CameraControl(ServoControl* pServoControl);
+	CameraControl(ServoControl* pServoControl, cv::VideoCapture* pCap, std::string pWindowTitle);
     __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);
     __attribute__((always_inline))

@@ -8,18 +8,28 @@
 const unsigned short int STEP_DEGREE = 5;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 const QString PORT_NAME = "/dev/ttyACM0";
-const bool SHOW_FPS = false;
+const bool SHOW_FPS = true;
 bool automaticMode = true;
 long unsigned int frameCount = 0;
 unsigned int fpsCount = 0;
 QTime startTime;
 int keyPressed;
+bool displayWindow = true;
+std::string windowTitle = "Abschusskamera";
 
 int main(int argc, char* argv[]) {
 
+	const short USB_CAM = 0;	//0 = first connected USB Cam on boot
+	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
+	if (!capture->isOpened()) {
+		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
+	}
+	if (displayWindow) {
+		cv::namedWindow(windowTitle, CV_WINDOW_AUTOSIZE);
+	}
     QSerialPort* serial = new QSerialPort();
     ServoControl* servoControl = new ServoControl(serial);
-	CameraControl* cameraControl = new CameraControl(servoControl);
+	CameraControl* cameraControl = new CameraControl(servoControl, capture, windowTitle);
 
     servoControl->initSerial(PORT_NAME);
     serial->open(QIODevice::ReadWrite);
