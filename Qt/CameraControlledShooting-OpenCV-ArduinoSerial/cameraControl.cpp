@@ -13,7 +13,22 @@ CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap
 	minimumRelationTrigger = 0.50;
 	minimumInterestingColorValue = 150;
 	interestingColor = RED;
+<<<<<<< Updated upstream
 	markDetectedPixels = false; //Leave for false when using threads
+=======
+    repeationsUntilShot = 20;
+    shootingCounter = 0;
+	distanceBetweenCamAndCannon = 0.1; //m
+	realSize = 0.18; //m
+	maximumSizeContacts = 5;
+	v0 = 5.3; //m/s
+	y0 = -0.06; //m
+
+	allowedToShoot = true;
+    preCalcFactor = 4;
+
+	markDetectedPixels = true; //Debug
+>>>>>>> Stashed changes
 	MINIMUM_OBJECT_PIXELS_IN_ROW = 0; //The higher the number the more noise suppression
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -62,9 +77,6 @@ bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 	float h = getByte(hsv_frame, x, y, 0);
 	float s = getByte(hsv_frame, x, y, 1);
 	float v = getByte(hsv_frame, x, y, 2);
-
-	//return ((-0.1 < h) && (h < 0.1) && (s > 0.5) && (0.15 < v) && (v < 0.85));
-	//return ((h > 300) || (h < 30));// && s > 120 && v > 30 && v < 220;
 #ifdef DEBUG_HSV
 	for (int i = 0; i < 3; i++) {
 		writeByte(h_frame, x, y, i, h);
@@ -77,9 +89,6 @@ bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 	}
 #endif
 	return (h > 150 || h < 20) && s > 210 && v > 150;
-	return false;
-	return false;
-	return s > 120 && v > 150;
 }
 
 void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
@@ -213,13 +222,18 @@ void CameraControl::detectBallByAverage() {
 		angleY = paramCam[ANGLE_OF_VIEW_Y] / (paramCam[HEIGHT] * 1.f) * ((paramCam[HEIGHT] - yposSumm) - paramCam[HEIGHT] / 2.f);
 		angleY = angleY / 180.f * PI;
 		coordY = std::sin(angleY) * distance;
-		//distance = std::sin(angleY) * distance;
+//		distance = std::sin(angleY) * distance; necessary to think about it and test it
 		distance -= distanceBetweenCamAndCannon;
+//		distance -= realSize/2.f; if you want to hit the center of the surface and not the center of the balloon, commented out because of KISS
 		height *= 3;
 #ifdef DEBUG
 		std::cout << ",\tdistance: " << distance << "m";
 #endif
 	}
+
+
+//======================= Lower part will be outsourced in missionControlCenter ===================================================
+
 	//get position and calc shooting angles
 	float degrees[2] = {0, 0};
 
