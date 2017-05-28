@@ -58,19 +58,12 @@ public:
 	static inline*/ bool isBalloon(cv::Mat hsv_frame, int x, int y);
 	void markPixel(cv::Mat frame, int posx, int posy);
     float calcDistance(std::vector<int> point1, std::vector<int> point2);
-    void updateFrame();
-    void show();
-    void showColorOfCenteredPixel();
-    void printApropriateSign(int value);
+	void updateFrame();
+	void showColorOfCenteredPixel();
     void markPosition(int posx, int posy);
 	void readFrame();
 	void showFrame();
-    void detectBallByAverage();
-    int moveWhileSameColor(int starty, int startx, int directiony, int directionx);
-    void detectBallWithLines();
-    void showAvgBGR();
-    void showOnCMD();
-    void printParams(cv::VideoCapture cap);
+	void detectBallByAverage();
 	~CameraControl();
 };
 
