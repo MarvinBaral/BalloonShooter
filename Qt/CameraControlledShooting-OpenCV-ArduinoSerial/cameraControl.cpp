@@ -70,17 +70,17 @@ bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 
 	//return ((-0.1 < h) && (h < 0.1) && (s > 0.5) && (0.15 < v) && (v < 0.85));
 	//return ((h > 300) || (h < 30));// && s > 120 && v > 30 && v < 220;
-	if (DEBUG_MODE) {
-		for (int i = 0; i < 3; i++) {
-			writeByte(h_frame, x, y, i, h);
-		}
-		for (int j = 0; j < 3; j++) {
-			writeByte(s_frame, x, y, j, s);
-		}
-		for (int k = 0; k < 3; k++) {
-			writeByte(v_frame, x, y, k, v);
-		}
+#ifdef DEBUG_HSV
+	for (int i = 0; i < 3; i++) {
+		writeByte(h_frame, x, y, i, h);
 	}
+	for (int j = 0; j < 3; j++) {
+		writeByte(s_frame, x, y, j, s);
+	}
+	for (int k = 0; k < 3; k++) {
+		writeByte(v_frame, x, y, k, v);
+	}
+#endif
 	return (h > 150 || h < 20) && s > 210 && v > 150;
 	return false;
 	return false;
@@ -122,22 +122,22 @@ float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> poin
 
 void CameraControl::readFrame() {
 	cap->read(frame);
-	if (DEBUG_MODE) {
-		cap->read(h_frame);
-		cap->read(s_frame);
-		cap->read(v_frame);
-	}
+#ifdef DEBUG_HSV
+	cap->read(h_frame);
+	cap->read(s_frame);
+	cap->read(v_frame);
+#endif
 }
 
 void CameraControl::showFrame()
 {
 	try {
 		imshow(windowTitle, frame);
-		if (DEBUG_MODE) {
-			imshow("h-frame", h_frame);
-			imshow("s-frame", s_frame);
-			imshow("v-frame", v_frame);
-		}
+#ifdef DEBUG_HSV
+		imshow("h-frame", h_frame);
+		imshow("s-frame", s_frame);
+		imshow("v-frame", v_frame);
+#endif
 	} catch (cv::Exception e) {
 		std::cout << e.what() <<std::endl;
 	}

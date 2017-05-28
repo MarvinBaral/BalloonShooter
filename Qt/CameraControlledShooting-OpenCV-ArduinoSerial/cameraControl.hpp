@@ -2,12 +2,12 @@
 #define OPENCV_HPP
 
 //#define DEBUG
+//#define DEBUG_HSV
 
 #include "servoControl.hpp"
 #include <opencv2/opencv.hpp>
 enum versions {V1_0 = 0, V1_1};
 const short HARDWARE_VERSION = V1_1;
-const bool DEBUG_MODE = false;
 enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum color {BLUE = 0, GREEN, RED};
 
