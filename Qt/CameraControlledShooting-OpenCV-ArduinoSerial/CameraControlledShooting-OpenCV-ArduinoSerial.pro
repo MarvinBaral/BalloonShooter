@@ -10,11 +10,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     servoControl.cpp \
-    cameraControl.cpp
+    cameraControl.cpp \
+    missionControlCenter.cpp
 
 INCLUDEPATH += /usr/local/include/opencv
 LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_videostab -lopencv_imgproc
 
 HEADERS += \
-    servoControl.hpp \
-    cameraControl.hpp
+    missionControlCenter.h \
+    cameraControl.h \
+    servoControl.h

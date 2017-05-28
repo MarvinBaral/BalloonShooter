@@ -4,7 +4,7 @@
 //#define DEBUG
 //#define DEBUG_HSV
 
-#include "servoControl.hpp"
+#include "servoControl.h"
 #include <opencv2/opencv.hpp>
 enum versions {V1_0 = 0, V1_1};
 const short HARDWARE_VERSION = V1_1;

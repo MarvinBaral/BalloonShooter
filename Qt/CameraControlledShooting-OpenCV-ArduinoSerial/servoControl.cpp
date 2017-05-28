@@ -1,4 +1,4 @@
-#include "servoControl.hpp"
+#include "servoControl.h"
 #include <iostream>
 
 ServoControl::ServoControl(QSerialPort *pSerial) {

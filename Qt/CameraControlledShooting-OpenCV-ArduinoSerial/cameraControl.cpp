@@ -1,4 +1,4 @@
-#include "cameraControl.hpp"
+#include "cameraControl.h"
 
 
 CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap, std::string pWindowTitle) {
