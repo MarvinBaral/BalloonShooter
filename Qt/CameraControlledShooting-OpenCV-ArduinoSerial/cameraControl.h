@@ -38,9 +38,6 @@ private:
 	float realSize;
 	float y0;
 	float v0;
-	int preCalcFactor;
-	std::vector<std::vector<int>> contacts;
-	unsigned short maximumSizeContacts;
 
     __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);

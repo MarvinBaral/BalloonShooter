@@ -29,11 +29,9 @@ CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap
 	shootingCounter = 0;
 	distanceBetweenCamAndCannon = 0.1; //m
 	realSize = 0.23; //m
-	maximumSizeContacts = 5;
 	v0 = 5.3; //m/s
 	y0 = -0.06; //m
 	allowedToShoot = true;
-	preCalcFactor = 4;
 }
 
 int CameraControl::getByte(cv::Mat frame, int x, int y, int byte) {
@@ -232,16 +230,9 @@ void CameraControl::detectBallByAverage() {
 #endif
 		this->markPosition(xposSumm, yposSumm); //mark center position
 		if (ctr > paramCam[MINIMUM_CTR]) {
-			contacts.push_back({xposSumm, yposSumm});
-			int xdiff = 0;
-			int ydiff = 0;
-			if (contacts.size() >= 2) {
-				xdiff = contacts[contacts.size() - 1][0] - contacts[contacts.size() - 2][0];
-				ydiff = contacts[contacts.size() - 1][1] - contacts[contacts.size() - 2][1];
-			}
 			shootingCounter++;
 			int xysize[2] = {paramCam[WIDTH], paramCam[HEIGHT]};
-			int xypos[2] = {xposSumm + preCalcFactor * xdiff, yposSumm + ydiff * preCalcFactor};
+			int xypos[2] = {xposSumm, yposSumm};
 			float degreeX = paramCam[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * paramCam[ANGLE_OF_VIEW_X]);
 			if (invertXAxis) {
 				degreeX = -degreeX;
@@ -278,11 +269,9 @@ void CameraControl::detectBallByAverage() {
 			}
 			if (shootingCounter >= repeationsUntilShot && allowedToShoot) {
 				servoControl->shoot();
-				contacts.clear();
 				shootingCounter = 0;
 			}
 		} else {
-			contacts.clear();
 			shootingCounter = 0;
 		}
 	}
