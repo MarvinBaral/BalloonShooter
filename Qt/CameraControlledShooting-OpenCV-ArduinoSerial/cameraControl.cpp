@@ -4,30 +4,16 @@
 CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap, std::string pWindowTitle) {
 	cap = pCap;
 	std::cout << "BGR color model!!!" << std::endl;
-
     servoControl = pServoControl;
-
 	paramCam[MINIMUM_CTR] = 350;
 	paramCam[ANGLE_OF_VIEW_X] = 2 * 30;
 	paramCam[ANGLE_OF_VIEW_Y] = 2 * 20;
 	paramCam[WIDTH] = 640;
 	paramCam[HEIGHT] = 480;
-    invertXAxis = true;
 	minimumRelationTrigger = 0.50;
 	minimumInterestingColorValue = 150;
 	interestingColor = RED;
-    repeationsUntilShot = 20;
-    shootingCounter = 0;
-	distanceBetweenCamAndCannon = 0.1; //m
-	realSize = 0.23; //m
-	maximumSizeContacts = 5;
-	v0 = 5.3; //m/s
-	y0 = -0.06; //m
-
-	allowedToShoot = true;
-    preCalcFactor = 4;
-
-	markDetectedPixels = false; //Leave for fals when using threads
+	markDetectedPixels = false; //Leave for false when using threads
 	MINIMUM_OBJECT_PIXELS_IN_ROW = 0; //The higher the number the more noise suppression
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -35,8 +21,19 @@ CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap
     positionMarkColor[0] = 0;
     positionMarkColor[1] = 255;
     positionMarkColor[2] = 0;
-
 	windowTitle = pWindowTitle;
+
+	servoControl = pServoControl;
+	invertXAxis = true;
+	repeationsUntilShot = 20;
+	shootingCounter = 0;
+	distanceBetweenCamAndCannon = 0.1; //m
+	realSize = 0.23; //m
+	maximumSizeContacts = 5;
+	v0 = 5.3; //m/s
+	y0 = -0.06; //m
+	allowedToShoot = true;
+	preCalcFactor = 4;
 }
 
 int CameraControl::getByte(cv::Mat frame, int x, int y, int byte) {
@@ -204,59 +201,53 @@ void CameraControl::detectBallByAverage() {
 #ifdef DEBUG
 	std::cout << "size: " << size << "px";
 #endif
-    //get distance
-    const float PI = 3.14159265359;
-    float distance = 0;
-    float coordY;
-    if (size > 0) {
+	//calc distance
+	const float PI = 3.14159265359;
+	float distance = 0;
+	float coordY;
+	if (size > 0) {
 		float alpha = (paramCam[ANGLE_OF_VIEW_Y] / (paramCam[HEIGHT] * 1.f)) * size; //ganzzahldivision
-        alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
-        distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
+		alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
+		distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
 
-        //get Height
+		//get Height
 		float angleY;
 		angleY = paramCam[ANGLE_OF_VIEW_Y] / (paramCam[HEIGHT] * 1.f) * ((paramCam[HEIGHT] - yposSumm) - paramCam[HEIGHT] / 2.f);
-        angleY = angleY / 180.f * PI;
+		angleY = angleY / 180.f * PI;
 		coordY = std::sin(angleY) * distance;
-        //distance = std::sin(angleY) * distance;
-        distance -= distanceBetweenCamAndCannon;
-        height *= 3;
+		//distance = std::sin(angleY) * distance;
+		distance -= distanceBetweenCamAndCannon;
+		height *= 3;
 #ifdef DEBUG
 		std::cout << ",\tdistance: " << distance << "m";
 #endif
-    }
-
-    //get position and calc shooting angles
-    float degrees[2] = {0, 0};
+	}
+	//get position and calc shooting angles
+	float degrees[2] = {0, 0};
 
 
 	if (xposSumm > 0 && yposSumm > 0) {
 #ifdef DEBUG
 		std::cout << ",\tx: " << xposSumm << "px" << ",\ty: " << yposSumm << "px" << ",\tctr: " << ctr << "px";
 #endif
-		this->markPosition(xposSumm, yposSumm);
+		this->markPosition(xposSumm, yposSumm); //mark center position
 		if (ctr > paramCam[MINIMUM_CTR]) {
 			contacts.push_back({xposSumm, yposSumm});
-            int xdiff = 0;
-            int ydiff = 0;
-            if (contacts.size() >= 2) {
-                xdiff = contacts[contacts.size() - 1][0] - contacts[contacts.size() - 2][0];
-                ydiff = contacts[contacts.size() - 1][1] - contacts[contacts.size() - 2][1];
-            }
-            shootingCounter++;
+			int xdiff = 0;
+			int ydiff = 0;
+			if (contacts.size() >= 2) {
+				xdiff = contacts[contacts.size() - 1][0] - contacts[contacts.size() - 2][0];
+				ydiff = contacts[contacts.size() - 1][1] - contacts[contacts.size() - 2][1];
+			}
+			shootingCounter++;
 			int xysize[2] = {paramCam[WIDTH], paramCam[HEIGHT]};
 			int xypos[2] = {xposSumm + preCalcFactor * xdiff, yposSumm + ydiff * preCalcFactor};
-            for (int i = 0; i < 2; i ++) {
-				float degree = paramCam[ANGLE_OF_VIEW_X + i] * 0.5 - ((xypos[i] * (1.0f / xysize[i])) * paramCam[ANGLE_OF_VIEW_X + i]);
-                if (i == 0) {
-                    if (invertXAxis) {
-                        degree = -degree;
-                    }
-				}
-                degrees[i] = degree;
+			float degreeX = paramCam[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * paramCam[ANGLE_OF_VIEW_X]);
+			if (invertXAxis) {
+				degreeX = -degreeX;
 			}
+			degrees[0] = degreeX;
 
-			degrees[1] = 0;
 			float a = 0;
 			float g = 9.81;
 			float x = distance, y;
@@ -280,21 +271,21 @@ void CameraControl::detectBallByAverage() {
 				degrees[0] += 5 + std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
 			}
 			for (int i = 0; i < 2 && allowedToShoot; i ++) {
-                servoControl->setServo(i, degrees[i]);
-            }
-            if (!allowedToShoot) {
-                shootingCounter = 0;
-            }
-            if (shootingCounter >= repeationsUntilShot && allowedToShoot) {
-                servoControl->shoot();
-                contacts.clear();
-                shootingCounter = 0;
-            }
-        } else {
-            contacts.clear();
-            shootingCounter = 0;
-        }
-    }
+				servoControl->setServo(i, degrees[i]);
+			}
+			if (!allowedToShoot) {
+				shootingCounter = 0;
+			}
+			if (shootingCounter >= repeationsUntilShot && allowedToShoot) {
+				servoControl->shoot();
+				contacts.clear();
+				shootingCounter = 0;
+			}
+		} else {
+			contacts.clear();
+			shootingCounter = 0;
+		}
+	}
 #ifdef DEBUG
 	std::cout << std::endl;
 #endif

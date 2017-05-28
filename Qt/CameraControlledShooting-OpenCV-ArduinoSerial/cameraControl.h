@@ -15,31 +15,32 @@ class CameraControl {
 private:
 	ServoControl* servoControl;
 	int paramCam[5];
-    bool displayWindow;
-    bool invertXAxis;
+	bool displayWindow;
     float minimumRelationTrigger;
 	int minimumInterestingColorValue;
-    short interestingColor;
-    short repeationsUntilShot;
-    short shootingCounter;
-    float distanceBetweenCamAndCannon;
-	float realSize;
-    float y0;
-    float v0;
-	int preCalcFactor;
+	short interestingColor;
 	short MINIMUM_OBJECT_PIXELS_IN_ROW;
     int positionMarkColor[3];
 	bool markDetectedPixels;
     int pixelMarkColor[3];
-    int size;
-    std::vector<std::vector<int>> contacts;
-	unsigned short maximumSizeContacts;
+	int size;
     std::string windowTitle;
 	cv::VideoCapture* cap;
 	cv::Mat frame;
 	cv::Mat h_frame;
 	cv::Mat s_frame;
 	cv::Mat v_frame;
+
+	bool invertXAxis;
+	short repeationsUntilShot;
+	short shootingCounter;
+	float distanceBetweenCamAndCannon;
+	float realSize;
+	float y0;
+	float v0;
+	int preCalcFactor;
+	std::vector<std::vector<int>> contacts;
+	unsigned short maximumSizeContacts;
 
     __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);
