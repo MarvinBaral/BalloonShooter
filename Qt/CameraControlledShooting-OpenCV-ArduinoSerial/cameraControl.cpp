@@ -13,22 +13,7 @@ CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap
 	minimumRelationTrigger = 0.50;
 	minimumInterestingColorValue = 150;
 	interestingColor = RED;
-<<<<<<< Updated upstream
-	markDetectedPixels = false; //Leave for false when using threads
-=======
-    repeationsUntilShot = 20;
-    shootingCounter = 0;
-	distanceBetweenCamAndCannon = 0.1; //m
-	realSize = 0.18; //m
-	maximumSizeContacts = 5;
-	v0 = 5.3; //m/s
-	y0 = -0.06; //m
-
-	allowedToShoot = true;
-    preCalcFactor = 4;
-
-	markDetectedPixels = true; //Debug
->>>>>>> Stashed changes
+	markDetectedPixels = true;
 	MINIMUM_OBJECT_PIXELS_IN_ROW = 0; //The higher the number the more noise suppression
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
