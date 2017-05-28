@@ -11,7 +11,6 @@ enum color {BLUE = 0, GREEN, RED};
 
 class CameraControl {
 private:
-	ServoControl* servoControl;
 	int paramCam[5];
 	bool displayWindow;
     float minimumRelationTrigger;
@@ -46,7 +45,7 @@ private:
 	float calcDistance(std::vector<int> point1, std::vector<int> point2);
 
 public:
-	CameraControl(ServoControl* pServoControl, cv::VideoCapture* pCap, std::string pWindowTitle);    void markPosition(int posx, int posy);
+	CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle);    void markPosition(int posx, int posy);
 	void showColorOfCenteredPixel();
 	void readFrame();
 	void showFrame();

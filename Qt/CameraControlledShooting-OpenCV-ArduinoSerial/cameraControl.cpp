@@ -2,10 +2,9 @@
 #include "missionControlCenter.h"
 #include "main.h"
 
-CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap, std::string pWindowTitle) {
+CameraControl::CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle) {
 	cap = pCap;
 	std::cout << "BGR color model!!!" << std::endl;
-    servoControl = pServoControl;
 	paramCam[MINIMUM_CTR] = 350;
 	paramCam[ANGLE_OF_VIEW_X] = 2 * 30;
 	paramCam[ANGLE_OF_VIEW_Y] = 2 * 20;
@@ -15,7 +14,7 @@ CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap
 	minimumInterestingColorValue = 150;
 	interestingColor = RED;
 	markDetectedPixels = true;
-	MINIMUM_OBJECT_PIXELS_IN_ROW = 0; //The higher the number the more noise suppression
+	MINIMUM_OBJECT_PIXELS_IN_ROW = 5; //The higher the number the more noise suppression
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
     pixelMarkColor[2] = 0;
@@ -23,8 +22,6 @@ CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap
     positionMarkColor[1] = 255;
     positionMarkColor[2] = 0;
 	windowTitle = pWindowTitle;
-
-	servoControl = pServoControl;
 	invertXAxis = true;
 	realSize = 0.23; //m
 	timer->start();

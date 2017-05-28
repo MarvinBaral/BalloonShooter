@@ -22,7 +22,7 @@ int main() {
 	int keyPressed;
 	bool displayWindow = true;
 	std::string windowTitle = "Abschusskamera";
-	const short USB_CAM = 1;	//0 = first connected USB Cam on boot
+	const short USB_CAM = 1;
 	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
 	if (!capture->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
@@ -32,7 +32,7 @@ int main() {
 	}
     QSerialPort* serial = new QSerialPort();
     ServoControl* servoControl = new ServoControl(serial);
-	CameraControl* cameraControl = new CameraControl(servoControl, capture, windowTitle);
+	CameraControl* cameraControl = new CameraControl(capture, windowTitle);
 	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl);
 
     servoControl->initSerial(PORT_NAME);
