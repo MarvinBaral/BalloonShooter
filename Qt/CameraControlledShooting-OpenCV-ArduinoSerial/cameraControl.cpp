@@ -27,7 +27,7 @@ CameraControl::CameraControl(ServoControl *pServoControl, cv::VideoCapture* pCap
 	allowedToShoot = true;
     preCalcFactor = 4;
 
-	markDetectedPixels = true; //Debug
+	markDetectedPixels = false; //Leave for fals when using threads
 	MINIMUM_OBJECT_PIXELS_IN_ROW = 0; //The higher the number the more noise suppression
     pixelMarkColor[0] = 255;
     pixelMarkColor[1] = 0;
@@ -118,6 +118,29 @@ void CameraControl::markPosition(int posx, int posy) {
 float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> point2){
     float distance = std::sqrt((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]));
     return distance;
+}
+
+void CameraControl::readFrame() {
+	cap->read(frame);
+	if (DEBUG_MODE) {
+		cap->read(h_frame);
+		cap->read(s_frame);
+		cap->read(v_frame);
+	}
+}
+
+void CameraControl::showFrame()
+{
+	try {
+		imshow(windowTitle, frame);
+		if (DEBUG_MODE) {
+			imshow("h-frame", h_frame);
+			imshow("s-frame", s_frame);
+			imshow("v-frame", v_frame);
+		}
+	} catch (cv::Exception e) {
+		std::cout << e.what() <<std::endl;
+	}
 }
 
 void CameraControl::detectBallByAverage() {

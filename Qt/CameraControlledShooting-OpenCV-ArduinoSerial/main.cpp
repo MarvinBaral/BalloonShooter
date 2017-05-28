@@ -17,7 +17,7 @@ int keyPressed;
 bool displayWindow = true;
 std::string windowTitle = "Abschusskamera";
 
-int main(int argc, char* argv[]) {
+int main() {
 
 	const short USB_CAM = 0;	//0 = first connected USB Cam on boot
 	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
@@ -36,29 +36,16 @@ int main(int argc, char* argv[]) {
 
     startTime = QTime::currentTime();
 	do {
-		cameraControl->cap->read(cameraControl->frame);
-		if (DEBUG_MODE) {
-		cameraControl->cap->read(cameraControl->h_frame);
-		cameraControl->cap->read(cameraControl->s_frame);
-		cameraControl->cap->read(cameraControl->v_frame);
-		}
+		cameraControl->readFrame();
 		frameCount++;
         fpsCount++;
 
 		if (automaticMode) {
 			cameraControl->detectBallByAverage();
 		}
-		try {
-			imshow(cameraControl->windowTitle, cameraControl->frame);
-			if (DEBUG_MODE) {
-				imshow("h-frame", cameraControl->h_frame);
-				imshow("s-frame", cameraControl->s_frame);
-				imshow("v-frame", cameraControl->v_frame);
-			}
-		} catch (cv::Exception e) {
-			std::cout << e.what() <<std::endl;
+		if (displayWindow) {
+			cameraControl->showFrame();
 		}
-
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {
         case -1: break;

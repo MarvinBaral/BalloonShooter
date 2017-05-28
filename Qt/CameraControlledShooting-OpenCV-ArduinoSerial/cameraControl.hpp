@@ -63,6 +63,8 @@ public:
     void showColorOfCenteredPixel();
     void printApropriateSign(int value);
     void markPosition(int posx, int posy);
+	void readFrame();
+	void showFrame();
     void detectBallByAverage();
     int moveWhileSameColor(int starty, int startx, int directiony, int directionx);
     void detectBallWithLines();
