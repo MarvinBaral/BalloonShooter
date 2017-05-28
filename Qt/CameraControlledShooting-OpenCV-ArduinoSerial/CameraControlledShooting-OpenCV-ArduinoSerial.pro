@@ -19,4 +19,5 @@ LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lope
 HEADERS += \
     missionControlCenter.h \
     cameraControl.h \
-    servoControl.h
+    servoControl.h \
+    main.h

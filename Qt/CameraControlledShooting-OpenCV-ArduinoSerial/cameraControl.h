@@ -6,8 +6,6 @@
 
 #include "servoControl.h"
 #include <opencv2/opencv.hpp>
-enum versions {V1_0 = 0, V1_1};
-const short HARDWARE_VERSION = V1_1;
 enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum color {BLUE = 0, GREEN, RED};
 
@@ -30,15 +28,8 @@ private:
 	cv::Mat h_frame;
 	cv::Mat s_frame;
 	cv::Mat v_frame;
-
 	bool invertXAxis;
-	short repeationsUntilShot;
-	short shootingCounter;
-	float distanceBetweenCamAndCannon;
 	float realSize;
-	float y0;
-	float v0;
-
     __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);
     __attribute__((always_inline))
@@ -55,7 +46,6 @@ private:
 	float calcDistance(std::vector<int> point1, std::vector<int> point2);
 
 public:
-	bool allowedToShoot;
 	CameraControl(ServoControl* pServoControl, cv::VideoCapture* pCap, std::string pWindowTitle);    void markPosition(int posx, int posy);
 	void showColorOfCenteredPixel();
 	void readFrame();

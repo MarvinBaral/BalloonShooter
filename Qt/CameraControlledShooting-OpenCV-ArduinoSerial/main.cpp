@@ -2,25 +2,27 @@
 #include <QTime>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <queue>
 #include "servoControl.h"
 #include "cameraControl.cpp"
-#include <queue>
-
-const unsigned short int STEP_DEGREE = 5;
-const bool SHOW_RESPONSE_FROM_ARDUINO = false;
-const QString PORT_NAME = "/dev/ttyACM0";
-const bool SHOW_FPS = true;
-bool automaticMode = true;
-long unsigned int frameCount = 0;
-unsigned int fpsCount = 0;
-QTime startTime;
-int keyPressed;
-bool displayWindow = true;
-std::string windowTitle = "Abschusskamera";
-const short USB_CAM = 1;	//0 = first connected USB Cam on boot
+#include "missionControlCenter.h"
+#include "main.h"
 
 int main() {
-
+	positions = new std::queue<Position>;
+	timer = new QTime;
+	const unsigned short int STEP_DEGREE = 5;
+	const bool SHOW_RESPONSE_FROM_ARDUINO = false;
+	const QString PORT_NAME = "/dev/ttyACM0";
+	const bool SHOW_FPS = true;
+	bool automaticMode = true;
+	long unsigned int frameCount = 0;
+	unsigned int fpsCount = 0;
+	QTime startTime;
+	int keyPressed;
+	bool displayWindow = true;
+	std::string windowTitle = "Abschusskamera";
+	const short USB_CAM = 1;	//0 = first connected USB Cam on boot
 	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
 	if (!capture->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
@@ -31,6 +33,7 @@ int main() {
     QSerialPort* serial = new QSerialPort();
     ServoControl* servoControl = new ServoControl(serial);
 	CameraControl* cameraControl = new CameraControl(servoControl, capture, windowTitle);
+	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl);
 
     servoControl->initSerial(PORT_NAME);
     serial->open(QIODevice::ReadWrite);
@@ -47,6 +50,7 @@ int main() {
 		if (displayWindow) {
 			cameraControl->showFrame();
 		}
+		missionControlCenter->handleShooting();
         keyPressed = cv::waitKey(1);
         switch (keyPressed) {
         case -1: break;
@@ -57,13 +61,13 @@ int main() {
 			automaticMode = false;
 				break;
 		case 99: //c = clear
-			cameraControl->allowedToShoot = true;
+			missionControlCenter->allowedToShoot = true;
             break;
         case 107: //k
 			cameraControl->showColorOfCenteredPixel();
             break;
         case 108: //l = lock
-			cameraControl->allowedToShoot = false;
+			missionControlCenter->allowedToShoot = false;
             break;
 		case 81: //left
 			if (!automaticMode)
@@ -115,7 +119,8 @@ int main() {
 
 	delete cameraControl;
     delete servoControl;
-    delete serial;
+	delete serial;
+	delete missionControlCenter;
 
     return 0;
 }
