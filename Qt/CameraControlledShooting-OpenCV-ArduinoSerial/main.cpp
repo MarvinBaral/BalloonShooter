@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include "servoControl.h"
 #include "cameraControl.cpp"
+#include <queue>
 
 const unsigned short int STEP_DEGREE = 5;
 const bool SHOW_RESPONSE_FROM_ARDUINO = false;
@@ -16,7 +17,7 @@ QTime startTime;
 int keyPressed;
 bool displayWindow = true;
 std::string windowTitle = "Abschusskamera";
-const short USB_CAM = 0;	//0 = first connected USB Cam on boot
+const short USB_CAM = 1;	//0 = first connected USB Cam on boot
 
 int main() {
 
