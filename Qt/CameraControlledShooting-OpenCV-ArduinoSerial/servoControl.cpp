@@ -1,10 +1,13 @@
 #include "servoControl.h"
 #include <iostream>
 
-ServoControl::ServoControl(QSerialPort *pSerial) {
-    serial = pSerial;
+ServoControl::ServoControl(QString pPortName) {
+	serial = new QSerialPort();
+	portName = pPortName;
     degrees[0] = 0;
-    degrees[1] = 0;
+	degrees[1] = 0;
+	initSerial(portName);
+	serial->open(QIODevice::ReadWrite);
 }
 
 void ServoControl::updateServo(int index, signed int degreeDiff) {
@@ -40,5 +43,25 @@ void ServoControl::initSerial(const QString &PORT_NAME) {
 
 void ServoControl::shoot(){
     serial->write(QString('s').toLocal8Bit());
-    serial->flush();
+	serial->flush();
+}
+
+void ServoControl::reset()
+{
+	serial->close();
+	serial->open(QIODevice::ReadWrite);
+}
+
+void ServoControl::printResponse()
+{
+	serial->waitForReadyRead(10);
+	QByteArray response = serial->readAll();
+	if (!response.isEmpty() && !response.isNull()) {
+		std::cout << response.toStdString();
+	}
+}
+
+ServoControl::~ServoControl()
+{
+	serial->close();
 }

@@ -33,13 +33,9 @@ int main() {
 	if (displayWindow) {
 		cv::namedWindow(windowTitle, CV_WINDOW_AUTOSIZE);
 	}
-    QSerialPort* serial = new QSerialPort();
-    ServoControl* servoControl = new ServoControl(serial);
+	ServoControl* servoControl = new ServoControl(PORT_NAME);
 	CameraControl* cameraControl = new CameraControl(capture, windowTitle);
 	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl);
-
-    servoControl->initSerial(PORT_NAME);
-    serial->open(QIODevice::ReadWrite);
 
     startTime = QTime::currentTime();
 	do {
@@ -92,8 +88,7 @@ int main() {
             servoControl->shoot();
             break;
         case 114: //r = reset
-            serial->close();
-            serial->open(QIODevice::ReadWrite);
+			servoControl->reset();
             break;
         default:
 #ifdef DEBUG
@@ -102,12 +97,8 @@ int main() {
 			break;
         }
 
-        if (SHOW_RESPONSE_FROM_ARDUINO) {
-			serial->waitForReadyRead(10);
-            QByteArray response = serial->readAll();
-            if (!response.isEmpty() && !response.isNull()) {
-                std::cout << response.toStdString();
-            }
+		if (SHOW_RESPONSE_FROM_ARDUINO) {
+			servoControl->printResponse();
         }
 
 		if (SHOW_FPS && startTime <= QTime::currentTime().addSecs(-1)) {
@@ -117,12 +108,10 @@ int main() {
         }
     } while (keyPressed != 27);
 
-    serial->close();
     std::cout << "esc key pressed - aborted" << std::endl;
 
 	delete cameraControl;
-    delete servoControl;
-	delete serial;
+	delete servoControl;
 	delete missionControlCenter;
 
     return 0;
