@@ -3,6 +3,8 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <queue>
+#include <thread>
+#include <chrono>
 #include "servoControl.h"
 #include "missionControlCenter.h"
 #include "main.h"
@@ -39,6 +41,7 @@ int main() {
 	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, windowTitle, capture);
 
 	do {
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		missionControlCenter->handleShooting();
 		cv_gui.lock();
 		keyPressed = cv::waitKey(10);

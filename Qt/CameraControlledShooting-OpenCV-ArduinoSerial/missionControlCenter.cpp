@@ -14,7 +14,8 @@ MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, std::str
 	v0 = 5.3; //m/s
 	y0 = -0.06; //m
 	allowedToShoot = true;
-	numThreads = 3;
+	unsigned int num_cores = std::thread::hardware_concurrency();
+	numThreads = num_cores;
 	for (int i = 0; i < numThreads; i++) {
 		workers.push_back(new std::thread([this, pCap, pWindowTitle] () {
 			CameraControl* cameraControl = new CameraControl(pCap, pWindowTitle);
@@ -38,7 +39,7 @@ void MissionControlCenter::handleShooting()
 		float degrees[2] = {0, 0};
 		pos_queue.lock();
 		Position positionRelToCam = positions.back();
-		if (timer.elapsed() >= positionRelToCam.time + timeoutMsec) {
+		if (timer.elapsed() >= positionRelToCam.time + timeoutMsec) { //empty queue
 			for (int i = 0; i < size; i++) {
 				positions.pop();
 			}
