@@ -11,13 +11,16 @@
 
 std::queue<Position> positions;
 QTime timer;
+QTime test_timer;
+QTime timer_queue;
+QTime timer_main_thread;
 std::mutex cv_gui;
 std::mutex pos_queue;
 unsigned int fpsCount = 0;
 const short HARDWARE_VERSION = V1_1;
 const float PI = 3.14159265359;
 bool automaticMode = true;
-bool displayWindow = true;
+bool displayWindow = false;
 
 int main() {
 	const unsigned short int STEP_DEGREE = 5;
@@ -26,9 +29,12 @@ int main() {
 	const bool SHOW_FPS = true;
 	QTime fpsTimer;
 	fpsTimer.start();
+	test_timer.start();
+	timer_queue.start();
+	timer_main_thread.start();
 	int keyPressed;
 	std::string windowTitle = "Abschusskamera";
-	const short USB_CAM = 0;
+	const short USB_CAM = 2;
 	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
 	if (!capture->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
@@ -41,11 +47,15 @@ int main() {
 	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, windowTitle, capture);
 
 	do {
+		timer_main_thread.restart();
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		missionControlCenter->handleShooting();
-		cv_gui.lock();
-		keyPressed = cv::waitKey(10);
-		cv_gui.unlock();
+//		std::cout << "handle shooting" << timer_main_thread.elapsed() <<std::endl;
+//		cv_gui.lock();
+//		test_timer.restart();
+//		keyPressed = cv::waitKey(1);
+//		std::cout << "wait Key  " << test_timer.elapsed() << std::endl;
+//		cv_gui.unlock();
         switch (keyPressed) {
         case -1: break;
 		case 97: //a = automatic mode

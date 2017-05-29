@@ -13,6 +13,9 @@ struct Position {
 enum versions {V1_0 = 0, V1_1};
 extern std::queue<Position> positions;
 extern QTime timer;
+extern QTime test_timer;
+extern QTime timer_queue;
+extern QTime timer_main_thread;
 extern std::mutex cv_gui;
 extern std::mutex pos_queue;
 extern unsigned int fpsCount;

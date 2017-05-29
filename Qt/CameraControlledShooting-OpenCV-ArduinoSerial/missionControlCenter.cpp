@@ -38,12 +38,14 @@ void MissionControlCenter::handleShooting()
 	if (size > 0) {
 		float degrees[2] = {0, 0};
 		pos_queue.lock();
+		timer_queue.restart();
 		Position positionRelToCam = positions.back();
 		if (timer.elapsed() >= positionRelToCam.time + timeoutMsec) { //empty queue
 			for (int i = 0; i < size; i++) {
 				positions.pop();
 			}
 		}
+		std::cout << "pos read " << timer_queue.elapsed() <<std::endl;
 		pos_queue.unlock();
 		degrees[0] = positionRelToCam.degree;
 		float a = 0;

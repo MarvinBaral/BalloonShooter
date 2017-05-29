@@ -65,7 +65,7 @@ bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 		writeByte(v_frame, x, y, k, v);
 	}
 #endif
-	return (h > 150 || h < 20) && s > 220 && v > 200;
+	return (h > 150 || h < 20) && s > 100 && v > 150;
 }
 
 void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
@@ -94,6 +94,7 @@ float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> poin
 
 void CameraControl::readFrame() {
 	cv_gui.lock();
+	test_timer.restart();
 	cap->read(frame);
 #ifdef DEBUG_HSV
 	cap->read(h_frame);
@@ -101,12 +102,14 @@ void CameraControl::readFrame() {
 	cap->read(v_frame);
 #endif
 	fpsCount++;
+	std::cout << "read Frame " << test_timer.elapsed() << std::endl;
 	cv_gui.unlock();
 }
 
 void CameraControl::showFrame()
 {
 	cv_gui.lock();
+	test_timer.restart();
 	try {
 		imshow(windowTitle, frame);
 #ifdef DEBUG_HSV
@@ -117,6 +120,7 @@ void CameraControl::showFrame()
 	} catch (cv::Exception e) {
 		std::cout << e.what() <<std::endl;
 	}
+	std::cout << "show Frame " << test_timer.elapsed() << std::endl;
 	cv_gui.unlock();
 }
 
@@ -218,7 +222,9 @@ void CameraControl::detectBallByAverage() {
 		posRelToCam.time = timer.elapsed();
 
 		pos_queue.lock();
+		timer_queue.restart();
 		positions.push(posRelToCam);
+		std::cout << "pos write" << timer_queue.elapsed() <<std::endl;
 		pos_queue.unlock();
 	}
 #ifdef DEBUG
