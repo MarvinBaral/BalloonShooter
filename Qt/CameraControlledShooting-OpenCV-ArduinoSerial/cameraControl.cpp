@@ -125,8 +125,8 @@ void CameraControl::detectBallByAverage() {
 	int height = 0;
 	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
 	int extremes[2][2] = {{paramCam[WIDTH], 0},{paramCam[HEIGHT], 0}}; //x,y min,max
-	cv::Mat hsv_frame(frame.clone());
-	cv::medianBlur(hsv_frame, hsv_frame, 15);
+	cv::Mat hsv_frame;
+	cv::medianBlur(frame, hsv_frame, 15);
 	cv::cvtColor(hsv_frame, hsv_frame, CV_BGR2HSV);
 
     for (int y = 0; y < frame.rows; y++) {
@@ -217,9 +217,11 @@ void CameraControl::detectBallByAverage() {
 		}
 		posRelToCam.time = timer.elapsed();
 
-		pos_queue.lock();
-		positions.push(posRelToCam);
-		pos_queue.unlock();
+		if (recordPosition) {
+			pos_queue.lock();
+			positions.push(posRelToCam);
+			pos_queue.unlock();
+		}
 	}
 #ifdef DEBUG
 	std::cout << std::endl;

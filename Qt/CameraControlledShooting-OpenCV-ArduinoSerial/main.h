@@ -20,6 +20,6 @@ extern const short HARDWARE_VERSION;
 extern const float PI;
 extern bool automaticMode;
 extern bool displayWindow;
-
+extern bool recordPosition;
 
 #endif // MAIN_H

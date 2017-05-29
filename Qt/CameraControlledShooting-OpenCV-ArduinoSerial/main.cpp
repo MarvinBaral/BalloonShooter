@@ -18,6 +18,7 @@ const short HARDWARE_VERSION = V1_1;
 const float PI = 3.14159265359;
 bool automaticMode = true;
 bool displayWindow = true;
+bool recordPosition = true;
 
 int main() {
 	const unsigned short int STEP_DEGREE = 5;
@@ -50,15 +51,19 @@ int main() {
         case -1: break;
 		case 97: //a = automatic mode
 			automaticMode = true;
+			recordPosition = true;
 			break;
 		case 109: //m = manual mode
 			automaticMode = false;
-				break;
+			recordPosition = false;
+			break;
 		case 99: //c = clear
 			missionControlCenter->allowedToShoot = true;
+			recordPosition = true;
 			break;
         case 108: //l = lock
 			missionControlCenter->allowedToShoot = false;
+			recordPosition = false;
             break;
 		case 81: //left
 			if (!automaticMode)
