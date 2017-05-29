@@ -4,9 +4,9 @@ const unsigned short int PULSE_LENGTH = 20000; //microseconds
 const unsigned short int MIN_PULSE = 500;
 const unsigned short int MAX_PULSE = 1810;
 const unsigned short int REPEATIONS_OF_NEW_PULSE_TIME = 10;
-const unsigned short int UPTIME_SHOOTING_POS = 1050;
-const unsigned short int UPTIME_SHOOT_LOCK = 1200;
-const unsigned short int INITIAL_PULSE_TIMES[3] = {1150, 1500, 1200};
+const unsigned short int UPTIME_SHOOTING_POS = 1400;
+const unsigned short int UPTIME_SHOOT_LOCK = 1150;
+const unsigned short int INITIAL_PULSE_TIMES[3] = {1150, 1540, UPTIME_SHOOT_LOCK};
 const float TIME_PER_DEGREE = 10.69; //for both
 
 unsigned short int pulseTimes[3];//in ms
@@ -71,6 +71,7 @@ void loop() {
     while (timeInPulse < PULSE_LENGTH);
     ctr++;
   }
+  handleSerial();
 }
 
 //The protocoll
@@ -97,7 +98,7 @@ void pulseServo(int pin, int uptime, int cycles) {
   }
 }
 
-void serialEvent(){
+void handleSerial() {
   if (Serial.available()) {
     select = Serial.read();
     if (select == 's') {

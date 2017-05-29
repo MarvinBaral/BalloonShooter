@@ -1,63 +1,62 @@
 #include <QSerialPort>
-#include <QTime>
-#include <QElapsedTimer>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include "servoControl.hpp"
-#include "cameraControl.cpp"
+#include <queue>
+#include <thread>
+#include <chrono>
+#include "servoControl.h"
+#include "missionControlCenter.h"
+#include "main.h"
 
-const unsigned short int STEP_DEGREE = 5;
-const bool SHOW_RESPONSE_FROM_ARDUINO = false;
-const QString PORT_NAME = "/dev/ttyACM0";
-const bool SHOW_FPS = true;
-bool automaticMode = true;
-long unsigned int frameCount = 0;
-unsigned int fpsCount = 0;
-QTime startTime;
+std::queue<Position> positions;
+QTime timer;
+QTime test_timer;
+QTime timer_queue;
+QTime timer_main_thread;
 QElapsedTimer elapsedTimer;
-int keyPressed;
+std::mutex cv_gui;
+std::mutex pos_queue;
+unsigned int fpsCount = 0;
+const short HARDWARE_VERSION = V1_1;
+const float PI = 3.14159265359;
+bool automaticMode = true;
+bool displayWindow = false;
 
-int main(int argc, char* argv[]) {
-    QSerialPort* serial = new QSerialPort();
-    ServoControl* servoControl = new ServoControl(serial);
-	CameraControl* cameraControl = new CameraControl(servoControl);
+int main() {
+	const unsigned short int STEP_DEGREE = 5;
+	const bool SHOW_RESPONSE_FROM_ARDUINO = false;
+	const QString PORT_NAME = "/dev/ttyACM1";
+	const bool SHOW_FPS = true;
+	QTime fpsTimer;
+	fpsTimer.start();
+	test_timer.start();
+	timer_queue.start();
+	timer_main_thread.start();
+	elapsedTimer.start();
+	int keyPressed;
+	std::string windowTitle = "Abschusskamera";
+	const short USB_CAM = 2;
+	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
+	if (!capture->isOpened()) {
+		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
+	}
+	std::cout << "fps:" << capture->get(CV_CAP_PROP_FPS) << std::endl;
+	if (displayWindow) {
+		cv::namedWindow(windowTitle, CV_WINDOW_AUTOSIZE);
+	}
+	ServoControl* servoControl = new ServoControl(PORT_NAME);
+	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, windowTitle, capture);
 
-    servoControl->initSerial(PORT_NAME);
-    serial->open(QIODevice::ReadWrite);
-
-    startTime = QTime::currentTime();
 	do {
-		elapsedTimer.restart();
-		cameraControl->cap->read(cameraControl->frame);
-		std::cout << "read frame:\t\t" << elapsedTimer.nsecsElapsed() << std::endl;
-		if (DEBUG_MODE) {
-			cameraControl->cap->read(cameraControl->h_frame);
-			cameraControl->cap->read(cameraControl->s_frame);
-			cameraControl->cap->read(cameraControl->v_frame);
-		}
-		frameCount++;
-        fpsCount++;
-
-		elapsedTimer.restart();
-		if (automaticMode) {
-			cameraControl->detectBallByAverage();
-		}
-		std::cout << "detectBallByAverage:\t" << elapsedTimer.nsecsElapsed() << std::endl;
-		try {
-			elapsedTimer.restart();
-			imshow(cameraControl->windowTitle, cameraControl->frame);
-			std::cout << "imshow:\t\t\t" << elapsedTimer.nsecsElapsed() << std::endl;
-			if (DEBUG_MODE) {
-				imshow("h-frame", cameraControl->h_frame);
-				imshow("s-frame", cameraControl->s_frame);
-				imshow("v-frame", cameraControl->v_frame);
-			}
-		} catch (cv::Exception e) {
-			std::cout << e.what() <<std::endl;
-		}
-
-		elapsedTimer.restart();
-        keyPressed = cv::waitKey(1);
+		timer_main_thread.restart();
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		missionControlCenter->handleShooting();
+//		std::cout << "handle shooting" << timer_main_thread.elapsed() <<std::endl;
+//		cv_gui.lock();
+//		test_timer.restart();
+//		keyPressed = cv::waitKey(1);
+//		std::cout << "wait Key  " << test_timer.elapsed() << std::endl;
+//		cv_gui.unlock();
         switch (keyPressed) {
         case -1: break;
 		case 97: //a = automatic mode
@@ -67,27 +66,24 @@ int main(int argc, char* argv[]) {
 			automaticMode = false;
 				break;
 		case 99: //c = clear
-			cameraControl->allowedToShoot = true;
-            break;
-        case 107: //k
-			cameraControl->showColorOfCenteredPixel();
-            break;
+			missionControlCenter->allowedToShoot = true;
+			break;
         case 108: //l = lock
-			cameraControl->allowedToShoot = false;
+			missionControlCenter->allowedToShoot = false;
             break;
-        case 65361: //left
+		case 81: //left
 			if (!automaticMode)
 				servoControl->updateServo(0, -STEP_DEGREE);
             break;
-        case 65363: //right
+		case 83: //right
 			if (!automaticMode)
 				servoControl->updateServo(0, STEP_DEGREE);
             break;
-        case 65362: //up
+		case 82: //up
 			if (!automaticMode)
 				servoControl->updateServo(1, -STEP_DEGREE);
             break;
-        case 65364: //down
+		case 84: //down
 			if (!automaticMode)
 				servoControl->updateServo(1, STEP_DEGREE);
             break;
@@ -95,8 +91,7 @@ int main(int argc, char* argv[]) {
             servoControl->shoot();
             break;
         case 114: //r = reset
-            serial->close();
-            serial->open(QIODevice::ReadWrite);
+			servoControl->reset();
             break;
         default:
 #ifdef DEBUG
@@ -107,27 +102,22 @@ int main(int argc, char* argv[]) {
 		std::cout << "gui polling:\t\t" << elapsedTimer.nsecsElapsed() << std::endl;
 
 
-        if (SHOW_RESPONSE_FROM_ARDUINO) {
-			serial->waitForReadyRead(10);
-            QByteArray response = serial->readAll();
-            if (!response.isEmpty() && !response.isNull()) {
-                std::cout << response.toStdString();
-            }
+		if (SHOW_RESPONSE_FROM_ARDUINO) {
+			servoControl->printResponse();
         }
 
-		if (SHOW_FPS && startTime <= QTime::currentTime().addSecs(-1)) {
-            startTime = QTime::currentTime();
-            std::cout << "fps:" << fpsCount << std::endl;
-            fpsCount = 0;
+		if (SHOW_FPS && fpsTimer.elapsed() >= 1000) {
+			std::cout << "fps:" << ((fpsCount * 1000.f)/fpsTimer.elapsed())  << std::endl;
+			fpsTimer.restart();
+			fpsCount = 0;
         }
     } while (keyPressed != 27);
 
-    serial->close();
     std::cout << "esc key pressed - aborted" << std::endl;
 
-	delete cameraControl;
-    delete servoControl;
-    delete serial;
+
+	delete servoControl;
+	delete missionControlCenter;
 
     return 0;
 }
