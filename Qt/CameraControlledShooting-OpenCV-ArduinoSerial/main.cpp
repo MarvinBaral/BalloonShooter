@@ -12,6 +12,9 @@ std::queue<Position> positions;
 QTime timer;
 std::mutex cv_gui;
 std::mutex pos_queue;
+unsigned int fpsCount = 0;
+const short HARDWARE_VERSION = V1_1;
+const float PI = 3.14159265359;
 
 int main() {
 	const unsigned short int STEP_DEGREE = 5;
@@ -19,8 +22,6 @@ int main() {
 	const QString PORT_NAME = "/dev/ttyACM0";
 	const bool SHOW_FPS = true;
 	bool automaticMode = true;
-	long unsigned int frameCount = 0;
-	unsigned int fpsCount = 0;
 	QTime startTime;
 	int keyPressed;
 	bool displayWindow = true;
@@ -40,8 +41,6 @@ int main() {
     startTime = QTime::currentTime();
 	do {
 		cameraControl->readFrame();
-		frameCount++;
-        fpsCount++;
 
 		if (automaticMode) {
 			cameraControl->detectBallByAverage();

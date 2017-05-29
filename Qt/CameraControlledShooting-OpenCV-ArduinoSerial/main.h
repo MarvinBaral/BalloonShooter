@@ -15,8 +15,9 @@ extern std::queue<Position> positions;
 extern QTime timer;
 extern std::mutex cv_gui;
 extern std::mutex pos_queue;
-const short HARDWARE_VERSION = V1_1;
-const float PI = 3.14159265359;
+extern unsigned int fpsCount;
+extern const short HARDWARE_VERSION;
+extern const float PI;
 
 
 #endif // MAIN_H

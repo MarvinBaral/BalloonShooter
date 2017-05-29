@@ -109,6 +109,7 @@ void CameraControl::readFrame() {
 	cap->read(s_frame);
 	cap->read(v_frame);
 #endif
+	fpsCount++;
 	cv_gui.unlock();
 }
 
