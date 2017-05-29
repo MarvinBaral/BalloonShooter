@@ -10,11 +10,12 @@ MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, std::str
 	servoControl = pServoControl;
 	repeationsUntilShot = 20;
 	distanceBetweenCamAndCannon = 0.1; //m
-	timeoutMsec = 1000;
+	timeoutMsec = 500;
 	v0 = 5.3; //m/s
 	y0 = -0.06; //m
 	allowedToShoot = true;
 	unsigned int num_cores = std::thread::hardware_concurrency();
+	std::cout << "Using " << num_cores << " worker threads" << std::endl;
 	numThreads = num_cores;
 	for (int i = 0; i < numThreads; i++) {
 		workers.push_back(new std::thread([this, pCap, pWindowTitle] () {

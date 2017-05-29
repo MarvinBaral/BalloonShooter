@@ -28,12 +28,12 @@ int main() {
 	fpsTimer.start();
 	int keyPressed;
 	std::string windowTitle = "Abschusskamera";
-	const short USB_CAM = 0;
+	const short USB_CAM = 2;
 	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
 	if (!capture->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
 	}
-	std::cout << "fps:" << capture->get(CV_CAP_PROP_FPS) << std::endl;
+	std::cout << "Theoretically possible fps:" << capture->get(CV_CAP_PROP_FPS) << std::endl;
 	if (displayWindow) {
 		cv::namedWindow(windowTitle, CV_WINDOW_AUTOSIZE);
 	}
@@ -41,10 +41,10 @@ int main() {
 	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, windowTitle, capture);
 
 	do {
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100)); //main thread doesn't do a lot, its better to give some time to the worker threads
 		missionControlCenter->handleShooting();
 		cv_gui.lock();
-		keyPressed = cv::waitKey(10);
+		keyPressed = cv::waitKey(1);
 		cv_gui.unlock();
         switch (keyPressed) {
         case -1: break;

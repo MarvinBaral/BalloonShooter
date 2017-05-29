@@ -3,7 +3,6 @@
 
 CameraControl::CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle) {
 	cap = pCap;
-	std::cout << "BGR color model!!!" << std::endl;
 	paramCam[MINIMUM_CTR] = 350;
 	paramCam[ANGLE_OF_VIEW_X] = 2 * 30;
 	paramCam[ANGLE_OF_VIEW_Y] = 2 * 20;
@@ -23,6 +22,7 @@ CameraControl::CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle) {
 	windowTitle = pWindowTitle;
 	invertXAxis = true;
 	realSize = 0.23; //m
+	std::cout << "CameraControl started" << std::endl;
 	timer.start();
 }
 
@@ -65,7 +65,7 @@ bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 		writeByte(v_frame, x, y, k, v);
 	}
 #endif
-	return (h > 150 || h < 20) && s > 220 && v > 200;
+	return (h > 150 || h < 20) && s > 100 && v > 100;
 }
 
 void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
