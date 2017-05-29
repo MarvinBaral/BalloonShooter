@@ -10,9 +10,8 @@ class MissionControlCenter {
 		bool running;
 		cv::VideoCapture* cap;
 		std::string windowTitle;
-		std::thread worker;
-		std::thread worker2;
-		std::thread worker3;
+		short int numThreads;
+		std::vector<std::thread*> workers;
 		ServoControl* servoControl;
 		short repeationsUntilShot;
 		unsigned int timeoutMsec;

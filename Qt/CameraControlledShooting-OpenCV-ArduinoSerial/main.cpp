@@ -20,27 +20,28 @@ bool displayWindow = true;
 int main() {
 	const unsigned short int STEP_DEGREE = 5;
 	const bool SHOW_RESPONSE_FROM_ARDUINO = false;
-	const QString PORT_NAME = "/dev/ttyACM0";
+	const QString PORT_NAME = "/dev/ttyACM1";
 	const bool SHOW_FPS = true;
-	QTime startTime;
+	QTime fpsTimer;
+	fpsTimer.start();
 	int keyPressed;
 	std::string windowTitle = "Abschusskamera";
-	const short USB_CAM = 1;
+	const short USB_CAM = 0;
 	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
 	if (!capture->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
 	}
+	std::cout << "fps:" << capture->get(CV_CAP_PROP_FPS) << std::endl;
 	if (displayWindow) {
 		cv::namedWindow(windowTitle, CV_WINDOW_AUTOSIZE);
 	}
 	ServoControl* servoControl = new ServoControl(PORT_NAME);
 	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, windowTitle, capture);
 
-    startTime = QTime::currentTime();
 	do {
 		missionControlCenter->handleShooting();
 		cv_gui.lock();
-		keyPressed = cv::waitKey(1);
+		keyPressed = cv::waitKey(10);
 		cv_gui.unlock();
         switch (keyPressed) {
         case -1: break;
@@ -89,10 +90,10 @@ int main() {
 			servoControl->printResponse();
         }
 
-		if (SHOW_FPS && startTime <= QTime::currentTime().addSecs(-1)) {
-            startTime = QTime::currentTime();
-            std::cout << "fps:" << fpsCount << std::endl;
-            fpsCount = 0;
+		if (SHOW_FPS && fpsTimer.elapsed() >= 1000) {
+			std::cout << "fps:" << ((fpsCount * 1000.f)/fpsTimer.elapsed())  << std::endl;
+			fpsTimer.restart();
+			fpsCount = 0;
         }
     } while (keyPressed != 27);
 

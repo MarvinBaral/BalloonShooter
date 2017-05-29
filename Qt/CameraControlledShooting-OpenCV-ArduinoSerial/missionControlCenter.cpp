@@ -5,43 +5,7 @@
 MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, std::string pWindowTitle, cv::VideoCapture* pCap):
 	running(true),
 	cap(pCap),
-	windowTitle(pWindowTitle),
-	worker([this] () {
-		CameraControl* cameraControl = new CameraControl(cap, windowTitle);
-		while (running) {
-			cameraControl->readFrame();
-			if (automaticMode) {
-				cameraControl->detectBallByAverage();
-			}
-			if (displayWindow) {
-				cameraControl->showFrame();
-			}
-		}
-	}),
-	worker2([this] () {
-		CameraControl* cameraControl = new CameraControl(cap, windowTitle);
-		while (running) {
-			cameraControl->readFrame();
-			if (automaticMode) {
-				cameraControl->detectBallByAverage();
-			}
-			if (displayWindow) {
-				cameraControl->showFrame();
-			}
-		}
-	}),
-	worker3([this] () {
-		CameraControl* cameraControl = new CameraControl(cap, windowTitle);
-		while (running) {
-			cameraControl->readFrame();
-			if (automaticMode) {
-				cameraControl->detectBallByAverage();
-			}
-			if (displayWindow) {
-				cameraControl->showFrame();
-			}
-		}
-	})
+	windowTitle(pWindowTitle)
 {
 	servoControl = pServoControl;
 	repeationsUntilShot = 20;
@@ -50,6 +14,21 @@ MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, std::str
 	v0 = 5.3; //m/s
 	y0 = -0.06; //m
 	allowedToShoot = true;
+	numThreads = 3;
+	for (int i = 0; i < numThreads; i++) {
+		workers.push_back(new std::thread([this, pCap, pWindowTitle] () {
+			CameraControl* cameraControl = new CameraControl(pCap, pWindowTitle);
+			while (running) {
+				cameraControl->readFrame();
+				if (automaticMode) {
+					cameraControl->detectBallByAverage();
+				}
+				if (displayWindow) {
+					cameraControl->showFrame();
+				}
+			}
+		}));
+	}
 }
 
 void MissionControlCenter::handleShooting()
@@ -100,5 +79,8 @@ void MissionControlCenter::handleShooting()
 MissionControlCenter::~MissionControlCenter()
 {
 	running = false;
-	worker.join();
+	for (int i = 0; i < numThreads; i++) {
+		workers.back()->join();
+		workers.pop_back();
+	}
 }
