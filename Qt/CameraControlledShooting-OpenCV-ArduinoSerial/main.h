@@ -18,6 +18,8 @@ extern std::mutex pos_queue;
 extern unsigned int fpsCount;
 extern const short HARDWARE_VERSION;
 extern const float PI;
+extern bool automaticMode;
+extern bool displayWindow;
 
 
 #endif // MAIN_H

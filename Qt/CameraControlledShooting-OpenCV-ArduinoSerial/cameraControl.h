@@ -1,7 +1,7 @@
 #ifndef OPENCV_HPP
 #define OPENCV_HPP
-#include "servoControl.h"
 #include <opencv2/opencv.hpp>
+#include "servoControl.h"
 #include "main.h"
 //#define DEBUG
 //#define DEBUG_HSV
@@ -46,7 +46,6 @@ private:
 
 public:
 	CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle);    void markPosition(int posx, int posy);
-	void showColorOfCenteredPixel();
 	void readFrame();
 	void showFrame();
 	void detectBallByAverage();

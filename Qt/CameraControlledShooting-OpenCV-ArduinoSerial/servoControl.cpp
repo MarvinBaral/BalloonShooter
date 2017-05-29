@@ -29,7 +29,7 @@ void ServoControl::setServo(int index, int degree) {
         serial->flush();
         serial->waitForReadyRead(100);
         serial->readAll();
-    }
+	}
 }
 
 void ServoControl::initSerial(const QString &PORT_NAME) {

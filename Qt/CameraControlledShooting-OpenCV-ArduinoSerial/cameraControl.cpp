@@ -74,15 +74,6 @@ void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
     }
 }
 
-void CameraControl::showColorOfCenteredPixel() {
-    int baseColor[3];
-    for (int color = 0; color < 3; color++){
-        baseColor[color] = *(frame.data + frame.step[0] * (frame.rows / 2) + frame.step[1] * (frame.cols / 2) + color);
-        std::cout << baseColor[color] << "|";
-    }
-    std::cout << std::endl << "y: " << frame.rows / 2 << " x: " << frame.cols / 2 << std::endl;
-}
-
 void CameraControl::markPosition(int posx, int posy) {
     int size = 5;
     for (int y = posy - size; y < posy + size; y++) {

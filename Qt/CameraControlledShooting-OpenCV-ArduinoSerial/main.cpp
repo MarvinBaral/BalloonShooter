@@ -4,7 +4,6 @@
 #include <opencv2/opencv.hpp>
 #include <queue>
 #include "servoControl.h"
-#include "cameraControl.cpp"
 #include "missionControlCenter.h"
 #include "main.h"
 
@@ -15,16 +14,16 @@ std::mutex pos_queue;
 unsigned int fpsCount = 0;
 const short HARDWARE_VERSION = V1_1;
 const float PI = 3.14159265359;
+bool automaticMode = true;
+bool displayWindow = true;
 
 int main() {
 	const unsigned short int STEP_DEGREE = 5;
 	const bool SHOW_RESPONSE_FROM_ARDUINO = false;
 	const QString PORT_NAME = "/dev/ttyACM0";
 	const bool SHOW_FPS = true;
-	bool automaticMode = true;
 	QTime startTime;
 	int keyPressed;
-	bool displayWindow = true;
 	std::string windowTitle = "Abschusskamera";
 	const short USB_CAM = 1;
 	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
@@ -35,21 +34,14 @@ int main() {
 		cv::namedWindow(windowTitle, CV_WINDOW_AUTOSIZE);
 	}
 	ServoControl* servoControl = new ServoControl(PORT_NAME);
-	CameraControl* cameraControl = new CameraControl(capture, windowTitle);
-	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl);
+	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, windowTitle, capture);
 
     startTime = QTime::currentTime();
 	do {
-		cameraControl->readFrame();
-
-		if (automaticMode) {
-			cameraControl->detectBallByAverage();
-		}
-		if (displayWindow) {
-			cameraControl->showFrame();
-		}
 		missionControlCenter->handleShooting();
-        keyPressed = cv::waitKey(1);
+		cv_gui.lock();
+		keyPressed = cv::waitKey(1);
+		cv_gui.unlock();
         switch (keyPressed) {
         case -1: break;
 		case 97: //a = automatic mode
@@ -60,10 +52,7 @@ int main() {
 				break;
 		case 99: //c = clear
 			missionControlCenter->allowedToShoot = true;
-            break;
-        case 107: //k
-			cameraControl->showColorOfCenteredPixel();
-            break;
+			break;
         case 108: //l = lock
 			missionControlCenter->allowedToShoot = false;
             break;
@@ -109,7 +98,7 @@ int main() {
 
     std::cout << "esc key pressed - aborted" << std::endl;
 
-	delete cameraControl;
+
 	delete servoControl;
 	delete missionControlCenter;
 

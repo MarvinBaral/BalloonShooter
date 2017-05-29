@@ -1,6 +1,5 @@
 #ifndef SERVOCONTROL_HPP
 #define SERVOCONTROL_HPP
-
 #include <QSerialPort>
 #include "../../Arduino/servo_pulse_time_reciever/sharedConstants.h"
 
