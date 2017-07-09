@@ -3,6 +3,7 @@
 #include <QTime>
 #include <queue>
 #include <mutex>
+#include "config.h"
 
 struct Position {
 		float degree;
@@ -10,7 +11,6 @@ struct Position {
 		float height;
 		long long int time;
 };
-enum versions {V1_0 = 0, V1_1};
 extern std::queue<Position> positions;
 extern QTime timer;
 extern std::mutex cv_gui;

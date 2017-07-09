@@ -3,11 +3,9 @@
 #include <opencv2/opencv.hpp>
 #include "servoControl.h"
 #include "main.h"
+#include "config.h"
 //#define DEBUG
 //#define DEBUG_HSV
-
-enum params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
-enum color {BLUE = 0, GREEN, RED};
 
 class CameraControl {
 private:
