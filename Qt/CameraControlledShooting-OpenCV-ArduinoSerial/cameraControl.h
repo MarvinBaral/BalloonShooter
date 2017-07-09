@@ -52,4 +52,4 @@ public:
 	~CameraControl();
 };
 
-#endif // OPENCV_HPP
+#endif // CAMERACONTROL_H

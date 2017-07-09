@@ -29,7 +29,7 @@ int main() {
 	fpsTimer.start();
 	int keyPressed;
 	std::string windowTitle = "Abschusskamera";
-	const short USB_CAM = 2;
+	const short USB_CAM = 1;
 	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
 	if (!capture->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;

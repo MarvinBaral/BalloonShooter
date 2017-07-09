@@ -22,4 +22,4 @@ public:
 
 
 
-#endif // SERVOCONTROL_HPP
+#endif // SERVOCONTROL_H
