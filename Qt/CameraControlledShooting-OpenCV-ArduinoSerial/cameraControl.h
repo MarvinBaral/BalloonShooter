@@ -10,7 +10,6 @@
 class CameraControl {
 private:
 	int paramCam[5];
-	bool displayWindow;
     float minimumRelationTrigger;
 	int minimumInterestingColorValue;
 	short interestingColor;
