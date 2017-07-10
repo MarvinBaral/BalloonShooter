@@ -4,7 +4,9 @@
 CameraControl::CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle) {
 	cap = pCap;
 	windowTitle = pWindowTitle;
+#ifdef DEBUG
 	std::cout << "CameraControl started" << std::endl;
+#endif
 	timer.start();
 }
 
@@ -25,10 +27,10 @@ float CameraControl::getRelation(cv::Mat frame, int x, int y, int byte) {
     return single/sum;
 }
 
-short CameraControl::getAverage(cv::Mat frame, int x, int y) {
-    int sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
-	return sum / 3.f;
-}
+//short CameraControl::getAverage(cv::Mat frame, int x, int y) {
+//    int sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
+//	return sum / 3.f;
+//}
 
 bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 {
