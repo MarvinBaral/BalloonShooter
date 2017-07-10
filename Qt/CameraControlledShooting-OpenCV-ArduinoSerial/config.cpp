@@ -4,41 +4,38 @@
 Config config;
 
 Cam::Cam():
-	paramCam{350, 640, 480, 2*30, 2*30},
-	minimumRelationTrigger(0.50),
-	minimumInterestingColorValue(150),
-	interestingColor(RED),
-	markDetectedPixels(true),
+	PARAM{350, 640, 480, 2*30, 2*30},
+	MAX_HUE(20),
+	MIN_HUE(150),
+	MIN_SATURATION(100),
+	MIN_VALUE(100),
+	MARK_DETECTED_PIXELS(true),
 	MINIMUM_OBJECT_PIXELS_IN_ROW(5), //The higher the number the more noise suppression
-	pixelMarkColor{255, 0, 0},
-	positionMarkColor{0, 255, 0},
-	invertXAxis(true),
-	realSize(0.23) //m
-{
-}
+	PIXEL_MARK_COLOR{255, 0, 0},
+	POS_MARK_COLOR{0, 255, 0},
+	INVERT_X_AXIS(true),
+	REAL_SIZE(0.23) //m
+{}
 
 MC::MC():
-	numThreads(std::thread::hardware_concurrency()), //number of cores
-	repeationsUntilShot(20),
-	distanceBetweenCamAndCannon(0.1), //m
-	timeoutMsec(500),
-	v0(5.3), //m/s
-	y0(-0.06) //m
-{
-}
+	NUM_THREADS(std::thread::hardware_concurrency()), //number of cores
+	REPEATIONS_UNTIL_SHOT(20),
+	DISTANCE_CAM_TO_CANNON(0.1), //m
+	TIMEOUT_MSEC(500),
+	V0(5.3), //m/s
+	Y0(-0.06) //m
+{}
 
 Main::Main():
 	HARDWARE_VERSION(V1_1),
 	STEP_DEGREE(5),
 	SHOW_RESPONSE_FROM_ARDUINO(false),
-	PORT_NAME("/dev/ttyACM1"),
+	PORT_NAME("/dev/ttyACM0"),
 	SHOW_FPS(true),
-	windowTitle("Abschusskamera"),
 	USB_CAM(1) //restart cap when changing this
-{
-}
+{}
 
 Config::Config():
-	displayWindow(true)
-{
-}
+	DISPLAY_WINDOW(true),
+	WINDOW_TITLE("Abschusskamera")
+{}

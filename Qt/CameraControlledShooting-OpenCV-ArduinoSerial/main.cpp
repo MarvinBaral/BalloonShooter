@@ -27,11 +27,11 @@ int main() {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
 	}
 	std::cout << "Theoretically possible fps:" << capture->get(CV_CAP_PROP_FPS) << std::endl;
-	if (config.displayWindow) {
-		cv::namedWindow(config.main.windowTitle, CV_WINDOW_AUTOSIZE);
+	if (config.DISPLAY_WINDOW) {
+		cv::namedWindow(config.WINDOW_TITLE, CV_WINDOW_AUTOSIZE);
 	}
 	ServoControl* servoControl = new ServoControl(config.main.PORT_NAME);
-	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, config.main.windowTitle, capture);
+	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, capture);
 
 	do {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100)); //main thread doesn't do a lot, its better to give some time to the worker threads

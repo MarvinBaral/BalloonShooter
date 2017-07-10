@@ -16,7 +16,7 @@ class MissionControlCenter {
 
 	public:
 		bool allowedToShoot;
-		MissionControlCenter(ServoControl* pServoControl, std::string pWindowTitle, cv::VideoCapture* pCap);
+		MissionControlCenter(ServoControl* pServoControl, cv::VideoCapture* pCap);
 		void handleShooting();
 		~MissionControlCenter();
 };

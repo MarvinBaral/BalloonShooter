@@ -47,12 +47,12 @@ bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 		writeByte(v_frame, x, y, k, v);
 	}
 #endif
-	return (h > 150 || h < 20) && s > 100 && v > 100;
+	return (h > config.cam.MIN_HUE || h < config.cam.MAX_HUE) && s > config.cam.MIN_SATURATION && v > config.cam.MIN_VALUE;
 }
 
 void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
     for (int i = 0; i < 3; i++) {
-		writeByte(frame, posx, posy, i, config.cam.pixelMarkColor[i]);
+		writeByte(frame, posx, posy, i, config.cam.PIXEL_MARK_COLOR[i]);
     }
 }
 
@@ -62,7 +62,7 @@ void CameraControl::markPosition(int posx, int posy) {
         for (int x = posx - size; x < posx + size; x++){
             for (int i = 0; i < 3; i++) {
 				if (x >= 0 && y >= 0 && x < frame.cols && y < frame.rows){
-					writeByte(frame, x, y, i, config.cam.positionMarkColor[i]);
+					writeByte(frame, x, y, i, config.cam.POS_MARK_COLOR[i]);
                 }
             }
         }
@@ -106,14 +106,13 @@ void CameraControl::detectBallByAverage() {
 	int width = 0;
 	int height = 0;
 	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
-	int extremes[2][2] = {{config.cam.paramCam[WIDTH], 0},{config.cam.paramCam[HEIGHT], 0}}; //x,y min,max
+	int extremes[2][2] = {{config.cam.PARAM[WIDTH], 0},{config.cam.PARAM[HEIGHT], 0}}; //x,y min,max
 	cv::Mat hsv_frame;
 	cv::medianBlur(frame, hsv_frame, 15);
 	cv::cvtColor(hsv_frame, hsv_frame, CV_BGR2HSV);
 
     for (int y = 0; y < frame.rows; y++) {
 		for (int x = 0; x < frame.cols; x++) {
-			//if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumInterestingColorValue) {
 			if (isBalloon(hsv_frame, x, y)) {
 				if (objectPixelsInRowCtr >= config.cam.MINIMUM_OBJECT_PIXELS_IN_ROW) {
 					//find out most outside points
@@ -134,7 +133,7 @@ void CameraControl::detectBallByAverage() {
 					ctr++;
 					yposSumm += y;
 					xposSumm += x;
-					if (config.cam.markDetectedPixels) {
+					if (config.cam.MARK_DETECTED_PIXELS) {
 						markPixel(frame, x, y);
 					}
 				}
@@ -166,14 +165,14 @@ void CameraControl::detectBallByAverage() {
 	//calc distance
 	float distance = 0;
 	float coordY;
-	if (ctr > config.cam.paramCam[MINIMUM_CTR]) {
-		float alpha = (config.cam.paramCam[ANGLE_OF_VIEW_Y] / (config.cam.paramCam[HEIGHT] * 1.f)) * size; //ganzzahldivision
+	if (ctr > config.cam.PARAM[MINIMUM_CTR]) {
+		float alpha = (config.cam.PARAM[ANGLE_OF_VIEW_Y] / (config.cam.PARAM[HEIGHT] * 1.f)) * size; //ganzzahldivision
 		alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
-		distance = (config.cam.realSize / 2.f) / (std::tan(alpha / 2.f));
+		distance = (config.cam.REAL_SIZE / 2.f) / (std::tan(alpha / 2.f));
 
 		//get Height
 		float angleY;
-		angleY = config.cam.paramCam[ANGLE_OF_VIEW_Y] / (config.cam.paramCam[HEIGHT] * 1.f) * ((config.cam.paramCam[HEIGHT] - yposSumm) - config.cam.paramCam[HEIGHT] / 2.f);
+		angleY = config.cam.PARAM[ANGLE_OF_VIEW_Y] / (config.cam.PARAM[HEIGHT] * 1.f) * ((config.cam.PARAM[HEIGHT] - yposSumm) - config.cam.PARAM[HEIGHT] / 2.f);
 		angleY = angleY / 180.f * PI;
 		coordY = std::sin(angleY) * distance;
 //		distance = std::sin(angleY) * distance; necessary to think about it and test it
@@ -182,10 +181,10 @@ void CameraControl::detectBallByAverage() {
 #ifdef DEBUG
 		std::cout << ",\tdistance: " << distance << "m";
 #endif
-		int xysize[2] = {config.cam.paramCam[WIDTH], config.cam.paramCam[HEIGHT]};
+		int xysize[2] = {config.cam.PARAM[WIDTH], config.cam.PARAM[HEIGHT]};
 		int xypos[2] = {xposSumm, yposSumm};
-		float degreeX = config.cam.paramCam[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * config.cam.paramCam[ANGLE_OF_VIEW_X]);
-		if (config.cam.invertXAxis) {
+		float degreeX = config.cam.PARAM[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * config.cam.PARAM[ANGLE_OF_VIEW_X]);
+		if (config.cam.INVERT_X_AXIS) {
 			degreeX = -degreeX;
 		}
 		this->markPosition(xposSumm, yposSumm); //mark center position
