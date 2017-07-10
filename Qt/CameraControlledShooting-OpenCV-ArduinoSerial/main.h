@@ -16,10 +16,8 @@ extern QTime timer;
 extern std::mutex cv_gui;
 extern std::mutex pos_queue;
 extern unsigned int fpsCount;
-extern const short HARDWARE_VERSION;
 extern const float PI;
 extern bool automaticMode;
-extern bool displayWindow;
 extern bool recordPosition;
 
 #endif // MAIN_H

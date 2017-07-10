@@ -4,19 +4,9 @@
 #include "servoControl.h"
 #include "main.h"
 #include "config.h"
-//#define DEBUG
-//#define DEBUG_HSV
 
 class CameraControl {
 private:
-	int paramCam[5];
-    float minimumRelationTrigger;
-	int minimumInterestingColorValue;
-	short interestingColor;
-	short MINIMUM_OBJECT_PIXELS_IN_ROW;
-    int positionMarkColor[3];
-	bool markDetectedPixels;
-    int pixelMarkColor[3];
 	int size;
     std::string windowTitle;
 	cv::VideoCapture* cap;
@@ -24,9 +14,7 @@ private:
 	cv::Mat h_frame;
 	cv::Mat s_frame;
 	cv::Mat v_frame;
-	bool invertXAxis;
-	float realSize;
-    __attribute__((always_inline))
+	 __attribute__((always_inline))
     static inline float getRelation(cv::Mat frame, int x, int y, int byte);
     __attribute__((always_inline))
     static inline int getByte(cv::Mat frame, int x, int y, int byte);

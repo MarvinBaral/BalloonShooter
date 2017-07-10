@@ -8,16 +8,9 @@ MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, std::str
 	windowTitle(pWindowTitle)
 {
 	servoControl = pServoControl;
-	repeationsUntilShot = 20;
-	distanceBetweenCamAndCannon = 0.1; //m
-	timeoutMsec = 500;
-	v0 = 5.3; //m/s
-	y0 = -0.06; //m
 	allowedToShoot = true;
-	unsigned int num_cores = std::thread::hardware_concurrency();
-	std::cout << "Using " << num_cores << " worker threads" << std::endl;
-	numThreads = num_cores;
-	for (int i = 0; i < numThreads; i++) {
+	std::cout << "Using " << config.mc.numThreads << " worker threads" << std::endl;
+	for (int i = 0; i < config.mc.numThreads; i++) {
 		workers.push_back(new std::thread([this, pCap, pWindowTitle] () {
 			CameraControl* cameraControl = new CameraControl(pCap, pWindowTitle);
 			while (running) {
@@ -25,7 +18,7 @@ MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, std::str
 				if (automaticMode) {
 					cameraControl->detectBallByAverage();
 				}
-				if (displayWindow) {
+				if (config.displayWindow) {
 					cameraControl->showFrame();
 				}
 			}
@@ -40,7 +33,7 @@ void MissionControlCenter::handleShooting()
 		float degrees[2] = {0, 0};
 		pos_queue.lock();
 		Position positionRelToCam = positions.back();
-		if (timer.elapsed() >= positionRelToCam.time + timeoutMsec) { //empty queue
+		if (timer.elapsed() >= positionRelToCam.time + config.mc.timeoutMsec) { //empty queue
 			for (int i = 0; i < size; i++) {
 				positions.pop();
 			}
@@ -48,26 +41,26 @@ void MissionControlCenter::handleShooting()
 		pos_queue.unlock();
 		degrees[0] = positionRelToCam.degree;
 		float a = 0;
-		float g = 9.81;
-		float x = positionRelToCam.distance - distanceBetweenCamAndCannon, y;
+		const float g = 9.81;
+		float x = positionRelToCam.distance - config.mc.distanceBetweenCamAndCannon, y;
 		for (int i = 0; i < 80; i++) {
 			a = i;
 			a = a / 180.f * PI; //convert to radiant
-			float t = (x / (v0 * std::cos(a)));
-			y = y0 + v0 * std::sin(a) * t - 0.5 * g * t * t;
+			float t = (x / (config.mc.v0 * std::cos(a)));
+			y = config.mc.y0 + config.mc.v0 * std::sin(a) * t - 0.5 * g * t * t;
 
 			if (y >= positionRelToCam.height) {
 				degrees[1] = i;
 				break;
 			}
 		}
-		if (HARDWARE_VERSION < V1_1){
+		if (config.main.HARDWARE_VERSION < V1_1){
 			degrees[0] += 5 + std::pow(1.07, degrees[1] - 18) + 8; //regression: y=1.07^(x-18)+8, more: https://docs.google.com/spreadsheets/d/1m2OmglEK80_FfIZ42FL04EmCf1KAKzufZCY5AwhhgKE/edit?usp=sharing
 		}
 		for (int i = 0; i < 2 && allowedToShoot; i ++) {
 			servoControl->setServo(i, degrees[i]);
 		}
-		if (size >= repeationsUntilShot && allowedToShoot) {
+		if (size >= config.mc.repeationsUntilShot && allowedToShoot) {
 			servoControl->shoot();
 			pos_queue.lock();
 			for (int i = 0; i < size; i++) {
@@ -81,7 +74,7 @@ void MissionControlCenter::handleShooting()
 MissionControlCenter::~MissionControlCenter()
 {
 	running = false;
-	for (int i = 0; i < numThreads; i++) {
+	for (int i = 0; i < config.mc.numThreads; i++) {
 		workers.back()->join();
 		workers.pop_back();
 	}

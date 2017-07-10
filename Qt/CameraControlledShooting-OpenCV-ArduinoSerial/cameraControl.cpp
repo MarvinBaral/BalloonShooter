@@ -3,25 +3,7 @@
 
 CameraControl::CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle) {
 	cap = pCap;
-	paramCam[MINIMUM_CTR] = 350;
-	paramCam[ANGLE_OF_VIEW_X] = 2 * 30;
-	paramCam[ANGLE_OF_VIEW_Y] = 2 * 20;
-	paramCam[WIDTH] = 640;
-	paramCam[HEIGHT] = 480;
-	minimumRelationTrigger = 0.50;
-	minimumInterestingColorValue = 150;
-	interestingColor = RED;
-	markDetectedPixels = true;
-	MINIMUM_OBJECT_PIXELS_IN_ROW = 5; //The higher the number the more noise suppression
-    pixelMarkColor[0] = 255;
-    pixelMarkColor[1] = 0;
-    pixelMarkColor[2] = 0;
-    positionMarkColor[0] = 0;
-    positionMarkColor[1] = 255;
-    positionMarkColor[2] = 0;
 	windowTitle = pWindowTitle;
-	invertXAxis = true;
-	realSize = 0.23; //m
 	std::cout << "CameraControl started" << std::endl;
 	timer.start();
 }
@@ -70,7 +52,7 @@ bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 
 void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
     for (int i = 0; i < 3; i++) {
-        writeByte(frame, posx, posy, i, pixelMarkColor[i]);
+		writeByte(frame, posx, posy, i, config.cam.pixelMarkColor[i]);
     }
 }
 
@@ -80,7 +62,7 @@ void CameraControl::markPosition(int posx, int posy) {
         for (int x = posx - size; x < posx + size; x++){
             for (int i = 0; i < 3; i++) {
 				if (x >= 0 && y >= 0 && x < frame.cols && y < frame.rows){
-                    writeByte(frame, x, y, i, positionMarkColor[i]);
+					writeByte(frame, x, y, i, config.cam.positionMarkColor[i]);
                 }
             }
         }
@@ -124,7 +106,7 @@ void CameraControl::detectBallByAverage() {
 	int width = 0;
 	int height = 0;
 	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
-	int extremes[2][2] = {{paramCam[WIDTH], 0},{paramCam[HEIGHT], 0}}; //x,y min,max
+	int extremes[2][2] = {{config.cam.paramCam[WIDTH], 0},{config.cam.paramCam[HEIGHT], 0}}; //x,y min,max
 	cv::Mat hsv_frame;
 	cv::medianBlur(frame, hsv_frame, 15);
 	cv::cvtColor(hsv_frame, hsv_frame, CV_BGR2HSV);
@@ -133,7 +115,7 @@ void CameraControl::detectBallByAverage() {
 		for (int x = 0; x < frame.cols; x++) {
 			//if (getRelation(frame, x, y, interestingColor) >= minimumRelationTrigger  && getByte(frame, x, y, interestingColor) >= minimumInterestingColorValue) {
 			if (isBalloon(hsv_frame, x, y)) {
-				if (objectPixelsInRowCtr >= MINIMUM_OBJECT_PIXELS_IN_ROW) {
+				if (objectPixelsInRowCtr >= config.cam.MINIMUM_OBJECT_PIXELS_IN_ROW) {
 					//find out most outside points
 					if (x < extremes[0][0]) {
 						extremes[0][0] = x;
@@ -152,7 +134,7 @@ void CameraControl::detectBallByAverage() {
 					ctr++;
 					yposSumm += y;
 					xposSumm += x;
-					if (markDetectedPixels) {
+					if (config.cam.markDetectedPixels) {
 						markPixel(frame, x, y);
 					}
 				}
@@ -184,14 +166,14 @@ void CameraControl::detectBallByAverage() {
 	//calc distance
 	float distance = 0;
 	float coordY;
-	if (ctr > paramCam[MINIMUM_CTR]) {
-		float alpha = (paramCam[ANGLE_OF_VIEW_Y] / (paramCam[HEIGHT] * 1.f)) * size; //ganzzahldivision
+	if (ctr > config.cam.paramCam[MINIMUM_CTR]) {
+		float alpha = (config.cam.paramCam[ANGLE_OF_VIEW_Y] / (config.cam.paramCam[HEIGHT] * 1.f)) * size; //ganzzahldivision
 		alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
-		distance = (realSize / 2.f) / (std::tan(alpha / 2.f));
+		distance = (config.cam.realSize / 2.f) / (std::tan(alpha / 2.f));
 
 		//get Height
 		float angleY;
-		angleY = paramCam[ANGLE_OF_VIEW_Y] / (paramCam[HEIGHT] * 1.f) * ((paramCam[HEIGHT] - yposSumm) - paramCam[HEIGHT] / 2.f);
+		angleY = config.cam.paramCam[ANGLE_OF_VIEW_Y] / (config.cam.paramCam[HEIGHT] * 1.f) * ((config.cam.paramCam[HEIGHT] - yposSumm) - config.cam.paramCam[HEIGHT] / 2.f);
 		angleY = angleY / 180.f * PI;
 		coordY = std::sin(angleY) * distance;
 //		distance = std::sin(angleY) * distance; necessary to think about it and test it
@@ -200,10 +182,10 @@ void CameraControl::detectBallByAverage() {
 #ifdef DEBUG
 		std::cout << ",\tdistance: " << distance << "m";
 #endif
-		int xysize[2] = {paramCam[WIDTH], paramCam[HEIGHT]};
+		int xysize[2] = {config.cam.paramCam[WIDTH], config.cam.paramCam[HEIGHT]};
 		int xypos[2] = {xposSumm, yposSumm};
-		float degreeX = paramCam[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * paramCam[ANGLE_OF_VIEW_X]);
-		if (invertXAxis) {
+		float degreeX = config.cam.paramCam[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * config.cam.paramCam[ANGLE_OF_VIEW_X]);
+		if (config.cam.invertXAxis) {
 			degreeX = -degreeX;
 		}
 		this->markPosition(xposSumm, yposSumm); //mark center position

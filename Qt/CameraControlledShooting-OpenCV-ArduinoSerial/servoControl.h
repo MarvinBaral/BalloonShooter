@@ -2,6 +2,7 @@
 #define SERVOCONTROL_HPP
 #include <QSerialPort>
 #include "../../Arduino/servo_pulse_time_reciever/sharedConstants.h"
+#include "config.h"
 
 class ServoControl {
 private:

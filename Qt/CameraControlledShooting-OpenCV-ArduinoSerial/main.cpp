@@ -14,32 +14,24 @@ QTime timer;
 std::mutex cv_gui;
 std::mutex pos_queue;
 unsigned int fpsCount = 0;
-const short HARDWARE_VERSION = V1_1;
 const float PI = 3.14159265359;
 bool automaticMode = true;
-bool displayWindow = true;
 bool recordPosition = true;
 
 int main() {
-	const unsigned short int STEP_DEGREE = 5;
-	const bool SHOW_RESPONSE_FROM_ARDUINO = false;
-	const QString PORT_NAME = "/dev/ttyACM1";
-	const bool SHOW_FPS = true;
 	QTime fpsTimer;
 	fpsTimer.start();
 	int keyPressed;
-	std::string windowTitle = "Abschusskamera";
-	const short USB_CAM = 1;
-	cv::VideoCapture* capture = new cv::VideoCapture(USB_CAM);
+	cv::VideoCapture* capture = new cv::VideoCapture(config.main.USB_CAM);
 	if (!capture->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
 	}
 	std::cout << "Theoretically possible fps:" << capture->get(CV_CAP_PROP_FPS) << std::endl;
-	if (displayWindow) {
-		cv::namedWindow(windowTitle, CV_WINDOW_AUTOSIZE);
+	if (config.displayWindow) {
+		cv::namedWindow(config.main.windowTitle, CV_WINDOW_AUTOSIZE);
 	}
-	ServoControl* servoControl = new ServoControl(PORT_NAME);
-	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, windowTitle, capture);
+	ServoControl* servoControl = new ServoControl(config.main.PORT_NAME);
+	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, config.main.windowTitle, capture);
 
 	do {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100)); //main thread doesn't do a lot, its better to give some time to the worker threads
@@ -67,19 +59,19 @@ int main() {
             break;
 		case 81: //left
 			if (!automaticMode)
-				servoControl->updateServo(0, -STEP_DEGREE);
+				servoControl->updateServo(0, -config.main.STEP_DEGREE);
             break;
 		case 83: //right
 			if (!automaticMode)
-				servoControl->updateServo(0, STEP_DEGREE);
+				servoControl->updateServo(0, config.main.STEP_DEGREE);
             break;
 		case 82: //up
 			if (!automaticMode)
-				servoControl->updateServo(1, -STEP_DEGREE);
+				servoControl->updateServo(1, -config.main.STEP_DEGREE);
             break;
 		case 84: //down
 			if (!automaticMode)
-				servoControl->updateServo(1, STEP_DEGREE);
+				servoControl->updateServo(1, config.main.STEP_DEGREE);
             break;
         case 10: //enter = shoot
             servoControl->shoot();
@@ -94,11 +86,11 @@ int main() {
 			break;
         }
 
-		if (SHOW_RESPONSE_FROM_ARDUINO) {
+		if (config.main.SHOW_RESPONSE_FROM_ARDUINO) {
 			servoControl->printResponse();
         }
 
-		if (SHOW_FPS && fpsTimer.elapsed() >= 1000) {
+		if (config.main.SHOW_FPS && fpsTimer.elapsed() >= 1000) {
 			std::cout << "fps:" << ((fpsCount * 1000.f)/fpsTimer.elapsed())  << std::endl;
 			fpsTimer.restart();
 			fpsCount = 0;

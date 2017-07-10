@@ -49,6 +49,7 @@ void ServoControl::shoot(){
 void ServoControl::reset()
 {
 	serial->close();
+	//initSerial(portName); how about this?????? Didn't test with it.
 	serial->open(QIODevice::ReadWrite);
 }
 
