@@ -1,0 +1,4 @@
+documentation:
+
+tabletennis ball: 0|240|238| 238|240|0 #eef000
+mandarine: 49|141|241| 241|141|49 #f18d31
