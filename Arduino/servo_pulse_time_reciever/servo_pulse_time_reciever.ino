@@ -86,7 +86,7 @@ void printErr() {
   Serial.print(MAX_DEGREES[0][0]);
   Serial.print(" to ");
   Serial.print(MAX_DEGREES[1][1]);
-  Serial.print("}> or: s, a");  
+  Serial.print("}>; or: s, a");  
 }
 
 void pulseServo(int pin, int uptime, int cycles) {
