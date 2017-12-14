@@ -20,6 +20,7 @@ struct Cam {
 	const int POS_MARK_COLOR[3];
 	const bool INVERT_X_AXIS;
 	const float REAL_SIZE;
+	const int USE_EACH_x_ROW;
 	Cam();
 };
 struct MC {

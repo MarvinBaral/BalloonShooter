@@ -113,8 +113,8 @@ void CameraControl::detectBallByAverage() {
 	cv::medianBlur(frame, hsv_frame, 15);
 	cv::cvtColor(hsv_frame, hsv_frame, CV_BGR2HSV);
 
-    for (int y = 0; y < frame.rows; y++) {
-		for (int x = 0; x < frame.cols; x++) {
+	for (int y = 0; y < frame.rows; y+=config.cam.USE_EACH_x_ROW) {
+		for (int x = 0; x < frame.cols; x+=config.cam.USE_EACH_x_ROW) {
 			if (isBalloon(hsv_frame, x, y)) {
 				if (objectPixelsInRowCtr >= config.cam.MINIMUM_OBJECT_PIXELS_IN_ROW) {
 					//find out most outside points
@@ -149,6 +149,10 @@ void CameraControl::detectBallByAverage() {
     if (ctr == 0) {
         ctr = 1;
     }
+	yposSumm *= config.cam.USE_EACH_x_ROW;
+	xposSumm *= config.cam.USE_EACH_x_ROW;
+	ctr *= config.cam.USE_EACH_x_ROW;
+
 	yposSumm /= ctr;
 	xposSumm /= ctr;
 
@@ -160,7 +164,7 @@ void CameraControl::detectBallByAverage() {
     markPosition(extremes[0][1], extremes[1][0]);
     markPosition(extremes[0][1], extremes[1][1]);
 
-    size = std::round((width + height) * 0.5);
+	size = std::round((width * config.cam.USE_EACH_x_ROW + height * config.cam.USE_EACH_x_ROW) * 0.5);
 #ifdef DEBUG
 	std::cout << "size: " << size << "px";
 #endif

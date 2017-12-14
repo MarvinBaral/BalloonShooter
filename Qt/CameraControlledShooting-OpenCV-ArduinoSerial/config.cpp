@@ -14,7 +14,7 @@ Cam::Cam():
 	PIXEL_MARK_COLOR{255, 0, 0},
 	POS_MARK_COLOR{0, 255, 0},
 	INVERT_X_AXIS(true),
-	REAL_SIZE(0.5), //height of the object in m
+	REAL_SIZE(0.23), //height of the object in m
 	USE_EACH_x_ROW(3) //int, quarters watched resolution
 {}
 
