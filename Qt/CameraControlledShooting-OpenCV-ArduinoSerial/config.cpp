@@ -14,11 +14,12 @@ Cam::Cam():
 	PIXEL_MARK_COLOR{255, 0, 0},
 	POS_MARK_COLOR{0, 255, 0},
 	INVERT_X_AXIS(true),
-	REAL_SIZE(0.23) //m
+	REAL_SIZE(0.5), //height of the object in m
+	USE_EACH_x_ROW(3) //int, quarters watched resolution
 {}
 
 MC::MC():
-	NUM_THREADS(std::thread::hardware_concurrency()), //number of cores
+	NUM_THREADS(1/*std::thread::hardware_concurrency()*/), //number of cores
 	REPEATIONS_UNTIL_SHOT(20),
 	DISTANCE_CAM_TO_CANNON(0.1), //m
 	TIMEOUT_MSEC(500),
