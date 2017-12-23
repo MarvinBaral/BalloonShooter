@@ -2,7 +2,7 @@
 ![](https://www.marvinbaral.de/image/jpeg/Uploads/RocketLauncher/2.jpg)
 Author: Marvin Baral (github@marvinbaral.de)
 
-A project for shooting airballons with a modified LEGO-RocketLauncher. The Launcher itself with three servomotors is controlled with an Arduino over UART over USB. The Camera can be any camera available on your PC. The pc-side is cross-platform compatible (could ba an RaspberryPi with Camera too).
+A project for shooting airballons with a modified LEGO-RocketLauncher. The Launcher itself with three servomotors is controlled with an Arduino over UART over USB. The Camera can be any camera available on your PC. The pc-side is cross-platform compatible (could be an RaspberryPi with Camera too).
 Red airballons can succesfully be hit and destroyed with a LEGO-RocketLauncher IF they hold still. PC-Side uses multithreading and is very CPU-intensive (12-13 FPS on a Quadcore i5, 400% CPU).
 The flightpath calculation uses physical formulars and trigonometry.
 To configure it you have to edit the constants/ class attributes defined in the constructors.
