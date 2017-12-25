@@ -69,7 +69,7 @@ void loop() {
       timeInPulse = micros() - startMicros;
     }
     while (timeInPulse < PULSE_LENGTH);
-    ctr++;
+      ctr++;
   }
   handleSerial();
 }
@@ -114,10 +114,11 @@ void handleSerial() {
         if (degree >= MAX_DEGREES[0][0] && degree <= MAX_DEGREES[1][1] && Serial.find(';')) {
           pulseTimes[select] = INITIAL_PULSE_TIMES[select] - degree * TIME_PER_DEGREE;
           ctr = 0;
-          Serial.print(char(select + '0')); //!!! modified char
-          Serial.print(';');
-          Serial.print(pulseTimes[select]);
-          Serial.println(';');
+// Printing these causes this function to execute too long and modify the servo positions
+//          Serial.print(char(select + '0')); //!!! modified char
+//          Serial.print(';');
+//          Serial.print(pulseTimes[select]);
+//          Serial.println(';');
         } else {
           printErr();
         }
