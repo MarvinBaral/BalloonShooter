@@ -15,9 +15,10 @@ extern std::queue<Position> positions;
 extern QTime timer;
 extern std::mutex cv_gui;
 extern std::mutex pos_queue;
-extern unsigned int fpsCount;
+extern std::mutex fps_ctr;
+extern volatile unsigned int fpsCount;
 extern const float PI;
 extern bool recordPosition;
-volatile extern bool automaticMode;
+extern volatile bool automaticMode;
 
 #endif // MAIN_H

@@ -84,8 +84,10 @@ void CameraControl::readFrame() {
 		cap->read(s_frame);
 		cap->read(v_frame);
 	}
-	fpsCount++;
 	cv_gui.unlock();
+	fps_ctr.lock();
+	fpsCount++;
+	fps_ctr.unlock();
 }
 
 void CameraControl::showFrame()

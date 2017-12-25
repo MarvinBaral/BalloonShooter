@@ -13,10 +13,11 @@ std::queue<Position> positions;
 QTime timer;
 std::mutex cv_gui;
 std::mutex pos_queue;
-unsigned int fpsCount = 0;
+std::mutex fps_ctr;
+volatile unsigned int fpsCount = 0; //volatile because it is used in worker and main threads
 const float PI = 3.14159265359;
 bool recordPosition = true;
-volatile bool automaticMode = false;
+volatile bool automaticMode = false; //volatile because it is used in worker and main threads
 
 int main() {
 	QTime fpsTimer;
@@ -91,9 +92,11 @@ int main() {
         }
 
 		if (config.main.SHOW_FPS && fpsTimer.elapsed() >= 1000) {
-			std::cout << "fps:" << ((fpsCount * 1000.f)/fpsTimer.elapsed())  << std::endl;
+			fps_ctr.lock();
+			std::cout << "fps: " << ((fpsCount * 1000.f)/fpsTimer.elapsed()) << " (" << fpsCount << " frames in " << fpsTimer.elapsed()/1000.f << "s)" << std::endl;
+			fpsCount = 0; //fpsCount is incremented by threads -> we need mutex to prevent race condition
+			fps_ctr.unlock();
 			fpsTimer.restart();
-			fpsCount = 0;
         }
     } while (keyPressed != 27);
 
