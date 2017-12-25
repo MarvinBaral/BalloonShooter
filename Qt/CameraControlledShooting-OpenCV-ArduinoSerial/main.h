@@ -17,7 +17,7 @@ extern std::mutex cv_gui;
 extern std::mutex pos_queue;
 extern unsigned int fpsCount;
 extern const float PI;
-extern bool automaticMode;
 extern bool recordPosition;
+volatile extern bool automaticMode;
 
 #endif // MAIN_H

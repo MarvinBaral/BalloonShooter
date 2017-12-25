@@ -15,8 +15,8 @@ std::mutex cv_gui;
 std::mutex pos_queue;
 unsigned int fpsCount = 0;
 const float PI = 3.14159265359;
-bool automaticMode = true;
 bool recordPosition = true;
+volatile bool automaticMode = false;
 
 int main() {
 	QTime fpsTimer;
@@ -35,10 +35,10 @@ int main() {
 
 	do {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100)); //main thread doesn't do a lot, its better to give some time to the worker threads
-		missionControlCenter->handleShooting();
-		cv_gui.lock();
-		keyPressed = cv::waitKey(1);
-		cv_gui.unlock();
+		if (automaticMode) {
+			missionControlCenter->handleShooting();
+		}
+		keyPressed = cv::waitKey(1); //do not use cv_gui.lock() here! It slows manualMode down and causes startup problems
         switch (keyPressed) {
         case -1: break;
 		case 97: //a = automatic mode
