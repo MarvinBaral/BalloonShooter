@@ -30,7 +30,8 @@ private:
 	float calcDistance(std::vector<int> point1, std::vector<int> point2);
 
 public:
-	CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle);    void markPosition(int posx, int posy);
+	CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle);
+	void markPosition(int posx, int posy);
 	void readFrame();
 	void showFrame();
 	void detectBallByAverage();

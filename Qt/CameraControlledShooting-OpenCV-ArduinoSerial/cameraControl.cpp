@@ -101,7 +101,7 @@ void CameraControl::showFrame()
 			imshow("v-frame", v_frame);
 		}
 	} catch (cv::Exception e) {
-		std::cout << e.what() <<std::endl;
+		std::cout << "error in showFrame(): " << e.what() << std::endl;
 	}
 	cv_gui.unlock();
 }

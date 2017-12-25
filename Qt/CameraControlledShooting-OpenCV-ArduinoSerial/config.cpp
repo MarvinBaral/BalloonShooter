@@ -4,7 +4,7 @@
 Config config;
 
 Cam::Cam():
-	PARAM{350, 640, 480, 2*30, 2*30},
+	PARAM{350, 640, 480, 2*30, 2*30}, //this maxpixel attribute is not nice
 	MAX_HUE(20),
 	MIN_HUE(150),
 	MIN_SATURATION(100),
@@ -33,7 +33,7 @@ MC::MC(): //does the flightpath calculation and handles camera threads
 Main::Main():
 	HARDWARE_VERSION(V1_1),
 	STEP_DEGREE(5),
-	SHOW_RESPONSE_FROM_ARDUINO(false),
+	SHOW_RESPONSE_FROM_ARDUINO(false), //communication net very clean
 	PORT_NAME("/dev/ttyACM0"),
 	SHOW_FPS(true),
 	USB_CAM(1), //restart cap when changing this

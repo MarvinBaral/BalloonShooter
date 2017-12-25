@@ -35,7 +35,7 @@ int main() {
 	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, capture);
 
 	do {
-		std::this_thread::sleep_for(std::chrono::milliseconds(100)); //main thread doesn't do a lot, its better to give some time to the worker threads
+		std::this_thread::sleep_for(std::chrono::milliseconds(10)); //give threads time to create window at startup, main thread doesn't do a lot, its better to give some time to the worker threads
 		if (automaticMode) {
 			missionControlCenter->handleShooting();
 		}
@@ -54,38 +54,38 @@ int main() {
 			missionControlCenter->allowedToShoot = true;
 			recordPosition = true;
 			break;
-        case 108: //l = lock
+		case 108: //l = lock
 			missionControlCenter->allowedToShoot = false;
 			recordPosition = false;
-            break;
+			break;
 		case 81: //left
-			if (!automaticMode)
+			if (!automaticMode) //!automaticMode == manualMode
 				servoControl->updateServo(0, -config.main.STEP_DEGREE);
-            break;
+			break;
 		case 83: //right
 			if (!automaticMode)
 				servoControl->updateServo(0, config.main.STEP_DEGREE);
-            break;
+			break;
 		case 82: //up
 			if (!automaticMode)
 				servoControl->updateServo(1, -config.main.STEP_DEGREE);
-            break;
+			break;
 		case 84: //down
 			if (!automaticMode)
 				servoControl->updateServo(1, config.main.STEP_DEGREE);
-            break;
-        case 10: //enter = shoot
-            servoControl->shoot();
-            break;
-        case 114: //r = reset
+			break;
+		case 10: //enter = shoot
+			servoControl->shoot();
+			break;
+		case 114: //r = reset
 			servoControl->reset();
-            break;
-        default:
+			break;
+		default:
 			if (config.main.DEBUG_KEYS) {
 				std::cout << "pressed " << keyPressed << std::endl;
 			}
 			break;
-        }
+		}
 
 		if (config.main.SHOW_RESPONSE_FROM_ARDUINO) {
 			servoControl->printResponse();
