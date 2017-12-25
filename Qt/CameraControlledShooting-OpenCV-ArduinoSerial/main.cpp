@@ -80,9 +80,9 @@ int main() {
 			servoControl->reset();
             break;
         default:
-#ifdef DEBUG
-			std::cout << "pressed " << keyPressed << std::endl;
-#endif
+			if (config.main.DEBUG_KEYS) {
+				std::cout << "pressed " << keyPressed << std::endl;
+			}
 			break;
         }
 

@@ -1,8 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 #include <QString>
-//#define DEBUG
-//#define DEBUG_HSV
 
 //syntax: file_name
 enum cam_params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
@@ -21,6 +19,8 @@ struct Cam {
 	const bool INVERT_X_AXIS;
 	const float REAL_SIZE;
 	const int USE_EACH_x_ROW;
+	const bool DEBUG_POS;
+	const bool DEBUG_HSV;
 	Cam();
 };
 struct MC {
@@ -39,6 +39,7 @@ struct Main {
 	const QString PORT_NAME;
 	const bool SHOW_FPS;
 	const short USB_CAM;
+	const bool DEBUG_KEYS;
 	Main();
 };
 struct Config {

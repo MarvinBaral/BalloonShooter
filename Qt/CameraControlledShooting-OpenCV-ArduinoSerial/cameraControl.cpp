@@ -4,9 +4,9 @@
 CameraControl::CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle) {
 	cap = pCap;
 	windowTitle = pWindowTitle;
-#ifdef DEBUG
-	std::cout << "CameraControl started" << std::endl;
-#endif
+	if (config.cam.DEBUG_POS) {
+		std::cout << "CameraControl started" << std::endl;
+	}
 	timer.start();
 }
 
@@ -38,17 +38,17 @@ bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 	float h = getByte(hsv_frame, x, y, 0);
 	float s = getByte(hsv_frame, x, y, 1);
 	float v = getByte(hsv_frame, x, y, 2);
-#ifdef DEBUG_HSV
-	for (int i = 0; i < 3; i++) {
-		writeByte(h_frame, x, y, i, h);
+	if (config.cam.DEBUG_HSV) {
+		for (int i = 0; i < 3; i++) {
+			writeByte(h_frame, x, y, i, h);
+		}
+		for (int j = 0; j < 3; j++) {
+			writeByte(s_frame, x, y, j, s);
+		}
+		for (int k = 0; k < 3; k++) {
+			writeByte(v_frame, x, y, k, v);
+		}
 	}
-	for (int j = 0; j < 3; j++) {
-		writeByte(s_frame, x, y, j, s);
-	}
-	for (int k = 0; k < 3; k++) {
-		writeByte(v_frame, x, y, k, v);
-	}
-#endif
 	return (h > config.cam.MIN_HUE || h < config.cam.MAX_HUE) && s > config.cam.MIN_SATURATION && v > config.cam.MIN_VALUE;
 }
 
@@ -79,11 +79,11 @@ float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> poin
 void CameraControl::readFrame() {
 	cv_gui.lock();
 	cap->read(frame);
-#ifdef DEBUG_HSV
-	cap->read(h_frame);
-	cap->read(s_frame);
-	cap->read(v_frame);
-#endif
+	if (config.cam.DEBUG_HSV) {
+		cap->read(h_frame);
+		cap->read(s_frame);
+		cap->read(v_frame);
+	}
 	fpsCount++;
 	cv_gui.unlock();
 }
@@ -93,11 +93,11 @@ void CameraControl::showFrame()
 	cv_gui.lock();
 	try {
 		imshow(windowTitle, frame);
-#ifdef DEBUG_HSV
-		imshow("h-frame", h_frame);
-		imshow("s-frame", s_frame);
-		imshow("v-frame", v_frame);
-#endif
+		if (config.cam.DEBUG_HSV) {
+			imshow("h-frame", h_frame);
+			imshow("s-frame", s_frame);
+			imshow("v-frame", v_frame);
+		}
 	} catch (cv::Exception e) {
 		std::cout << e.what() <<std::endl;
 	}
@@ -165,9 +165,9 @@ void CameraControl::detectBallByAverage() {
     markPosition(extremes[0][1], extremes[1][1]);
 
 	size = std::round((width * config.cam.USE_EACH_x_ROW + height * config.cam.USE_EACH_x_ROW) * 0.5);
-#ifdef DEBUG
-	std::cout << "size: " << size << "px";
-#endif
+	if (config.cam.DEBUG_POS) {
+		std::cout << "size: " << size << "px";
+	}
 	//calc distance
 	float distance = 0;
 	float coordY;
@@ -184,9 +184,9 @@ void CameraControl::detectBallByAverage() {
 //		distance = std::sin(angleY) * distance; necessary to think about it and test it
 //		distance -= realSize/2.f; if you want to hit the center of the surface and not the center of the balloon, commented out because of KISS
 		height *= 3;
-#ifdef DEBUG
-		std::cout << ",\tdistance: " << distance << "m";
-#endif
+		if (config.cam.DEBUG_POS) {
+			std::cout << ",\tdistance: " << distance << "m";
+		}
 		int xysize[2] = {config.cam.PARAM[WIDTH], config.cam.PARAM[HEIGHT]};
 		int xypos[2] = {xposSumm, yposSumm};
 		float degreeX = config.cam.PARAM[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * config.cam.PARAM[ANGLE_OF_VIEW_X]);
@@ -210,9 +210,9 @@ void CameraControl::detectBallByAverage() {
 			pos_queue.unlock();
 		}
 	}
-#ifdef DEBUG
-	std::cout << std::endl;
-#endif
+	if (config.cam.DEBUG_POS) {
+		std::cout << std::endl;
+	}
 }
 
 
