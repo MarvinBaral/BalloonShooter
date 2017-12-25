@@ -75,7 +75,8 @@ int main() {
 				servoControl->updateServo(1, config.main.STEP_DEGREE);
 			break;
 		case 10: //enter = shoot
-			servoControl->shoot();
+			if (!automaticMode)
+				servoControl->shoot();
 			break;
 		case 114: //r = reset
 			servoControl->reset();
