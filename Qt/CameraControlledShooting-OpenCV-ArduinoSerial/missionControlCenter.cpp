@@ -38,15 +38,16 @@ void MissionControlCenter::handleShooting()
 			}
 		}
 		pos_queue.unlock();
+		//how about return?
 		degrees[0] = positionRelToCam.degree;
-		float a = 0;
+		float alpha = 0;
 		const float g = 9.81;
-		float x = positionRelToCam.distance - config.mc.DISTANCE_CAM_TO_CANNON, y;
+		float r = positionRelToCam.distance - config.mc.DISTANCE_CAM_TO_CANNON, y;
 		for (int i = 0; i < 80; i++) {
-			a = i;
-			a = a / 180.f * PI; //convert to radiant
-			float t = (x / (config.mc.V0 * std::cos(a)));
-			y = config.mc.Y0 + config.mc.V0 * std::sin(a) * t - 0.5 * g * t * t;
+			alpha = i;
+			alpha = alpha / 180.f * PI; //convert to radiant
+			float t = (r / (config.mc.V0 * std::cos(alpha)));
+			y = config.mc.Y0 + config.mc.V0 * std::sin(alpha) * t - 0.5 * g * t * t;
 
 			if (y >= positionRelToCam.height) {
 				degrees[1] = i;
