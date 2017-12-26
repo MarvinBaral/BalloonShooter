@@ -23,12 +23,12 @@ void ServoControl::updateServo(int index, signed int degreeDiff) {
 
 void ServoControl::setServo(int index, int degree) {
     if (degree >= MAX_DEGREES[index][0] && degree <= MAX_DEGREES[index][1]) {
-        degrees[index] = degree;
-        QString command = QString::number(index) + ";" + QString::number(degrees[index]) + ";";
-        serial->write(command.toLocal8Bit());
-        serial->flush();
-        serial->waitForReadyRead(100);
-        serial->readAll();
+		degrees[index] = degree;
+		QString command = QString::number(index) + ";" + QString::number(degrees[index]) + ";";
+		serial->write(command.toLocal8Bit());
+		serial->flush();
+		serial->waitForReadyRead(1);
+		serial->readAll();
 	}
 }
 
@@ -55,7 +55,7 @@ void ServoControl::reset()
 
 void ServoControl::printResponse()
 {
-	serial->waitForReadyRead(10);
+	serial->waitForReadyRead(1);
 	QByteArray response = serial->readAll();
 	if (!response.isEmpty() && !response.isNull()) {
 		std::cout << response.toStdString();
