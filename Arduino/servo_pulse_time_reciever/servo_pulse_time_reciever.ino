@@ -80,15 +80,6 @@ void loop() {
 
 //used in the same way as acknowledgement
 
-void printErr() {
-  Serial.print("Malformed expression. Right protocol usage: ");
-  Serial.print("<char select {0-1}>;<int degree {");
-  Serial.print(MAX_DEGREES[0][0]);
-  Serial.print(" to ");
-  Serial.print(MAX_DEGREES[1][1]);
-  Serial.print("}>; or: s, a");  
-}
-
 void pulseServo(int pin, int uptime, int cycles) {
   for (int cycle = 0; cycle < cycles; cycle++) {
     digitalWrite(pin, HIGH);
@@ -109,9 +100,9 @@ void handleSerial() {
       Serial.println("shot");
     } else {
       select -= '0'; //convert char to number
-      if (select == 0 || select == 1 && Serial.find(';')) {
+      if ((select == 0 || select == 1) && Serial.find(';')) {
         degree = Serial.parseFloat();
-        if (degree >= MAX_DEGREES[0][0] && degree <= MAX_DEGREES[1][1] && Serial.find(';')) {
+        if (degree >= MAX_DEGREES[select][0] && degree <= MAX_DEGREES[select][1] && Serial.find(';')) {
           pulseTimes[select] = INITIAL_PULSE_TIMES[select] - degree * TIME_PER_DEGREE;
           ctr = 0;
 // Printing these causes this function to execute too long and modify the servo positions
@@ -120,7 +111,7 @@ void handleSerial() {
 //          Serial.print(pulseTimes[select]);
 //          Serial.println(';');
         } else {
-          printErr();
+          Serial.println("reached limit degrees or wrong protocol usage, request ignored");
         }
       } else {
         if (select == ('a' - '0')) { //!!! modified char
@@ -130,7 +121,7 @@ void handleSerial() {
             Serial.println(pulseTimes[i]);
           }
         } else {
-          printErr();
+          Serial.println("wrong protocol usage, request ignored");
         }
       }
     }
