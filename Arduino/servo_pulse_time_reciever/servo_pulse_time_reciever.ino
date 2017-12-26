@@ -1,4 +1,3 @@
-//this is a firmware simply there to be able to control 3 Servos with serial communication from your PC
 #include "sharedConstants.h"
 const unsigned short int PULSE_LENGTH = 20000; //microseconds
 const unsigned short int MIN_PULSE = 500;

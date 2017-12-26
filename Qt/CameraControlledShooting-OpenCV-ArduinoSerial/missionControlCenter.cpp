@@ -1,6 +1,7 @@
 #include "missionControlCenter.h"
 #include "cameraControl.cpp"
 #include <math.h>
+#include "../../Arduino/servo_pulse_time_reciever/sharedConstants.h"
 
 MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, cv::VideoCapture* pCap):
 	running(true),
@@ -43,7 +44,7 @@ void MissionControlCenter::handleShooting()
 		float alpha = 0;
 		const float g = 9.81;
 		float r = positionRelToCam.distance - config.mc.DISTANCE_CAM_TO_CANNON, y;
-		for (int i = 0; i < 80; i++) {
+		for (int i = MAX_DEGREES[1][0]; i < MAX_DEGREES[1][1]; i++) {
 			alpha = i;
 			alpha = alpha / 180.f * PI; //convert to radiant
 			float t = (r / (config.mc.V0 * std::cos(alpha)));

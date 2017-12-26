@@ -13,9 +13,11 @@ ServoControl::ServoControl(QString pPortName) {
 void ServoControl::updateServo(int index, signed int degreeDiff) {
     degrees[index] += degreeDiff;
     if (degrees[index] < MAX_DEGREES[index][0]) {
+		std::cout << "reached min degree, ignoring request" << std::endl;
         degrees[index] = MAX_DEGREES[index][0];
     } else if (degrees[index] > MAX_DEGREES[index][1]) {
         degrees[index] = MAX_DEGREES[index][1];
+		std::cout << "reached max degree, ignoring request" << std::endl;
     }
 
     this->setServo(index, degrees[index]);
