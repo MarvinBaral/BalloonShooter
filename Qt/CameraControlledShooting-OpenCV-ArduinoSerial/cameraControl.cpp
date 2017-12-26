@@ -138,6 +138,7 @@ void CameraControl::detectBallByAverage() {
 	cv::medianBlur(frame, hsv_frame, 15);
 	cv::cvtColor(hsv_frame, hsv_frame, CV_BGR2HSV);
 
+	bool markPixelsIgnoredByCountingPixelFilter = true;
 	for (int y = 0; y < frame.rows; y+=config.cam.USE_EACH_x_ROW) {
 		for (int x = 0; x < frame.cols; x+=config.cam.USE_EACH_x_ROW) {
 			if (isBalloon(hsv_frame, x, y)) {
@@ -161,12 +162,19 @@ void CameraControl::detectBallByAverage() {
 					yposSumm += y;
 					xposSumm += x;
 					if (config.cam.MARK_DETECTED_PIXELS) {
+						if (markPixelsIgnoredByCountingPixelFilter) {
+							for (int i = 1; i < objectPixelsInRowCtr; i++) {
+								markPixel(frame, x - i, y);
+							}
+							markPixelsIgnoredByCountingPixelFilter = false;
+						}
 						markPixel(frame, x, y);
 					}
 				}
 				objectPixelsInRowCtr++;
 			} else {
 				objectPixelsInRowCtr = 0;
+				markPixelsIgnoredByCountingPixelFilter = true;
 			}
         }
     }
