@@ -16,7 +16,9 @@ MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, cv::Vide
 				CameraControl* cameraControl = new CameraControl(pCap, config.WINDOW_TITLE);
 				while (running) {
 					cameraControl->readFrame();
-					if (automaticMode) {
+					if (config.cam.CALIBRATION_MODE) {
+						cameraControl->calibrate();
+					} else if (automaticMode) { // standard case
 						cameraControl->detectBallByAverage();
 					}
 					if (config.DISPLAY_WINDOW) {

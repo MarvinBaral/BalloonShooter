@@ -28,13 +28,15 @@ private:
 	static inline*/ bool isBalloon(cv::Mat hsv_frame, int x, int y);
 	void markPixel(cv::Mat frame, int posx, int posy);
 	float calcDistance(std::vector<int> point1, std::vector<int> point2);
-
+	void rectangle(int posx = config.cam.PARAM[WIDTH] / 2 - 5, int posy = config.cam.PARAM[HEIGHT] / 2 - 5, int width = 10, int height = 10);
+	int getRectangleByte(cv::Mat frame, int posx, int posy, int width, int height, int relx, int rely, int i);
 public:
 	CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle);
 	void markPosition(int posx, int posy);
 	void readFrame();
 	void showFrame();
 	void detectBallByAverage();
+	void calibrate();
 	~CameraControl();
 };
 

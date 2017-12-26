@@ -55,6 +55,9 @@ int main() {
 			automaticMode = false;
 			recordPosition = false;
 			break;
+		case 107: //k = calibration
+			config.cam.CALIBRATION_MODE = true;
+			break;
 		case 99: //c = clear
 			missionControlCenter->allowedToShoot = true;
 			recordPosition = true;

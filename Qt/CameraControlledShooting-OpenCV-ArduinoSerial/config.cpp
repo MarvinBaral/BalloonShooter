@@ -25,7 +25,8 @@ Cam::Cam():
 	REAL_SIZE(0.23), //height of the object in m
 	USE_EACH_x_ROW(1), //int, quarters watched resolution
 	DEBUG_POS(false), //outputs distance and size of detected balloon
-	DEBUG_HSV(false) //opens 3 additional windws for hue, saturation and value
+	DEBUG_HSV(false), //opens 3 additional windows for hue, saturation and value
+	CALIBRATION_MODE(false)
 {}
 
 MC::MC(): //does the flightpath calculation and handles camera threads

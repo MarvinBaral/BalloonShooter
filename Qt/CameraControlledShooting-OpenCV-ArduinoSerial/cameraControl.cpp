@@ -71,6 +71,29 @@ void CameraControl::markPosition(int posx, int posy) {
     }
 }
 
+void CameraControl::rectangle(int posx, int posy, int width, int height) { //position at top left corner
+	for (int y = posy; y < posy + height; y++) {
+		for (int x = posx; x < posx + width; x++) {
+			if (x == posx || x == posx + width - 1 || y == posy || y == posy + height - 1) {
+				for (int i = 0; i < 3; i++) {
+					writeByte(frame, x, y, i, config.cam.POS_MARK_COLOR[i]);
+				}
+			}
+		}
+	}
+}
+
+int CameraControl::getRectangleByte(cv::Mat frame, int posx, int posy, int width, int height, int relx, int rely, int i) { //position at top left corner
+	int x = posx + 1 + relx;
+	int y = posy + 1 + rely;
+	if (x < (posx + width - 1) && y < (posy + height - 1)) {
+		return getByte(frame, x, y, i);
+	} else {
+		std::cout << "exceeded array bounds" <<std::endl;
+		return 0;
+	}
+}
+
 float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> point2){
     float distance = std::sqrt((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]));
     return distance;
@@ -217,6 +240,47 @@ void CameraControl::detectBallByAverage() {
 	}
 }
 
+void CameraControl::calibrate() {
+	std::cout << "calibrating" << std::endl;
+	cv::Mat hsv_frame;
+	cv::cvtColor(frame, hsv_frame, CV_BGR2HSV);
+	int width = 80;
+	int squarePosX = config.cam.PARAM[WIDTH] / 4 - (width / 2);
+	int squarePosY = config.cam.PARAM[HEIGHT] / 2 - (width/ 2);
+	rectangle(squarePosX, squarePosY, width, width);
+	int values[3]; //(h,s,v)
+	int calibration[3][3] = {{255,255,255}, {0,0,0}}; //min(h,s,v),max(h,s,v),avg( ,s,v)
+	long int ctr = 1;
+	for (int x = 0; x < width - 2; x++) {
+		for (int y = 0; y < width - 2; y++) {
+			for (int i = 0; i < 3; i++) {
+				values[i] = getRectangleByte(hsv_frame, squarePosX, squarePosY, width, width, x, y, i);
+				if (i == 0) { //only for red because of its split hue spectrum
+					if (values[i] > calibration[1][i] && values[i] < 89) {
+						calibration[1][i] = values[i];
+					}
+					if (values[i] < calibration[0][i] && values[i] > 89) {
+						calibration[0][i] = values[i];
+					}
+				} else {
+					if (values[i] > calibration[1][i]) {
+						calibration[1][i] = values[i];
+					}
+					if (values[i] < calibration[0][i]) {
+						calibration[0][i] = values[i];
+					}
+					calibration[2][i] += values[i];
+				}
+			}
+			ctr++;
+		}
+	}
+	calibration[2][1] /= ctr;
+	calibration[2][2] /= ctr;
+	//markPixel(frame, pos[0], pos[1]);
+//	markPosition(x, y);
+	std::cout << "(min/max/avg) hue: " << calibration[0][0] << "/" << calibration[1][0] << ", saturation: " << calibration[0][1] << "/" << calibration[1][1] << "/" << calibration[2][1] << ", value: " << calibration[0][2] << "/" << calibration[1][2] << "/" << calibration[2][2] << std::endl;
+}
 
 CameraControl::~CameraControl() {
 	delete cap;

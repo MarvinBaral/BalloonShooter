@@ -28,6 +28,7 @@ struct Cam {
 	const int USE_EACH_x_ROW;
 	const bool DEBUG_POS;
 	const bool DEBUG_HSV;
+	volatile bool CALIBRATION_MODE;
 	Cam();
 };
 struct MC {
