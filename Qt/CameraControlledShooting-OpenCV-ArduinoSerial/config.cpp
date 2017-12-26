@@ -11,12 +11,14 @@ Servo::Servo():
 
 Cam::Cam():
 	PARAM{350, 640, 480, 2*30, 2*30}, //this maxpixel attribute is not nice
-	MAX_HUE(20),
-	MIN_HUE(150),
-	MIN_SATURATION(100),
-	MIN_VALUE(100),
+	MAX_HUE(5),
+	MIN_HUE(175),
+	MAX_SATURATION(230),
+	MIN_SATURATION(170),
+	MAX_VALUE(240),
+	MIN_VALUE(190),
 	MARK_DETECTED_PIXELS(true),
-	MINIMUM_OBJECT_PIXELS_IN_ROW(5), //The higher the number the more noise suppression
+	MINIMUM_OBJECT_PIXELS_IN_ROW(0), //The higher the number the more noise suppression
 	PIXEL_MARK_COLOR{255, 0, 0},
 	POS_MARK_COLOR{0, 255, 0},
 	INVERT_X_AXIS(true),

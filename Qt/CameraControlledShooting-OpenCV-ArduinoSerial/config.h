@@ -15,7 +15,9 @@ struct Cam {
 	const int PARAM[5];
 	const short MAX_HUE;
 	const short MIN_HUE;
+	const short MAX_SATURATION;
 	const short MIN_SATURATION;
+	const short MAX_VALUE;
 	const short MIN_VALUE;
 	const bool MARK_DETECTED_PIXELS;
 	const short MINIMUM_OBJECT_PIXELS_IN_ROW;

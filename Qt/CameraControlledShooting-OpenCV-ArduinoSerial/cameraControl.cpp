@@ -49,7 +49,7 @@ bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
 			writeByte(v_frame, x, y, k, v);
 		}
 	}
-	return (h > config.cam.MIN_HUE || h < config.cam.MAX_HUE) && s > config.cam.MIN_SATURATION && v > config.cam.MIN_VALUE;
+	return (h > config.cam.MIN_HUE || h < config.cam.MAX_HUE) && (s > config.cam.MIN_SATURATION && s < config.cam.MAX_SATURATION) && (v > config.cam.MIN_VALUE && v < config.cam.MAX_VALUE);
 }
 
 void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
@@ -63,7 +63,7 @@ void CameraControl::markPosition(int posx, int posy) {
     for (int y = posy - size; y < posy + size; y++) {
         for (int x = posx - size; x < posx + size; x++){
             for (int i = 0; i < 3; i++) {
-				if (x >= 0 && y >= 0 && x < frame.cols && y < frame.rows){
+				if (x >= 0 && y >= 0 && x < frame.cols && y < frame.rows){ //improveable
 					writeByte(frame, x, y, i, config.cam.POS_MARK_COLOR[i]);
                 }
             }
