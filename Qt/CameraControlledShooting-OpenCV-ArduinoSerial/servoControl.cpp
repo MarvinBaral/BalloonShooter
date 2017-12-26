@@ -21,7 +21,7 @@ void ServoControl::updateServo(int index, signed int degreeDiff) {
     this->setServo(index, degrees[index]);
 }
 
-void ServoControl::setServo(int index, int degree) {
+void ServoControl::setServo(int index, int degree) { //it has to be assured, that there are at least ~100ms between each call Servo call to keep load of serial traffic on Arduino in an optimal area. (is done in the main loop)
     if (degree >= MAX_DEGREES[index][0] && degree <= MAX_DEGREES[index][1]) {
 		degrees[index] = degree;
 		QString command = QString::number(index) + ";" + QString::number(degrees[index]) + ";";

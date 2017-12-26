@@ -35,7 +35,12 @@ int main() {
 	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, capture);
 
 	do {
-		std::this_thread::sleep_for(std::chrono::milliseconds(10)); //give threads time to create window at startup, main thread doesn't do a lot, its better to give some time to the worker threads
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		/* why:
+		 * -give threads time to create window at startup
+		 * -main thread doesn't do a lot, its better to give some time to the worker threads
+		 * -assure, that there are at least ~100ms between each Servo call to keep load of serial traffic on Arduino in an optimal area
+		*/
 		if (automaticMode) {
 			missionControlCenter->handleShooting();
 		}
