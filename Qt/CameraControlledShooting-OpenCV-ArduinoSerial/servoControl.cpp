@@ -34,7 +34,7 @@ void ServoControl::setServo(int index, int degree) {
 
 void ServoControl::initSerial(const QString &PORT_NAME) {
     serial->setPortName(PORT_NAME);
-    serial->setBaudRate(QSerialPort::Baud9600);
+	serial->setBaudRate(QSerialPort::Baud115200);
     serial->setDataBits(QSerialPort::Data8);
     serial->setParity(QSerialPort::NoParity);
     serial->setStopBits(QSerialPort::OneStop);

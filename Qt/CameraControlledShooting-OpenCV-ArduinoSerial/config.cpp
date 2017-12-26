@@ -33,7 +33,7 @@ MC::MC(): //does the flightpath calculation and handles camera threads
 Main::Main():
 	HARDWARE_VERSION(V1_1),
 	STEP_DEGREE(5),
-	SHOW_RESPONSE_FROM_ARDUINO(false), //communication net very clean
+	SHOW_RESPONSE_FROM_ARDUINO(true),
 	PORT_NAME("/dev/ttyACM0"),
 	SHOW_FPS(true),
 	USB_CAM(1), //restart cap when changing this
