@@ -6,6 +6,11 @@
 enum cam_params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum main_versions {V1_0 = 0, V1_1};
 
+struct Servo {
+	const int BAUDRATE;
+	const bool DEBUG;
+	Servo();
+};
 struct Cam {
 	const int PARAM[5];
 	const short MAX_HUE;
@@ -43,6 +48,7 @@ struct Main {
 	Main();
 };
 struct Config {
+	Servo servo;
 	Cam cam;
 	MC mc;
 	Main main;

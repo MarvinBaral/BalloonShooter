@@ -11,32 +11,31 @@ ServoControl::ServoControl(QString pPortName) {
 }
 
 void ServoControl::updateServo(int index, signed int degreeDiff) {
-    degrees[index] += degreeDiff;
-    if (degrees[index] < MAX_DEGREES[index][0]) {
-		std::cout << "reached min degree, ignoring request" << std::endl;
-        degrees[index] = MAX_DEGREES[index][0];
-    } else if (degrees[index] > MAX_DEGREES[index][1]) {
-        degrees[index] = MAX_DEGREES[index][1];
-		std::cout << "reached max degree, ignoring request" << std::endl;
-    }
-
-    this->setServo(index, degrees[index]);
+	setServo(index, degrees[index] + degreeDiff);
 }
 
 void ServoControl::setServo(int index, int degree) { //it has to be assured, that there are at least ~100ms between each call Servo call to keep load of serial traffic on Arduino in an optimal area. (is done in the main loop)
-    if (degree >= MAX_DEGREES[index][0] && degree <= MAX_DEGREES[index][1]) {
+	if (degree < MAX_DEGREES[index][0]) {
+		degree = MAX_DEGREES[index][0];
+		if (config.servo.DEBUG) {std::cout << "reached min degree" << std::endl;}
+	} else if (degree > MAX_DEGREES[index][1]) {
+		degree = MAX_DEGREES[index][1];
+		if (config.servo.DEBUG) {std::cout << "reached max degree" << std::endl;}
+	} else if (degrees[index] != degree){
 		degrees[index] = degree;
 		QString command = QString::number(index) + ";" + QString::number(degrees[index]) + ";";
 		serial->write(command.toLocal8Bit());
 		serial->flush();
 		serial->waitForReadyRead(1);
 		serial->readAll();
+	} else {
+		if (config.servo.DEBUG) {std::cout << "already in correct position" << std::endl;}
 	}
 }
 
 void ServoControl::initSerial(const QString &PORT_NAME) {
     serial->setPortName(PORT_NAME);
-	serial->setBaudRate(QSerialPort::Baud115200);
+	serial->setBaudRate(config.servo.BAUDRATE);
     serial->setDataBits(QSerialPort::Data8);
     serial->setParity(QSerialPort::NoParity);
     serial->setStopBits(QSerialPort::OneStop);

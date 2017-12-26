@@ -1,7 +1,13 @@
 #include "config.h"
 #include <thread>
+#include "../../Arduino/servo_pulse_time_reciever/sharedConstants.h"
 
 Config config;
+
+Servo::Servo():
+	BAUDRATE(COMMON_BAUD_RATE),
+	DEBUG(false)
+{}
 
 Cam::Cam():
 	PARAM{350, 640, 480, 2*30, 2*30}, //this maxpixel attribute is not nice

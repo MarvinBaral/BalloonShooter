@@ -17,7 +17,7 @@ unsigned long int timeInPulse;
 unsigned short int ctr = 0;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(COMMON_BAUD_RATE);
   for (int i = 0; i < 3; i++) {
     pinMode(servoPins[i], OUTPUT);
     pulseTimes[i] = INITIAL_PULSE_TIMES[i];
