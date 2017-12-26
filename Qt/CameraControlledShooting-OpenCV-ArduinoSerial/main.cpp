@@ -16,7 +16,7 @@ std::mutex pos_queue;
 std::mutex fps_ctr;
 volatile unsigned int fpsCount = 0; //volatile because it is used in worker and main threads
 const float PI = 3.14159265359;
-bool recordPosition = true;
+volatile bool recordPosition = true;
 volatile bool automaticMode = false; //volatile because it is used in worker and main threads
 
 int main() {
@@ -58,6 +58,11 @@ int main() {
 		case 99: //c = clear
 			missionControlCenter->allowedToShoot = true;
 			recordPosition = true;
+			pos_queue.lock();
+			for (int i = 0; i < positions.size(); i++) {
+				positions.pop();
+			}
+			pos_queue.unlock();
 			break;
 		case 108: //l = lock
 			missionControlCenter->allowedToShoot = false;
