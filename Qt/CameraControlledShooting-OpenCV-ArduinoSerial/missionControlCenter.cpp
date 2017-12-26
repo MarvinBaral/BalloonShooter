@@ -9,20 +9,42 @@ MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, cv::Vide
 {
 	servoControl = pServoControl;
 	allowedToShoot = true;
-	std::cout << "Using " << config.mc.NUM_THREADS << " worker threads" << std::endl;
-	for (int i = 0; i < config.mc.NUM_THREADS; i++) {
-		workers.push_back(new std::thread([this, pCap] () {
-			CameraControl* cameraControl = new CameraControl(pCap, config.WINDOW_TITLE);
-			while (running) {
-				cameraControl->readFrame();
-				if (automaticMode) {
-					cameraControl->detectBallByAverage();
+	if (!config.mc.TEST_MODE) {
+		std::cout << "Using " << config.mc.NUM_THREADS << " worker threads" << std::endl;
+		for (int i = 0; i < config.mc.NUM_THREADS; i++) {
+			workers.push_back(new std::thread([this, pCap] () {
+				CameraControl* cameraControl = new CameraControl(pCap, config.WINDOW_TITLE);
+				while (running) {
+					cameraControl->readFrame();
+					if (automaticMode) {
+						cameraControl->detectBallByAverage();
+					}
+					if (config.DISPLAY_WINDOW) {
+						cameraControl->showFrame();
+					}
 				}
-				if (config.DISPLAY_WINDOW) {
-					cameraControl->showFrame();
-				}
+			}));
+		}
+	} else { //this is the main are for testing flightpathcalc
+		std::string resp = "";
+		std::cout << "running in test mode for flightpath calculation" << std::endl;
+		do {
+			std::cout << "enter x coordinate to shoot at (from camera):" << std::endl;
+			float x;
+			std::cin >> x;
+			std::cout << "read" << x << std::endl;
+			for (int i = 0; i < config.mc.REPEATIONS_UNTIL_SHOT; i++) {
+				Position posRelToCam;
+				posRelToCam.degree = 0;
+				posRelToCam.distance = x;
+				posRelToCam.height = -0.15; //m, height of camera above ground
+				positions.push(posRelToCam);
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				handleShooting();
 			}
-		}));
+			std::cout << "do you want another test? (y/n)" << std::endl;
+			std::cin >> resp;
+		} while (resp == "y" || resp =="yes");
 	}
 }
 

@@ -27,6 +27,7 @@ Cam::Cam():
 {}
 
 MC::MC(): //does the flightpath calculation and handles camera threads
+	TEST_MODE(false),
 	NUM_THREADS(1/*std::thread::hardware_concurrency()*/), //number of cores
 	REPEATIONS_UNTIL_SHOT(20),
 	DISTANCE_CAM_TO_CANNON(0.1), //m

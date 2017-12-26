@@ -29,6 +29,7 @@ struct Cam {
 	Cam();
 };
 struct MC {
+	const bool TEST_MODE;
 	const short int NUM_THREADS;
 	const short REPEATIONS_UNTIL_SHOT;
 	const float DISTANCE_CAM_TO_CANNON;
