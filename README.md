@@ -14,6 +14,11 @@ I made this project for my oral A level in computer technology. Therefore I am a
 ## DIY (Do It Yourself)
 how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzqlPu6wwwvgCbJU/edit#heading=h.loo15b9ijivk
 
+## Dependencies
+* Qt
+* OpenCV
+* Arduino
+
 ## Hotkeys
 * l - lock - locks the servos, the turret will nether move nor shoot
 * c - clearance - clearance to shoot
@@ -28,7 +33,7 @@ how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzq
 * physical flightpathcalculation is working
 
 ## Protocol for Communication between PC and Arduino:
-\<char select {0-1}\>;\<int degree {-61 to 93}\>;
+\<char select {0-1}\>;\<int degree\>;   no newline
 
 ![](https://www.marvinbaral.de/image/jpeg/Uploads/RocketLauncher/5.jpg)
 
