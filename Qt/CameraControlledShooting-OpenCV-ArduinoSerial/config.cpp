@@ -10,21 +10,19 @@ Servo::Servo():
 {}
 
 Cam::Cam():
-	PARAM{350, 640, 480, 2*30, 2*30}, //this maxpixel attribute is not nice
-	MAX_HUE(5),
-	MIN_HUE(175),
-	MAX_SATURATION(230),
-	MIN_SATURATION(170),
-	MAX_VALUE(240),
-	MIN_VALUE(190),
+	PARAM{640, 480, 2*30, 2*30}, //this maxpixel attribute is not nice
+	MAX_HUE(1),
+	MIN_HUE(122),
+	MAX_SATURATION(255),
+	MIN_SATURATION(104),
+	MAX_VALUE(255),
+	MIN_VALUE(90),
 	MARK_DETECTED_PIXELS(true),
-	MINIMUM_OBJECT_PIXELS_IN_ROW(0), //The higher the number the more noise suppression
 	PIXEL_MARK_COLOR{255, 0, 0},
 	POS_MARK_COLOR{0, 255, 0},
 	INVERT_X_AXIS(true),
 	REAL_SIZE(0.23), //height of the object in m
-	USE_EACH_x_ROW(1), //int, quarters watched resolution
-	DEBUG_POS(false), //outputs distance and size of detected balloon
+	DEBUG_POS(true), //outputs distance and size of detected balloon
 	DEBUG_HSV(false), //opens 3 additional windows for hue, saturation and value
 	CALIBRATION_MODE(false)
 {}

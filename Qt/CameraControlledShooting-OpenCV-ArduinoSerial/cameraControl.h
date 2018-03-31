@@ -35,7 +35,7 @@ public:
 	void markPosition(int posx, int posy);
 	void readFrame();
 	void showFrame();
-	void detectBallByAverage();
+	void detectBallByContours();
 	void calibrate();
 	~CameraControl();
 };

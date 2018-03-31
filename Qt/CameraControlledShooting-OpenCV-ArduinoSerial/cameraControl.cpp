@@ -129,118 +129,83 @@ void CameraControl::showFrame()
 	cv_gui.unlock();
 }
 
-void CameraControl::detectBallByAverage() {
-	int width = 0;
-	int height = 0;
-	int ctr = 0, yposSumm = 0, xposSumm = 0, objectPixelsInRowCtr = 0;
-	int extremes[2][2] = {{config.cam.PARAM[WIDTH], 0},{config.cam.PARAM[HEIGHT], 0}}; //x,y min,max
+void CameraControl::detectBallByContours() {
+	cv::Rect balloon;
 	cv::Mat hsv_frame;
 	cv::medianBlur(frame, hsv_frame, 15);
+	std::vector<short int> lowerBounds1 = {config.cam.MIN_HUE, config.cam.MIN_SATURATION, config.cam.MIN_VALUE};
+	std::vector<short int> upperBounds1 = {255, config.cam.MAX_SATURATION, config.cam.MAX_VALUE};
+	std::vector<short int> lowerBounds2 = {0, config.cam.MIN_SATURATION, config.cam.MIN_VALUE};
+	std::vector<short int> upperBounds2 = {config.cam.MAX_HUE, config.cam.MAX_SATURATION, config.cam.MAX_VALUE};
 	cv::cvtColor(hsv_frame, hsv_frame, CV_BGR2HSV);
+	cv::Mat editing_frame1, editing_frame2;
+	cv::inRange(hsv_frame, lowerBounds1, upperBounds1, editing_frame1);
+	cv::inRange(hsv_frame, lowerBounds2, upperBounds2, editing_frame2);
+	cv::bitwise_or(editing_frame1, editing_frame2, editing_frame1);
+	std::vector<std::vector<cv::Point>> contours;
+	cv::findContours(editing_frame1, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+	cv::Scalar color = cv::Scalar(0, 255, 0);
 
-	bool markPixelsIgnoredByCountingPixelFilter = true;
-	for (int y = 0; y < frame.rows; y+=config.cam.USE_EACH_x_ROW) {
-		for (int x = 0; x < frame.cols; x+=config.cam.USE_EACH_x_ROW) {
-			if (isBalloon(hsv_frame, x, y)) {
-				if (objectPixelsInRowCtr >= config.cam.MINIMUM_OBJECT_PIXELS_IN_ROW) {
-					//find out most outside points
-					if (x < extremes[0][0]) {
-						extremes[0][0] = x;
-					}
-					if (x > extremes[0][1]) {
-						extremes[0][1] = x;
-					}
-					if (y < extremes[1][0]) {
-						extremes[1][0] = y;
-					}
-					if (y > extremes[1][1]) {
-						extremes[1][1] = y;
-					}
-
-					//size and position
-					ctr++;
-					yposSumm += y;
-					xposSumm += x;
-					if (config.cam.MARK_DETECTED_PIXELS) {
-						if (markPixelsIgnoredByCountingPixelFilter) {
-							for (int i = 1; i < objectPixelsInRowCtr; i++) {
-								markPixel(frame, x - i, y);
-							}
-							markPixelsIgnoredByCountingPixelFilter = false;
-						}
-						markPixel(frame, x, y);
-					}
-				}
-				objectPixelsInRowCtr++;
-			} else {
-				objectPixelsInRowCtr = 0;
-				markPixelsIgnoredByCountingPixelFilter = true;
+	if (contours.size() > 0) {
+		//display longest contour
+		int maxContourArea = 0;
+		int largestContour = 0;
+		for (unsigned int i = 0; i < contours.size(); i++) {
+			if ((int) contours[i].size() > maxContourArea) {
+				maxContourArea = std::max(maxContourArea, (int) cv::contourArea(contours[i]));
+				largestContour = i;
 			}
-        }
-    }
-    //get position
-    if (ctr == 0) {
-        ctr = 1;
-    }
-	yposSumm *= config.cam.USE_EACH_x_ROW;
-	xposSumm *= config.cam.USE_EACH_x_ROW;
-	ctr *= config.cam.USE_EACH_x_ROW;
-
-	yposSumm /= ctr;
-	xposSumm /= ctr;
-
-	//get size
-    width = extremes[0][1] - extremes[0][0];
-    height = extremes[1][1] - extremes[1][0];
-    markPosition(extremes[0][0], extremes[1][0]);
-    markPosition(extremes[0][0], extremes[1][1]);
-    markPosition(extremes[0][1], extremes[1][0]);
-    markPosition(extremes[0][1], extremes[1][1]);
-
-	size = std::round((width * config.cam.USE_EACH_x_ROW + height * config.cam.USE_EACH_x_ROW) * 0.5);
-	if (config.cam.DEBUG_POS) {
-		std::cout << "size: " << size << "px";
-	}
-	//calc distance
-	float distance = 0;
-	float coordY;
-	if (ctr > config.cam.PARAM[MINIMUM_CTR]) {
-		float alpha = (config.cam.PARAM[ANGLE_OF_VIEW_Y] / (config.cam.PARAM[HEIGHT] * 1.f)) * size; //ganzzahldivision
-		alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
-		distance = (config.cam.REAL_SIZE / 2.f) / (std::tan(alpha / 2.f));
-
-		//get Height
-		float angleY;
-		angleY = config.cam.PARAM[ANGLE_OF_VIEW_Y] / (config.cam.PARAM[HEIGHT] * 1.f) * ((config.cam.PARAM[HEIGHT] - yposSumm) - config.cam.PARAM[HEIGHT] / 2.f);
-		angleY = angleY / 180.f * PI;
-		coordY = std::sin(angleY) * distance;
-//		distance = std::sin(angleY) * distance; necessary to think about it and test it
-//		distance -= realSize/2.f; if you want to hit the center of the surface and not the center of the balloon, commented out because of KISS
-		height *= 3;
+		}
+		balloon = cv::boundingRect(contours[largestContour]);
+		size = std::round((balloon.width + balloon.height) * 0.5);
 		if (config.cam.DEBUG_POS) {
-			std::cout << ",\tdistance: " << distance << "m";
+			std::cout << "Rel to cam:\tsize: " << size << "px";
 		}
-		int xysize[2] = {config.cam.PARAM[WIDTH], config.cam.PARAM[HEIGHT]};
-		int xypos[2] = {xposSumm, yposSumm};
-		float degreeX = config.cam.PARAM[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * config.cam.PARAM[ANGLE_OF_VIEW_X]);
-		if (config.cam.INVERT_X_AXIS) {
-			degreeX = -degreeX;
-		}
-		this->markPosition(xposSumm, yposSumm); //mark center position
 
-		Position posRelToCam;
-		posRelToCam.degree = degreeX;
-		posRelToCam.distance = distance;
-		posRelToCam.height = coordY;
-		if (positions.size() == 0) {
-			timer.restart();
-		}
-		posRelToCam.time = timer.elapsed();
+		if (size > 50) {
+			cv::drawContours(frame, contours, largestContour, color);
+			cv::rectangle(frame, balloon, color, 3);
 
-		if (recordPosition) {
-			pos_queue.lock();
-			positions.push(posRelToCam);
-			pos_queue.unlock();
+			//calc distance
+			float distance = 0;
+			float coordY;
+			int xypos[2] = {(int) (balloon.x + balloon.width*0.5), (int) (balloon.y + balloon.height*0.5)};
+			float alpha = (config.cam.PARAM[ANGLE_OF_VIEW_Y] / (config.cam.PARAM[HEIGHT] * 1.f)) * size; //ganzzahldivision
+			alpha =  alpha / 180.f * PI;  //conversion from degree to radiant
+			distance = (config.cam.REAL_SIZE / 2.f) / (std::tan(alpha / 2.f));
+			distance *= 0.8/0.5;
+
+			//get Height
+			float angleY;
+			angleY = config.cam.PARAM[ANGLE_OF_VIEW_Y] / (config.cam.PARAM[HEIGHT] * 1.f) * ((config.cam.PARAM[HEIGHT] - xypos[1]) - config.cam.PARAM[HEIGHT] / 2.f);
+			angleY = angleY / 180.f * PI;
+			coordY = std::sin(angleY) * distance;
+	//		distance = std::sin(angleY) * distance; necessary to think about it and test it
+	//		distance -= realSize/2.f; if you want to hit the center of the surface and not the center of the balloon, commented out because of KISS
+			if (config.cam.DEBUG_POS) {
+				std::cout << ",\tdistance: " << distance << "m" << ",\theight" << coordY << "m";
+			}
+			int xysize[2] = {config.cam.PARAM[WIDTH], config.cam.PARAM[HEIGHT]};
+			float degreeX = config.cam.PARAM[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * config.cam.PARAM[ANGLE_OF_VIEW_X]);
+			if (config.cam.INVERT_X_AXIS) {
+				degreeX = -degreeX;
+			}
+			this->markPosition(xypos[0], xypos[1]); //mark center position
+
+			Position posRelToCam;
+			posRelToCam.degree = degreeX;
+			posRelToCam.distance = distance;
+			posRelToCam.height = coordY;
+			if (positions.size() == 0) {
+				timer.restart();
+			}
+			posRelToCam.time = timer.elapsed();
+
+			if (recordPosition) {
+				pos_queue.lock();
+				positions.push(posRelToCam);
+				pos_queue.unlock();
+			}
 		}
 	}
 	if (config.cam.DEBUG_POS) {

@@ -19,7 +19,7 @@ MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, cv::Vide
 					if (config.cam.CALIBRATION_MODE) {
 						cameraControl->calibrate();
 					} else if (automaticMode) { // standard case
-						cameraControl->detectBallByAverage();
+						cameraControl->detectBallByContours();
 					}
 					if (config.DISPLAY_WINDOW) {
 						cameraControl->showFrame();

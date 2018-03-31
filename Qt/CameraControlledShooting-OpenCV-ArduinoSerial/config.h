@@ -3,7 +3,7 @@
 #include <QString>
 
 //syntax: file_name
-enum cam_params {MINIMUM_CTR = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
+enum cam_params {WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum main_versions {V1_0 = 0, V1_1};
 
 struct Servo {
@@ -12,7 +12,7 @@ struct Servo {
 	Servo();
 };
 struct Cam {
-	const int PARAM[5];
+	const int PARAM[4];
 	const short MAX_HUE;
 	const short MIN_HUE;
 	const short MAX_SATURATION;
@@ -20,12 +20,10 @@ struct Cam {
 	const short MAX_VALUE;
 	const short MIN_VALUE;
 	const bool MARK_DETECTED_PIXELS;
-	const short MINIMUM_OBJECT_PIXELS_IN_ROW;
 	const int PIXEL_MARK_COLOR[3];
 	const int POS_MARK_COLOR[3];
 	const bool INVERT_X_AXIS;
 	const float REAL_SIZE;
-	const int USE_EACH_x_ROW;
 	const bool DEBUG_POS;
 	const bool DEBUG_HSV;
 	volatile bool CALIBRATION_MODE;
