@@ -10,7 +10,7 @@ Servo::Servo():
 {}
 
 Cam::Cam():
-	PARAM{640, 480, 2*30, 2*30}, //this maxpixel attribute is not nice
+	PARAM{50, 640, 480, 2*30, 2*30}, //this maxpixel attribute is not nice
 	MAX_HUE(1),
 	MIN_HUE(122),
 	MAX_SATURATION(255),

@@ -3,7 +3,7 @@
 #include <QString>
 
 //syntax: file_name
-enum cam_params {WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
+enum cam_params {MIN_SIZE = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
 enum main_versions {V1_0 = 0, V1_1};
 
 struct Servo {
@@ -12,7 +12,7 @@ struct Servo {
 	Servo();
 };
 struct Cam {
-	const int PARAM[4];
+	const int PARAM[5];
 	const short MAX_HUE;
 	const short MIN_HUE;
 	const short MAX_SATURATION;

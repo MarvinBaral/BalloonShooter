@@ -62,7 +62,7 @@ int main() {
 			missionControlCenter->allowedToShoot = true;
 			recordPosition = true;
 			pos_queue.lock();
-			for (int i = 0; i < positions.size(); i++) {
+			for (unsigned int i = 0; i < positions.size(); i++) {
 				positions.pop();
 			}
 			pos_queue.unlock();

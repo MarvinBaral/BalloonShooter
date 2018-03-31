@@ -162,7 +162,7 @@ void CameraControl::detectBallByContours() {
 			std::cout << "Rel to cam:\tsize: " << size << "px";
 		}
 
-		if (size > 50) {
+		if (size >= config.cam.PARAM[MIN_SIZE]) {
 			cv::drawContours(frame, contours, largestContour, color);
 			cv::rectangle(frame, balloon, color, 3);
 
