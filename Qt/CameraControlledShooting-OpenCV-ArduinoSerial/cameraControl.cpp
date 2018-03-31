@@ -11,52 +11,52 @@ CameraControl::CameraControl(cv::VideoCapture* pCap, std::string pWindowTitle) {
 }
 
 int CameraControl::getByte(cv::Mat frame, int x, int y, int byte) {
-    return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte); //http://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#mat, BGR color model!
+	return *(frame.data + frame.step[0] * y + frame.step[1] * x + byte); //http://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#mat, BGR color model!
 }
 
 void CameraControl::writeByte(cv::Mat frame, int x, int y, int byte, int value) {
-    *(frame.data + frame.step[0] * y + frame.step[1] * x + byte) = value;
+	*(frame.data + frame.step[0] * y + frame.step[1] * x + byte) = value;
 }
 
-float CameraControl::getRelation(cv::Mat frame, int x, int y, int byte) {
-    float sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
-    float single = getByte(frame, x, y, byte);
-    if (sum == 0) {
-        sum = 1;
-    }
-    return single/sum;
-}
+//float CameraControl::getRelation(cv::Mat frame, int x, int y, int byte) {
+//    float sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
+//    float single = getByte(frame, x, y, byte);
+//    if (sum == 0) {
+//        sum = 1;
+//    }
+//    return single/sum;
+//}
 
 //short CameraControl::getAverage(cv::Mat frame, int x, int y) {
 //    int sum = (getByte(frame, x, y, 0) + getByte(frame, x, y, 1) + getByte(frame, x, y, 2));
 //	return sum / 3.f;
 //}
 
-bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
-{
-	//For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]. Different softwares use different scales. So if you are comparing OpenCV values with them, you need to normalize these ranges.
-	float h = getByte(hsv_frame, x, y, 0);
-	float s = getByte(hsv_frame, x, y, 1);
-	float v = getByte(hsv_frame, x, y, 2);
-	if (config.cam.DEBUG_HSV) {
-		for (int i = 0; i < 3; i++) {
-			writeByte(h_frame, x, y, i, h);
-		}
-		for (int j = 0; j < 3; j++) {
-			writeByte(s_frame, x, y, j, s);
-		}
-		for (int k = 0; k < 3; k++) {
-			writeByte(v_frame, x, y, k, v);
-		}
-	}
-	return (h > config.cam.MIN_HUE || h < config.cam.MAX_HUE) && (s > config.cam.MIN_SATURATION && s < config.cam.MAX_SATURATION) && (v > config.cam.MIN_VALUE && v < config.cam.MAX_VALUE);
-}
+//bool CameraControl::isBalloon(cv::Mat hsv_frame, int x, int y)
+//{
+//	//For HSV, Hue range is [0,179], Saturation range is [0,255] and Value range is [0,255]. Different softwares use different scales. So if you are comparing OpenCV values with them, you need to normalize these ranges.
+//	float h = getByte(hsv_frame, x, y, 0);
+//	float s = getByte(hsv_frame, x, y, 1);
+//	float v = getByte(hsv_frame, x, y, 2);
+//	if (config.cam.DEBUG_HSV) {
+//		for (int i = 0; i < 3; i++) {
+//			writeByte(h_frame, x, y, i, h);
+//		}
+//		for (int j = 0; j < 3; j++) {
+//			writeByte(s_frame, x, y, j, s);
+//		}
+//		for (int k = 0; k < 3; k++) {
+//			writeByte(v_frame, x, y, k, v);
+//		}
+//	}
+//	return (h > config.cam.MIN_HUE || h < config.cam.MAX_HUE) && (s > config.cam.MIN_SATURATION && s < config.cam.MAX_SATURATION) && (v > config.cam.MIN_VALUE && v < config.cam.MAX_VALUE);
+//}
 
-void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
-    for (int i = 0; i < 3; i++) {
-		writeByte(frame, posx, posy, i, config.cam.PIXEL_MARK_COLOR[i]);
-    }
-}
+//void CameraControl::markPixel(cv::Mat frame, int posx, int posy) {
+//    for (int i = 0; i < 3; i++) {
+//		writeByte(frame, posx, posy, i, config.cam.PIXEL_MARK_COLOR[i]);
+//    }
+//}
 
 void CameraControl::markPosition(int posx, int posy) {
     int size = 5;
@@ -94,10 +94,10 @@ int CameraControl::getRectangleByte(cv::Mat frame, int posx, int posy, int width
 	}
 }
 
-float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> point2){
-    float distance = std::sqrt((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]));
-    return distance;
-}
+//float CameraControl::calcDistance(std::vector<int> point1, std::vector<int> point2){
+//    float distance = std::sqrt((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]));
+//    return distance;
+//}
 
 void CameraControl::readFrame() {
 	cv_gui.lock();
