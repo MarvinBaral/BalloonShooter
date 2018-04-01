@@ -183,7 +183,7 @@ void CameraControl::detectBallByContours() {
 	//		distance = std::sin(angleY) * distance; necessary to think about it and test it
 	//		distance -= realSize/2.f; if you want to hit the center of the surface and not the center of the balloon, commented out because of KISS
 			if (config.cam.DEBUG_POS) {
-				std::cout << ",\tdistance: " << distance << "m" << ",\theight" << coordY << "m";
+				std::cout << ",\tdistance: " << distance << "m" << ",\theight: " << coordY << "m";
 			}
 			int xysize[2] = {config.cam.PARAM[WIDTH], config.cam.PARAM[HEIGHT]};
 			float degreeX = config.cam.PARAM[ANGLE_OF_VIEW_X] * 0.5 - ((xypos[0] * (1.0f / xysize[0])) * config.cam.PARAM[ANGLE_OF_VIEW_X]);

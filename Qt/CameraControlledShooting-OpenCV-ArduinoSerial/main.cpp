@@ -27,6 +27,9 @@ int main() {
 	if (!capture->isOpened()) {
 		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
 	}
+	capture->set(cv::CAP_PROP_FRAME_WIDTH, config.cam.PARAM[WIDTH]);
+	capture->set(cv::CAP_PROP_FRAME_HEIGHT, config.cam.PARAM[HEIGHT]);
+	capture->set(cv::CAP_PROP_FPS, 30);
 	std::cout << "Theoretically possible fps:" << capture->get(CV_CAP_PROP_FPS) << std::endl;
 	if (config.DISPLAY_WINDOW) {
 		cv::namedWindow(config.WINDOW_TITLE, CV_WINDOW_AUTOSIZE);
