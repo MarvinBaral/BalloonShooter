@@ -15,8 +15,8 @@ SOURCES += main.cpp \
     config.cpp
 
 INCLUDEPATH += /usr/local/include/opencv
-LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_videostab -lopencv_imgproc
-
+LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_videoio
+# -lopencv_imgcodecs  -lopencv_videostab  -lopencv_video
 HEADERS += \
     missionControlCenter.h \
     cameraControl.h \
