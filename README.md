@@ -1,5 +1,7 @@
 # BalloonShooter
-![](https://www.marvinbaral.de/image/jpeg/Uploads/BalloonShooter/BalloonShooterMetall_5.jpg)
+
+![](https://www.marvinbaral.de/image/jpeg/Uploads/BalloonShooter/BalloonShooterMetall_7.jpg)
+
 Author: Marvin Baral (github@marvinbaral.de)
 
 A project for shooting airballons with a modified LEGO Cannon. The Launcher itself with three servomotors is controlled with an Arduino over UART over USB. The Camera can be any camera available on your PC. The pc-side is cross-platform compatible (could be an RaspberryPi with Camera too, which is what i want to do next).
@@ -9,8 +11,6 @@ To configure it you have to edit the constants defined in config.cpp and recompi
 
 
 I made this project for my oral A level in computer technology. Therefore I am able to offer you a wonderfully colored presentation (in German): https://docs.google.com/presentation/d/1Q0u6JJvU0JhhG1BdvJM-5qi7tFbW3g5N5EWulWlf5u8/edit?usp=sharing
-
-![](https://www.marvinbaral.de/image/jpeg/Uploads/BalloonShooter/BalloonShooterMetall_6.jpg)
 
 ## DIY (Do It Yourself)
 how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzqlPu6wwwvgCbJU/edit#heading=h.loo15b9ijivk
@@ -26,8 +26,6 @@ how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzq
 * m - manual mode - control the turret with keys and shoot with enter
 * a - let the program automatically detect and shoot at a airballoon (red)
 * r - reset connection to Arduino, resetting servo positions
-
-![](https://www.marvinbaral.de/image/jpeg/Uploads/BalloonShooter/BalloonShooterMetall_7.jpg)
 
 ## Current Status:
 Works ok, but not perfect. ~70% hit rate, best hit quote in horizontal level. Pretty slow reaction due to various factors like bad old webcam, usb hub slicing framerate in half, performance hungryness,... 
