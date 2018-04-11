@@ -2,10 +2,10 @@
 ![](https://www.marvinbaral.de/image/jpeg/Uploads/RocketLauncher/2.jpg)
 Author: Marvin Baral (github@marvinbaral.de)
 
-A project for shooting airballons with a modified LEGO-RocketLauncher. The Launcher itself with three servomotors is controlled with an Arduino over UART over USB. The Camera can be any camera available on your PC. The pc-side is cross-platform compatible (could be an RaspberryPi with Camera too).
-Red airballons can succesfully be hit and destroyed with a LEGO-RocketLauncher IF they hold still. PC-Side uses multithreading and is very CPU-intensive (12-13 FPS on a Quadcore i5, 400% CPU).
-The flightpath calculation uses physical formulars and trigonometry.
-To configure it you have to edit the constants/ class attributes defined in the constructors.
+A project for shooting airballons with a modified LEGO Cannon. The Launcher itself with three servomotors is controlled with an Arduino over UART over USB. The Camera can be any camera available on your PC. The pc-side is cross-platform compatible (could be an RaspberryPi with Camera too, which is what i want to do next).
+Red airballons can succesfully be hit and destroyed with the LEGO cannon IF they hold still.
+The flightpath calculation uses physical formulars and trigonometry and relies on the given size of the balloon (23 cm).
+To configure it you have to edit the constants defined in config.cpp and recompile.
 
 
 I made this project for my oral A level in computer technology. Therefore I am able to offer you a wonderfully colored presentation (in German): https://docs.google.com/presentation/d/1Q0u6JJvU0JhhG1BdvJM-5qi7tFbW3g5N5EWulWlf5u8/edit?usp=sharing
@@ -22,15 +22,12 @@ how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzq
 ## Hotkeys
 * l - lock - locks the servos, the turret will nether move nor shoot
 * c - clearance - clearance to shoot
-* m - manual mode - control the turret with keys and enter
+* m - manual mode - control the turret with keys and shoot with enter
 * a - let the program automatically detect and shoot at a airballoon (red)
-* r - reset connection to Arduino, resetting servos
+* r - reset connection to Arduino, resetting servo positions
 
 ## Current Status:
-* Servo-Control is working
-* automatical shooting is working
-* object detection and distance detection working
-* physical flightpathcalculation is working
+Works ok, but not perfect. ~70% hit rate, best hit quote in horizontal level. Pretty slow reaction due to various factors like bad old webcam, usb hub slicing framerate in half, performance hungryness,... 
 
 ## Protocol for Communication between PC and Arduino:
 \<char select {0-1}\>;\<int degree\>;   no newline
