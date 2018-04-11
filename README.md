@@ -1,6 +1,6 @@
 # BalloonShooter
 
-![balloonshootermetall_7](https://user-images.githubusercontent.com/11145294/38643176-95a453c8-3ddc-11e8-8496-b928f3528313.jpg)
+![balloonshootermetall_5](https://user-images.githubusercontent.com/11145294/38643127-6cb276fc-3ddc-11e8-8858-ff50dbfc657e.jpg)
 
 Author: Marvin Baral (github@marvinbaral.de)
 
@@ -12,7 +12,7 @@ To configure it you have to edit the constants defined in config.cpp and recompi
 
 I made this project for my oral A level in computer technology. Therefore I am able to offer you a wonderfully colored presentation (in German): https://docs.google.com/presentation/d/1Q0u6JJvU0JhhG1BdvJM-5qi7tFbW3g5N5EWulWlf5u8/edit?usp=sharing
 
-![balloonshootermetall_5](https://user-images.githubusercontent.com/11145294/38643127-6cb276fc-3ddc-11e8-8858-ff50dbfc657e.jpg)
+![balloonshootermetall_6](https://user-images.githubusercontent.com/11145294/38643145-7da191a0-3ddc-11e8-8993-18cbf771a546.jpg)
 
 ## DIY (Do It Yourself)
 how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzqlPu6wwwvgCbJU/edit#heading=h.loo15b9ijivk
@@ -29,7 +29,7 @@ how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzq
 * a - let the program automatically detect and shoot at a airballoon (red)
 * r - reset connection to Arduino, resetting servo positions
 
-![balloonshootermetall_6](https://user-images.githubusercontent.com/11145294/38643145-7da191a0-3ddc-11e8-8993-18cbf771a546.jpg)
+![balloonshootermetall_7](https://user-images.githubusercontent.com/11145294/38643176-95a453c8-3ddc-11e8-8496-b928f3528313.jpg)
 
 ## Current Status:
 Works ok, but not perfect. ~70% hit rate, best hit quote in horizontal level. Pretty slow reaction due to various factors like bad old webcam, usb hub slicing framerate in half, performance hungryness,... 
