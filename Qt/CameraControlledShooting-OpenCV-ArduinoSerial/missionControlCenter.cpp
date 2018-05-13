@@ -1,9 +1,9 @@
 #include "missionControlCenter.h"
-#include "cameraControl.cpp"
+#include "cameraControl.h"
 #include <math.h>
 #include "../../Arduino/servo_pulse_time_reciever/sharedConstants.h"
 
-MissionControlCenter::MissionControlCenter(ServoControl* pServoControl, cv::VideoCapture* pCap):
+MissionControlCenter::MissionControlCenter(abstractServoControl* pServoControl, cv::VideoCapture* pCap):
 	running(true),
 	cap(pCap)
 {
@@ -59,7 +59,7 @@ void MissionControlCenter::handleShooting()
 		Position positionRelToCam = positions.back();
 		if (timer.elapsed() >= positionRelToCam.time + config.mc.TIMEOUT_MSEC) { //empty queue
 			for (int i = 0; i < size; i++) {
-				positions.pop();
+                positions.pop();
 			}
 		}
 		pos_queue.unlock();

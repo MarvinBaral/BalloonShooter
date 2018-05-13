@@ -3,17 +3,20 @@
 #include <QSerialPort>
 #include "../../Arduino/servo_pulse_time_reciever/sharedConstants.h"
 #include "config.h"
+#include "SmiOut.hpp"
+#include "abstractServoControl.h"
 
-class ServoControl {
+
+class ServoControl: public abstractServoControl {
 private:
-	QString portName;
-    float degrees[2];
+    QString portName;
     QSerialPort* serial;
+    float degrees[2];
 	void initSerial(const QString &PORT_NAME);
 public:
 	ServoControl(QString pPortName);
-    void updateServo(int index, signed int degreeDiff);
-	void setServo(int index, int degree);
+    void moveServo(int index, signed int degreeDiff);
+    void setServo(int index, float degree);
     void shoot();
 	void reset();
 	void printResponse();

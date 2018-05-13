@@ -10,11 +10,11 @@ ServoControl::ServoControl(QString pPortName) {
 	serial->open(QIODevice::ReadWrite);
 }
 
-void ServoControl::updateServo(int index, signed int degreeDiff) {
+void ServoControl::moveServo(int index, signed int degreeDiff) {
 	setServo(index, degrees[index] + degreeDiff);
 }
 
-void ServoControl::setServo(int index, int degree) { //it has to be assured, that there are at least ~100ms between each call Servo call to keep load of serial traffic on Arduino in an optimal area. (is done in the main loop)
+void ServoControl::setServo(int index, float degree) { //it has to be assured, that there are at least ~100ms between each call Servo call to keep load of serial traffic on Arduino in an optimal area. (is done in the main loop)
 	if (degree < MAX_DEGREES[index][0]) {
 		degree = MAX_DEGREES[index][0];
 		if (config.servo.DEBUG) {std::cout << "reached min degree" << std::endl;}

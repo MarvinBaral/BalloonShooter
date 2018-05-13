@@ -12,11 +12,11 @@ class MissionControlCenter {
 		cv::VideoCapture* cap;
 		std::string windowTitle;
 		std::vector<std::thread*> workers;
-		ServoControl* servoControl;
+        abstractServoControl* servoControl;
 
 	public:
 		bool allowedToShoot;
-		MissionControlCenter(ServoControl* pServoControl, cv::VideoCapture* pCap);
+        MissionControlCenter(abstractServoControl* pServoControl, cv::VideoCapture* pCap);
 		void handleShooting();
 		~MissionControlCenter();
 };

@@ -8,6 +8,7 @@
 #include "servoControl.h"
 #include "missionControlCenter.h"
 #include "main.h"
+#include "rpi3_dma_servoControl.h"
 
 std::queue<Position> positions;
 QTime timer;
@@ -23,22 +24,26 @@ int main() {
 	QTime fpsTimer;
 	fpsTimer.start();
 	int keyPressed;
-	cv::VideoCapture* capture = new cv::VideoCapture(config.main.USB_CAM);
+    cv::VideoCapture* capture = new cv::VideoCapture(config.main.CAM);
 	if (!capture->isOpened()) {
-		std::cout << "Cannot open the video cam. Please connect the USB-Cam!" << std::endl;
+        std::cout << "Cannot open the video cam. Please connect the camera!" << std::endl;
 	}
-	capture->set(cv::CAP_PROP_FRAME_WIDTH, config.cam.PARAM[WIDTH]);
-	capture->set(cv::CAP_PROP_FRAME_HEIGHT, config.cam.PARAM[HEIGHT]);
-	capture->set(cv::CAP_PROP_FPS, 30);
-	std::cout << "Theoretically possible fps:" << capture->get(CV_CAP_PROP_FPS) << std::endl;
+    capture->set(CV_CAP_PROP_FRAME_WIDTH, config.cam.PARAM[WIDTH]);
+    capture->set(CV_CAP_PROP_FRAME_HEIGHT, config.cam.PARAM[HEIGHT]);
+    capture->set(CV_CAP_PROP_FPS, config.cam.PARAM[FPS]);
 	if (config.DISPLAY_WINDOW) {
-		cv::namedWindow(config.WINDOW_TITLE, CV_WINDOW_AUTOSIZE);
+        cv::namedWindow(config.WINDOW_TITLE, CV_WINDOW_NORMAL);
 	}
-	ServoControl* servoControl = new ServoControl(config.main.PORT_NAME);
-	MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, capture);
+    abstractServoControl* servoControl;
+    if (config.main.HARDWARE_VERSION >= V2_0) {
+        servoControl = new rpi3_dma_servoControl(); //raspi dma
+    } else {
+        servoControl = new ServoControl(config.main.PORT_NAME); //Arduino via Serialport
+    }
+    MissionControlCenter* missionControlCenter = new MissionControlCenter(servoControl, capture);
 
 	do {
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+//		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		/* why:
 		 * -give threads time to create window at startup
 		 * -main thread doesn't do a lot, its better to give some time to the worker threads
@@ -74,22 +79,27 @@ int main() {
 			missionControlCenter->allowedToShoot = false;
 			recordPosition = false;
 			break;
-		case 81: //left
+        case 65361: //left via VNC
+        case 81: //left
 			if (!automaticMode) //!automaticMode == manualMode
-				servoControl->updateServo(0, -config.main.STEP_DEGREE);
+                servoControl->moveServo(0, -config.main.STEP_DEGREE);
 			break;
+        case 65363: //right via VNC
 		case 83: //right
 			if (!automaticMode)
-				servoControl->updateServo(0, config.main.STEP_DEGREE);
+                servoControl->moveServo(0, config.main.STEP_DEGREE);
 			break;
-		case 82: //up
+        case 65362: //up via VNC
+        case 82: //up
 			if (!automaticMode)
-				servoControl->updateServo(1, -config.main.STEP_DEGREE);
+                servoControl->moveServo(1, -config.main.STEP_DEGREE);
 			break;
+        case 65364: //down via VNC
 		case 84: //down
 			if (!automaticMode)
-				servoControl->updateServo(1, config.main.STEP_DEGREE);
+                servoControl->moveServo(1, config.main.STEP_DEGREE);
 			break;
+        case 10: //enter via VNC
 		case 13: //enter = shoot
 			if (!automaticMode)
 				servoControl->shoot();

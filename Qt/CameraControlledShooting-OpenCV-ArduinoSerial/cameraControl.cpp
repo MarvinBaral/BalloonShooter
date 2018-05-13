@@ -100,13 +100,16 @@ int CameraControl::getRectangleByte(cv::Mat frame, int posx, int posy, int width
 //}
 
 void CameraControl::readFrame() {
-	cv_gui.lock();
+    cv_gui.lock();
 	cap->read(frame);
+    if (config.cam.ROTATE_180) {
+        cv::flip(frame, frame, -1);
+    }
 	if (config.cam.DEBUG_HSV) {
 		cap->read(h_frame);
 		cap->read(s_frame);
 		cap->read(v_frame);
-	}
+    }
 	cv_gui.unlock();
 	fps_ctr.lock();
 	fpsCount++;
@@ -217,7 +220,7 @@ void CameraControl::calibrate() {
 	std::cout << "calibrating" << std::endl;
 	cv::Mat hsv_frame;
 	cv::cvtColor(frame, hsv_frame, CV_BGR2HSV);
-	int width = 80;
+    int width = config.cam.PARAM[WIDTH] * 0.2;
 	int squarePosX = config.cam.PARAM[WIDTH] / 4 - (width / 2);
 	int squarePosY = config.cam.PARAM[HEIGHT] / 2 - (width/ 2);
 	rectangle(squarePosX, squarePosY, width, width);

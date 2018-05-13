@@ -2,9 +2,13 @@
 #define CONFIG_H
 #include <QString>
 
-//syntax: file_name
-enum cam_params {MIN_SIZE = 0, WIDTH, HEIGHT, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
-enum main_versions {V1_0 = 0, V1_1};
+enum cam_params {MIN_SIZE = 0, WIDTH, HEIGHT, FPS, ANGLE_OF_VIEW_X, ANGLE_OF_VIEW_Y};
+enum hardware_versions {V1_0 = 0, V1_1, V2_0};
+/*
+ * V1_0 = PC + Arduino, unstabilized turret
+ * V1_1 = PC + Arduino, stabilized turret
+ * V2_0 = Raspi3, stabilized turret
+ */
 
 struct Servo {
 	const int BAUDRATE;
@@ -12,7 +16,7 @@ struct Servo {
 	Servo();
 };
 struct Cam {
-	const int PARAM[5];
+    const int PARAM[6];
 	const short MAX_HUE;
 	const short MIN_HUE;
 	const short MAX_SATURATION;
@@ -23,6 +27,7 @@ struct Cam {
 	const int PIXEL_MARK_COLOR[3];
 	const int POS_MARK_COLOR[3];
 	const bool INVERT_X_AXIS;
+    const bool ROTATE_180;
 	const float REAL_SIZE;
 	const bool DEBUG_POS;
 	const bool DEBUG_HSV;
@@ -45,7 +50,7 @@ struct Main {
 	const bool SHOW_RESPONSE_FROM_ARDUINO;
 	const QString PORT_NAME;
 	const bool SHOW_FPS;
-	const short USB_CAM;
+    const short CAM;
 	const bool DEBUG_KEYS;
 	Main();
 };
