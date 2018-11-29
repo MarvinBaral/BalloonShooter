@@ -23,7 +23,7 @@ how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzq
 * Arduino
 
 ## Hotkeys
-* l - lock - locks the servos, the turret will nether move nor shoot
+* l - lock - locks the servos, the turret will neither move nor shoot
 * c - clearance - clearance to shoot
 * m - manual mode - control the turret with keys and shoot with enter
 * a - let the program automatically detect and shoot at a airballoon (red)
