@@ -4,7 +4,7 @@
 
 Author: Marvin Baral (github@marvinbaral.de)
 
-A project for shooting airballons with a modified LEGO Cannon. The Launcher itself with three servomotors is controlled with an Arduino over UART over USB. The Camera can be any camera available on your PC. The pc-side is cross-platform compatible (could be an RaspberryPi with Camera too, which is what i want to do next).
+A project for shooting airballons with a modified LEGO Cannon automatically by the use of image processing. The Launcher itself with three servomotors is controlled with an Arduino over UART over USB. The Camera can be any camera available on your PC. The pc-side is cross-platform compatible (could be an RaspberryPi with Camera too, which is what i want to do next).
 Red airballons can succesfully be hit and destroyed with the LEGO cannon IF they hold still.
 The flightpath calculation uses physical formulars and trigonometry and relies on the given size of the balloon (23 cm).
 To configure it you have to edit the constants defined in config.cpp and recompile.
