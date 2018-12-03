@@ -11,7 +11,7 @@ The camera can be any camera available on your PC.
 Red airballons can succesfully be hit and destroyed with the LEGO cannon IF they hold still.
 The flightpath calculation uses physical formulars and trigonometry and relies on the given size of the balloon (23 cm).
 To configure it you have to edit the constants defined in config.cpp and recompile.
-If you want to use your Laptop/PC with Arduino change HARDWARE_VERSION to V1_1.
+If you want to use your Laptop/PC with Arduino, change HARDWARE_VERSION to V1_1.
 
 
 I made this project for my oral A level in computer technology. Therefore I am able to offer you a wonderfully colored presentation (in German): https://docs.google.com/presentation/d/1Q0u6JJvU0JhhG1BdvJM-5qi7tFbW3g5N5EWulWlf5u8/edit?usp=sharing
