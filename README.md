@@ -24,7 +24,8 @@ how to build: https://docs.google.com/document/d/1PGubxyf4P0CSoW_Ag_M8PcPFT6wyzq
 ## Dependencies
 * Qt
 * OpenCV
-* Arduino or RaspberryPi DMA
+* https://github.com/lukaslihotzki/rpi-many-ws2812b
+* (Arduino)
 
 ## Hotkeys
 * l - lock - locks the servos, the turret will neither move nor shoot
