@@ -3,7 +3,7 @@
 ![newballoonshooter2](https://user-images.githubusercontent.com/11145294/49402491-4c077d80-f74a-11e8-9f29-82e0e5070571.jpg)
 
 
-Author: Marvin Baral (github@marvinbaral.de)
+Author: Marvin Baral
 
 A project for shooting airballons with a modified LEGO Cannon automatically by the use of image processing. Everything is controlled by a RaspberryPi. The Camera is the 160° 5MP RaspberryPi Camera.
 If you want to boost performance you can run the Qt-program on your laptop and connect an Arduino and a USB Webcam to it.
